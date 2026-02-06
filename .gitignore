@@ -85,3 +85,5 @@ ios/*.xcodeproj/project.xcsettings
 .flaskenv*
 !.env.project
 !.env.vault
+
+.tmp

@@ -6,6 +6,7 @@ import type { CardRepository } from "@app/domain/repositories/CardRepository";
 import type { QuoteRepository } from "@app/data/b3/B3QuoteRepository";
 import type { CurrencyRepository } from "@app/domain/repositories/CurrencyRepository";
 import type { FileRepository } from "@app/domain/repositories/FileRepository";
+import type { TaskRepository } from "@app/domain/repositories/TaskRepository";
 
 export type Token<T> = symbol & { __type?: T };
 
@@ -41,6 +42,7 @@ export const TOKENS = {
   CardRepository: Symbol("CardRepository") as Token<CardRepository>,
   CurrencyRepository: Symbol("CurrencyRepository") as Token<CurrencyRepository>,
   FileRepository: Symbol("FileRepository") as Token<FileRepository>,
+  TaskRepository: Symbol("TaskRepository") as Token<TaskRepository>,
 };
 
 export function createDI(container: Container): DI {

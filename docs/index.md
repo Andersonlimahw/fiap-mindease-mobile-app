@@ -1,6 +1,17 @@
-# Documentação do Projeto Bytebank
+# Documentação do Projeto MindEase Mobile
 
-Bem-vindo à documentação oficial do Bytebank App. Este documento serve como um guia central para desenvolvedores, designers e qualquer pessoa envolvida no projeto.
+Bem-vindo à documentação oficial do MindEase Mobile App. Este documento serve como um guia central para desenvolvedores, designers e qualquer pessoa envolvida no projeto.
+
+## Features (MindEase)
+
+Documentação das features de produtividade do MindEase sendo migradas da versão web.
+
+-   [Índice de Features](./features/index.md)
+-   [Tasks Management](./features/tasks.md)
+-   [Pomodoro Timer](./features/pomodoro.md)
+-   [Focus Mode](./features/focus-mode.md)
+-   [AI Chat](./features/chat.md)
+-   [Accessibility](./features/accessibility.md)
 
 ## Arquitetura
 

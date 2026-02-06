@@ -54,6 +54,31 @@ const AddTransactionScreen = lazy(() =>
     default: m.AddTransactionScreen,
   }))
 );
+const TasksScreen = lazy(() =>
+  import("../screens/Tasks/TasksScreen").then((m) => ({
+    default: m.TasksScreen,
+  }))
+);
+const PomodoroScreen = lazy(() =>
+  import("../screens/Pomodoro/PomodoroScreen").then((m) => ({
+    default: m.PomodoroScreen,
+  }))
+);
+const FocusModeScreen = lazy(() =>
+  import("../screens/FocusMode/FocusModeScreen").then((m) => ({
+    default: m.FocusModeScreen,
+  }))
+);
+const ChatScreen = lazy(() =>
+  import("../screens/Chat/ChatScreen").then((m) => ({
+    default: m.ChatScreen,
+  }))
+);
+const AccessibilityScreen = lazy(() =>
+  import("../screens/Accessibility/AccessibilityScreen").then((m) => ({
+    default: m.AccessibilityScreen,
+  }))
+);
 
 /**
  * HOC para envolver componentes lazy em Suspense
@@ -79,6 +104,11 @@ const LazyPix = withSuspense(PixScreen);
 const LazyDigitalCards = withSuspense(DigitalCardsScreen);
 const LazyRegister = withSuspense(RegisterScreen);
 const LazyAddTransaction = withSuspense(AddTransactionScreen);
+const LazyTasks = withSuspense(TasksScreen);
+const LazyPomodoro = withSuspense(PomodoroScreen);
+const LazyFocusMode = withSuspense(FocusModeScreen);
+const LazyChat = withSuspense(ChatScreen);
+const LazyAccessibility = withSuspense(AccessibilityScreen);
 
 type AuthStackParamList = {
   Onboarding: undefined;
@@ -88,6 +118,7 @@ type AuthStackParamList = {
 
 type AppTabParamList = {
   Home: undefined;
+  Tasks: undefined;
   Dashboard: undefined;
   Investments: undefined;
   Extract: undefined;
@@ -124,6 +155,7 @@ function AppTabs() {
           let iconName: React.ComponentProps<typeof MaterialIcons>["name"] =
             "help";
           if (route.name === "Home") iconName = "home";
+          else if (route.name === "Tasks") iconName = "check-circle";
           else if (route.name === "Dashboard") iconName = "dashboard";
           else if (route.name === "Investments") iconName = "trending-up";
           else if (route.name === "Extract") iconName = "receipt";
@@ -135,6 +167,14 @@ function AppTabs() {
         name="Home"
         component={HomeScreen}
         options={{ tabBarLabel: t("tabs.home"), headerTitle: t("titles.home") }}
+      />
+      <Tab.Screen
+        name="Tasks"
+        component={LazyTasks}
+        options={{
+          tabBarLabel: t("tabs.tasks"),
+          headerTitle: t("tasks.title"),
+        }}
       />
       <Tab.Screen
         name="Dashboard"
@@ -255,6 +295,26 @@ export function RootNavigator() {
           presentation: "modal",
           title: t("titles.newTransaction"),
         }}
+      />
+      <AppStack.Screen
+        name="Pomodoro"
+        component={LazyPomodoro}
+        options={{ title: t("pomodoro.title") }}
+      />
+      <AppStack.Screen
+        name="FocusMode"
+        component={LazyFocusMode}
+        options={{ title: t("focusMode.title") }}
+      />
+      <AppStack.Screen
+        name="Chat"
+        component={LazyChat}
+        options={{ title: t("chat.title") }}
+      />
+      <AppStack.Screen
+        name="Accessibility"
+        component={LazyAccessibility}
+        options={{ title: t("accessibility.title") }}
       />
     </AppStack.Navigator>
   );
