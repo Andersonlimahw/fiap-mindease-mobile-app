@@ -36,7 +36,7 @@ Edite `src/presentation/navigation/types.ts` e adicione a rota `WebView` no `Roo
 export type RootStackParamList = {
   Back: undefined;
   User: undefined;
-  Pix: undefined;
+  Tasks: undefined;
   DigitalCards: undefined;
   AddTransaction: { transactionId?: string };
   WebView: {

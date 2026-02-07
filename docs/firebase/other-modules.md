@@ -1,6 +1,6 @@
 # Outros módulos React Native Firebase
 
-Este arquivo consolida recomendações para módulos complementares que podem ser adicionados ao ByteBank. Cada seção descreve o objetivo, passos-chave e pontos de integração na arquitetura existente.
+Este arquivo consolida recomendações para módulos complementares que podem ser adicionados ao MindEase. Cada seção descreve o objetivo, passos-chave e pontos de integração na arquitetura existente.
 
 ## 1. Cloud Messaging (FCM)
 **Uso**: push notifications.

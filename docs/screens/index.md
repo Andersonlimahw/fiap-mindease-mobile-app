@@ -1,6 +1,6 @@
 # Screens (Telas)
 
-Este documento descreve como as screens estão implementadas no aplicativo ByteBank, incluindo arquitetura, padrões de navegação e exemplos detalhados.
+Este documento descreve como as screens estão implementadas no aplicativo MindEase, incluindo arquitetura, padrões de navegação e exemplos detalhados.
 
 ## Arquitetura de Screens
 
@@ -19,17 +19,16 @@ src/presentation/screens/
 ├── Dashboard/
 │   ├── DashboardScreen.tsx
 │   └── DashboardScreen.styles.ts
-├── Cards/
-│   └── DigitalCardsScreen.tsx
-├── Transactions/
-│   └── AddTransactionScreen.tsx
+├── Tasks/
+│   └── TasksScreen.tsx
+├── Pomodoro/
+│   └── PomodoroScreen.tsx
+├── FocusMode/
+│   └── FocusModeScreen.tsx
+├── Chat/
+│   └── ChatScreen.tsx
 ├── User/
 │   └── UserScreen.tsx
-├── Pix/
-│   └── PixScreen.tsx
-├── Extract/
-│   └── ExtractScreen.tsx
-├── Investments/
 └── Onboarding/
     └── OnboardingScreen.tsx
 ```
@@ -48,7 +47,7 @@ import { useTheme } from "@presentation/theme/theme";
 import { useFadeSlideInOnFocus } from "../../hooks/animations";
 
 export const HomeScreen: React.FC<any> = ({ navigation }) => {
-  const { loading, transactions, balance, refresh } = useHomeViewModel();
+  const { loading, tasks, stats, refresh } = useHomeViewModel();
   const { user, signOut } = useAuth();
   const { animatedStyle } = useFadeSlideInOnFocus();
   const { t } = useI18n();
@@ -74,27 +73,26 @@ export const HomeScreen: React.FC<any> = ({ navigation }) => {
 **Exemplo: DashboardScreen.tsx**
 
 ```typescript
-export const DashboardScreen: React.FC<any> = ({ navigation }) => {
-  const { user, balance, transactions, loading, refresh } = useDashboardViewModel();
-  const { cards } = useDigitalCardsViewModel();
+export const TasksOverviewScreen: React.FC<any> = ({ navigation }) => {
+  const { user, tasks, loading, refresh } = useTasksViewModel();
+  const { stats } = usePomodoroViewModel();
   const { animatedStyle } = useFadeSlideInOnFocus();
   const { animatedStyle: chartStyle } = useChartEntranceAndPulse(
-    transactions?.length ?? 0
+    tasks?.length ?? 0
   );
 
-  const goAddTransaction = useCallback(
-    () => navigation?.navigate?.("AddTransaction"),
+  const goAddTask = useCallback(
+    () => navigation?.navigate?.("AddTask"),
     [navigation]
   );
 
   return (
     <Animated.ScrollView>
       {/* Header com informações do usuário */}
-      {/* Card de saldo */}
+      {/* Estatísticas de produtividade */}
       {/* Ações rápidas */}
-      {/* Seção de cartões */}
-      {/* Gráfico de gastos */}
-      {/* Transações recentes */}
+      {/* Tarefas recentes */}
+      {/* Sessões de foco */}
     </Animated.ScrollView>
   );
 };
@@ -103,7 +101,7 @@ export const DashboardScreen: React.FC<any> = ({ navigation }) => {
 **Características:**
 - Múltiplos ViewModels para diferentes funcionalidades
 - Navegação programática com callbacks
-- Componentes complexos (charts, cards)
+- Componentes de produtividade (timers, task lists)
 - Animações específicas para diferentes seções
 
 ## Screens Principais
@@ -112,45 +110,46 @@ export const DashboardScreen: React.FC<any> = ({ navigation }) => {
 - **Localização**: `src/presentation/screens/Home/HomeScreen.tsx`
 - **Propósito**: Tela principal após login
 - **Funcionalidades**:
-  - Exibição de saldo
-  - Ações rápidas (PIX, cartões, empréstimos, etc.)
-  - Transações recentes
+  - Dashboard de produtividade
+  - Ações rápidas (Tasks, Pomodoro, Focus Mode, etc.)
+  - Tarefas recentes
   - Acesso ao perfil do usuário
 
 **Exemplo de Uso:**
 ```typescript
 <QuickAction
-  label={t("home.pix")}
-  icon={require("../../../../public/assets/images/icons/Ícone Pix.png")}
-  onPress={() => navigation?.navigate?.("Pix")}
+  label={t("home.tasks")}
+  icon={require("../../../../public/assets/images/icons/tasks.png")}
+  onPress={() => navigation?.navigate?.("Tasks")}
 />
 ```
 
-### 2. DashboardScreen
-- **Localização**: `src/presentation/screens/Dashboard/DashboardScreen.tsx`
-- **Propósito**: Visão analítica das finanças
+### 2. TasksScreen
+- **Localização**: `src/presentation/screens/Tasks/TasksScreen.tsx`
+- **Propósito**: Gerenciamento de tarefas
 - **Funcionalidades**:
-  - Gráfico de gastos por categoria
-  - Visualização de cartões
-  - Botões de demo (crédito/débito)
-  - Análise de transações
+  - Lista de tarefas com prioridades
+  - Subtarefas para micro-passos
+  - Acompanhamento de progresso
+  - Criar, editar e excluir tarefas
 
-**Exemplo de Integração com Charts:**
+**Exemplo de Integração com Estatísticas:**
 ```typescript
-<HorizontalBarChart
-  data={buildSpendingChartData(transactions || [], t)}
-  formatValue={(v) => formatCurrency(v)}
-  testID="dashboard-spending-chart"
+<PomodoroStats
+  completedSessions={stats.completedSessions}
+  totalFocusTime={stats.totalFocusTime}
+  testID="pomodoro-stats"
 />
 ```
 
-### 3. DigitalCardsScreen
-- **Localização**: `src/presentation/screens/Cards/DigitalCardsScreen.tsx`
-- **Propósito**: Gerenciamento de cartões digitais
+### 3. PomodoroScreen
+- **Localização**: `src/presentation/screens/Pomodoro/PomodoroScreen.tsx`
+- **Propósito**: Timer Pomodoro para gestão de tempo
 - **Funcionalidades**:
-  - Visualização de cartões com animação flip
-  - Adição/remoção de cartões
-  - Detalhes completos dos cartões
+  - Timer circular com progresso visual
+  - Controles de iniciar/pausar/resetar
+  - Sessões de foco e intervalos configuráveis
+  - Estatísticas de sessões completadas
 
 ### 4. Auth Screens
 - **Localização**: `src/presentation/screens/Auth/`
@@ -223,25 +222,25 @@ return (
 
 ## Funcionalidades por Screen
 
-### Home vs Dashboard
+### Home vs Tasks
 
 **HomeScreen**:
 - Foco em ações rápidas
-- Interface mais simples
-- Transações básicas
+- Interface resumida
+- Visão geral de produtividade
 
-**DashboardScreen**:
-- Análise detalhada
-- Gráficos e métricas
-- Visão gerencial
+**TasksScreen**:
+- Gestão detalhada de tarefas
+- Subtarefas e prioridades
+- Progresso e estatísticas
 
 ### Estados de Carregamento
 
 ```typescript
 <FlatList
-  data={transactions}
+  data={tasks}
   keyExtractor={(item) => item.id}
-  renderItem={({ item }) => <TransactionItem tx={item} />}
+  renderItem={({ item }) => <TaskItem task={item} />}
   refreshing={loading}
   onRefresh={refresh}
   scrollEnabled={false}
@@ -250,33 +249,32 @@ return (
 
 ### Helpers e Utilities
 
-#### Análise de Gastos
+#### Estatísticas de Produtividade
 ```typescript
-function buildSpendingChartData(transactions: any[], t: TFunc): ChartDatum[] {
-  const debits = transactions.filter((tx) => tx?.type === "debit");
-  const groups = new Map<string, number>();
+function buildProductivityStats(tasks: Task[], sessions: PomodoroSession[]): Stats {
+  const completedTasks = tasks.filter((t) => t.completed).length;
+  const totalTasks = tasks.length;
+  const totalFocusTime = sessions.reduce((acc, s) => acc + s.duration, 0);
+  const completedSessions = sessions.length;
 
-  for (const tx of debits) {
-    const category = deriveCategoryFromDescription(tx?.description);
-    const current = groups.get(category) || 0;
-    groups.set(category, current + Number(tx?.amount));
-  }
-
-  return Array.from(groups.entries())
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 6)
-    .map(([label, value]) => ({ label: t(`categories.${label}`), value }));
+  return {
+    completedTasks,
+    totalTasks,
+    completionRate: totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0,
+    totalFocusTime,
+    completedSessions,
+  };
 }
 ```
 
-#### Categorização Automática
+#### Priorização de Tarefas
 ```typescript
-function deriveCategoryFromDescription(desc: string): string {
-  const d = desc.toLowerCase();
-  if (d.includes("grocery") || d.includes("market")) return "groceries";
-  if (d.includes("coffee") || d.includes("restaurant")) return "foodDrink";
-  if (d.includes("uber") || d.includes("gas")) return "transport";
-  return "other";
+function sortTasksByPriority(tasks: Task[]): Task[] {
+  const priorityOrder = { high: 0, medium: 1, low: 2 };
+  return [...tasks].sort((a, b) => {
+    if (a.completed !== b.completed) return a.completed ? 1 : -1;
+    return priorityOrder[a.priority] - priorityOrder[b.priority];
+  });
 }
 ```
 
@@ -309,8 +307,8 @@ describe('HomeScreen', () => {
   beforeEach(() => {
     mockUseHomeViewModel.mockReturnValue({
       loading: false,
-      transactions: mockTransactions,
-      balance: 1000
+      tasks: mockTasks,
+      stats: mockStats
     });
   });
 

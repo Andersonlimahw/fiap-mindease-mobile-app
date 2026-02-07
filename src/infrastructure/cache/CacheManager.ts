@@ -1,7 +1,7 @@
 import { SecureStorage } from '../storage/SecureStorage';
 
 /**
- * CacheManager - Sistema de cache com TTL para o ByteBank
+ * CacheManager - Sistema de cache com TTL para o MindEase
  *
  * IMPORTANTE: Este cache deve ser usado APENAS para APIs externas (BRAPI, etc).
  * Para dados do Firebase, NÃO use cache pois o Firestore já gerencia

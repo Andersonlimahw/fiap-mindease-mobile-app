@@ -22,7 +22,7 @@ graph LR
   C --> D[AppStack]
   D --> E[Tabs]
   D --> F[User]
-  D --> G[Pix]
+  D --> G[Tasks]
   D --> H[DigitalCards]
   D --> I[AddTransaction]
   D --> J[WebView (nova)]

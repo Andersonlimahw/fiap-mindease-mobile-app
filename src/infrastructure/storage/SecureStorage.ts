@@ -2,7 +2,7 @@ import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 /**
- * SecureStorage - Camada de armazenamento seguro para o ByteBank
+ * SecureStorage - Camada de armazenamento seguro para o MindEase
  *
  * Utiliza:
  * - expo-secure-store para credenciais sensíveis (tokens, senhas) - Keychain/Keystore

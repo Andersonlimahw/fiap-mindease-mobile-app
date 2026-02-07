@@ -50,7 +50,7 @@ const requestManageExternalStorageIfNeeded = async (sdkVersion: number): Promise
               onPress: async () => {
                 try {
                   // Abrir configurações específicas para MANAGE_EXTERNAL_STORAGE
-                  await Linking.openURL("package:com.bytebankapp.android");
+                  await Linking.openURL("package:com.mindease.android");
                   // Como não podemos detectar se foi concedida, assumimos que sim por agora
                   // O usuário pode tentar novamente se não funcionou
                   resolve(true);

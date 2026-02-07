@@ -1,8 +1,8 @@
-# ByteBank App - Comprehensive Codebase Analysis Report
+# MindEase App - Comprehensive Codebase Analysis Report
 
 ## Executive Summary
 
-The ByteBank App is a **React Native** application built with Expo, implementing a modern fintech banking platform with comprehensive clean architecture principles, TypeScript support, and multi-brand white-label capabilities.
+The MindEase App is a **React Native** application built with Expo, implementing a modern productivity and wellness platform with comprehensive clean architecture principles, TypeScript support, and multi-brand white-label capabilities.
 
 **Technology Stack:**
 - React Native 0.81.4 with Expo SDK 54
@@ -42,16 +42,15 @@ src/
 │   └── di/                          # Dependency Injection container
 │       └── container.tsx            # Simple DI with symbols
 ├── domain/                          # Business entities & contracts
-│   ├── entities/                    # Data models (User, Transaction, Card, etc.)
+│   ├── entities/                    # Data models (User, Task, PomodoroSession, etc.)
 │   └── repositories/                # Repository interfaces (abstract contracts)
 ├── application/
-│   └── usecases/                    # Business logic (GetBalance, SignOut, etc.)
+│   └── usecases/                    # Business logic (GetTasks, SignOut, etc.)
 ├── data/                            # Data layer implementations
 │   ├── firebase/                    # Firebase repository implementations
 │   ├── mock/                        # Mock repository implementations
 │   ├── google/                      # Google Sign-In implementation
-│   ├── b3/                          # B3 Quote API integration
-│   └── currency/                    # Currency conversion API
+│   └── api/                         # External API integrations
 ├── infrastructure/
 │   └── firebase/                    # Firebase initialization & setup
 ├── presentation/                    # UI Layer
@@ -75,19 +74,19 @@ Total Files: 113 TypeScript/TSX files
 **Layer Breakdown:**
 
 1. **Domain Layer** (Business Logic - Framework Independent)
-   - Entities: User, Transaction, Card, Investment, Pix, etc.
+   - Entities: User, Task, PomodoroSession, FocusSession, ChatMessage, etc.
    - Repository Interfaces: Define contracts without implementation details
    - No external dependencies
 
 2. **Application Layer** (Use Cases)
    - Orchestrates domain logic
-   - Examples: GetBalance, SignOut, GetRecentTransactions, SignInWithProvider
+   - Examples: GetTasks, SignOut, GetPomodoroStats, SignInWithProvider
    - Dependency-injected repository implementations
 
 3. **Data Layer** (Repository Implementations)
    - **Firebase Repositories:** Real production data sources
    - **Mock Repositories:** Development/testing with in-memory data
-   - **External APIs:** B3 quotes, currency conversion
+   - **External APIs:** AI chat service
    - Factory pattern: Switch between implementations via environment flags
 
 4. **Infrastructure Layer**
@@ -99,12 +98,14 @@ Total Files: 113 TypeScript/TSX files
    - **ViewModels:** Custom React hooks (useHomeViewModel, useExtractViewModel, etc.)
    - **Navigation:** React Navigation with native stack & bottom tabs
    - **Components:** Reusable UI building blocks
-   - **Theme:** Dynamic white-label support (ByteBank/HelioBank brands)
+   - **Theme:** Dynamic white-label support (MindEase/HelioBank brands)
    - **i18n:** Multi-language support (Portuguese, English, Spanish)
+
+**Key Features:** Task management, Pomodoro timer, Focus Mode with ambient sounds, AI Chat assistant, Accessibility settings
 
 **Dependency Flow:**
 ```
-Presentation (UI) 
+Presentation (UI)
     ↓
 ViewModels (Custom Hooks + DI)
     ↓
@@ -135,7 +136,7 @@ Data (Repository Implementations)
 ```typescript
 - State: user, loading, isHydrated
 - Actions: signIn, signUp, signOut, signInAnonymously
-- Persistence: AsyncStorage with migration support
+- Persistence: MMKV SecureStorage with migration support
 - Hydration: Automatic rehydration on app start
 - Listener Pattern: onAuthStateChanged subscription for real-time updates
 ```
@@ -198,8 +199,8 @@ AsyncStorage persists changes
 
 #### 1. **Memoization & Callback Optimization**
 - `useMemo()` for style object recreation (prevents unnecessary re-renders)
-- `useCallback()` for event handlers (cards screen has 7+ useCallback hooks)
-- Used in: HomeScreen, DashboardScreen, CardsScreen, UserScreen
+- `useCallback()` for event handlers (multiple screens with 7+ useCallback hooks)
+- Used in: HomeScreen, TasksScreen, PomodoroScreen, UserScreen
 
 Example:
 ```typescript
@@ -210,7 +211,7 @@ const formatNumber = useCallback((val: string) => {...}, []);
 #### 2. **Real-time Subscriptions vs Polling**
 - Firebase `onSnapshot()` for live data updates
 - Automatic unsubscribe on component unmount
-- Example: `subscribeRecent()` in transaction & card repositories
+- Example: `subscribe()` in task & session repositories
 - Reduces unnecessary API calls and data fetching
 
 #### 3. **React Native Screens Performance**
@@ -225,7 +226,7 @@ const formatNumber = useCallback((val: string) => {...}, []);
 
 #### 5. **Lazy Loaded Screen Components**
 - Dynamic imports for non-critical screens
-- Used in navigation: `require("../screens/Pix/PixScreen")`
+- Used in navigation: `require("../screens/Tasks/TasksScreen")`
 - Reduces initial bundle size
 
 #### 6. **AsyncStorage Caching**
@@ -246,8 +247,8 @@ const formatNumber = useCallback((val: string) => {...}, []);
 
 1. **No Code Splitting:** All screens loaded eagerly despite dynamic imports
 2. **No Image Optimization:** Banner and icon images not optimized for mobile
-3. **No Caching Strategy:** API responses (B3 quotes) not cached
-4. **No Virtualization:** Long transaction lists use FlatList but may lack optimization
+3. **No Caching Strategy:** API responses not cached
+4. **No Virtualization:** Long task lists use FlatList but may lack optimization
 5. **No Suspense/Concurrent Rendering:** Not leveraging React 19 capabilities
 6. **No Bundle Analysis:** No size monitoring tools configured
 7. **No Lazy Loading:** All components imported at module level
@@ -279,10 +280,6 @@ const formatNumber = useCallback((val: string) => {...}, []);
 - Firebase handles authentication token management
 
 #### 3. **API Security**
-- **B3 Quote API:** Bearer token stored in source code (SECURITY RISK)
-  - Token visible: `p6j38bVSefgui6rCkjcCpT`
-  - Should be server-side proxied
-  
 - **Firebase:** Native SDK authentication
   - Firestore security rules validated server-side
   - Collection-level access control via userId filtering
@@ -295,19 +292,17 @@ const formatNumber = useCallback((val: string) => {...}, []);
 
 #### 5. **Sensitive Data Handling**
 - User photos via Firebase Storage (signed URLs)
-- Card information (mock - PII not validated)
-- Pix validation: CPF/Email/Phone basic format checks (not cryptographic)
+- User data validated with Zod schemas
 
 ### Security Vulnerabilities Identified:
 
-1. **CRITICAL: API Token in Source Code**
-   - B3 quote bearer token exposed in `B3QuoteRepository.ts`
+1. **CRITICAL: API Token Management**
+   - Ensure all API tokens are stored in environment variables
    - Solution: Move to backend proxy or environment variable
 
-2. **CRITICAL: No Input Validation**
-   - Card number validation only via Luhn algorithm (weak)
-   - No CVV encryption/masking
-   - Pix keys accept any format after basic regex
+2. **CRITICAL: Input Validation**
+   - Input validation should use Zod schemas comprehensively
+   - All user-facing forms need validation
 
 3. **HIGH: No Password Storage**
    - Email/password authentication not fully implemented
@@ -319,7 +314,7 @@ const formatNumber = useCallback((val: string) => {...}, []);
 
 5. **MEDIUM: No Certificate Pinning**
    - Firebase SDKs handle it internally
-   - But custom API calls (B3) could benefit from pinning
+   - Custom API calls could benefit from pinning
 
 6. **MEDIUM: No Biometric Authentication**
    - Should require face/fingerprint for sensitive operations
@@ -348,25 +343,21 @@ AuthRepository
   ├── GoogleAuthRepository (Production - Google Sign-In)
   └── MockAuthRepository (Development - Mock data)
 
-TransactionRepository
-  ├── FirebaseTransactionRepository (Firestore)
-  └── MockTransactionRepository (In-memory)
+TaskRepository
+  ├── FirebaseTaskRepository (Firestore)
+  └── MockTaskRepository (In-memory)
 
-[Similar for Cards, Pix, Investments, Files, Currency, Quotes]
+[Similar for Pomodoro, FocusMode, Chat, Accessibility, Files]
 ```
 
 #### **Firebase Implementation Details**
 
 **Collections Used:**
-1. `transactions` - User cash flows
-2. `cards` - Digital card data
-3. `pixKeys` - PIX key registry
-4. `pixTransfers` - PIX transfer history
-5. `pixFavorites` - Saved PIX recipients
-6. `pixLimits` - User PIX limits
-7. `pixQrCharges` - Generated QR charges
-8. `investments` - Stock/fund investments
-9. `files` - User-uploaded documents
+1. `tasks` - User tasks with subtasks and priorities
+2. `pomodoroSessions` - Pomodoro session history
+3. `focusSessions` - Focus mode session records
+4. `chatMessages` - AI chat message history
+5. `files` - User-uploaded documents
 
 **Query Patterns:**
 - `where("userId", "==", userId)` - User isolation
@@ -375,9 +366,9 @@ TransactionRepository
 - `onSnapshot()` - Real-time subscriptions
 
 **Real-time Features:**
-- Transaction updates push live to Home screen
-- Card modifications reflect instantly
-- PIX transfers update in real-time
+- Task updates push live to the Tasks screen
+- Pomodoro session stats update in real-time
+- Chat messages sync across sessions
 
 **Timestamp Handling:**
 - `serverTimestamp()` for server-side consistency
@@ -394,21 +385,15 @@ In-memory storage with:
 
 #### **External APIs**
 
-1. **B3 Quote API (`brapi.dev`)**
-   - Stock quote fetching
-   - Ticker search (limited: 4+ char query)
-   - Rate limiting: No explicit handling
-   - Caching: None (called fresh each time)
-
-2. **Currency API (`awesome-api`)**
-   - Currency conversion rates
-   - Real-time exchange data
-   - No explicit error handling
-
-3. **Google Sign-In**
+1. **Google Sign-In**
    - OAuth endpoint
    - Credential exchange
    - User profile mapping
+
+2. **AI Chat API (Ollama - future)**
+   - Chat completion endpoint
+   - Prompt-based responses
+   - Architecture prepared for integration
 
 #### **Firestore Limitations**
 
@@ -436,12 +421,11 @@ The app uses:
 - **React Hooks:** State management via useState + useEffect
 - **Zustand:** Pub/sub store pattern (not RxJS)
 
-Example (Transaction subscription):
+Example (Task subscription):
 ```typescript
-subscribeRecent(
+subscribe(
   userId: string,
-  limit = 10,
-  cb: (txs: Transaction[]) => void
+  cb: (tasks: Task[]) => void
 ): () => void {
   const unsub = onSnapshot(q, (snap) => {
     const list = snap.docs.map(...);
@@ -500,17 +484,17 @@ Component Updates
                      │
 ┌────────────────────▼────────────────────────────┐
 │    Application Layer (Use Cases)                │
-│  - GetBalance, SignOut, GetRecentTransactions   │
+│  - GetTasks, SignOut, GetPomodoroStats           │
 └────────────────────┬────────────────────────────┘
                      │
 ┌────────────────────▼────────────────────────────┐
 │    Domain Layer (Entities & Interfaces)         │
-│  - User, Transaction, Card, etc.                │
+│  - User, Task, PomodoroSession, etc.             │
 └────────────────────┬────────────────────────────┘
                      │
 ┌────────────────────▼────────────────────────────┐
 │    Data Layer (Repository Implementations)      │
-│  - Firebase, Mock, Google Auth, B3, Currency    │
+│  - Firebase, Mock, Google Auth, APIs             │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -523,51 +507,46 @@ Component Updates
 - [x] Apple Sign-In (iOS only)
 - [x] Anonymous Login
 - [ ] Email/Password (mock only)
-- [ ] Biometric Authentication
+- [x] Biometric Authentication
 
-### Transactions
-- [x] List recent transactions (real-time)
-- [x] Add transactions (mock/real)
-- [x] Edit transactions
-- [x] Delete transactions
-- [x] Balance calculation
-- [x] Transaction search/filtering
-- [x] Category inference from description
+### Task Management
+- [x] Create, update, delete tasks
+- [x] Priority levels (low, medium, high)
+- [x] SubTasks for micro-steps
+- [x] Progress tracking
+- [x] Completion timestamps
+- [x] Real-time sync via Firebase
 
-### Cards
-- [x] Digital card display
-- [x] Card flip animation (front/back)
-- [x] Add new cards
-- [x] Card validation (Luhn, CVV, Expiry)
-- [ ] Card encryption/tokenization
-- [ ] Physical card integration
+### Pomodoro Timer
+- [x] Configurable focus sessions
+- [x] Short and long breaks
+- [x] Auto-transition between modes
+- [x] Session statistics
+- [x] Sound notifications
 
-### PIX System
-- [x] Add PIX keys (CPF, Email, Phone, Random)
-- [x] PIX transfers via key
-- [x] QR Code generation & payment
-- [x] Favorites management
-- [x] Transfer limits (Daily, Nightly, Per-transfer)
-- [x] Transfer history
-- [x] Best-effort recipient crediting
+### Focus Mode
+- [x] Timer-based sessions
+- [x] Ambient sounds (rain, forest, ocean, cafe, white noise)
+- [ ] Notification blocking
+- [ ] Brightness dimming
 
-### Investments
-- [x] Stock quote fetching (B3 API)
-- [x] Portfolio viewing
-- [ ] Dividend tracking
-- [ ] Performance analytics
+### AI Chat
+- [x] Demo mode with predefined responses
+- [x] Quick question suggestions
+- [x] Message history
+- [ ] Ollama API integration
 
-### Dashboard
-- [x] Balance summary
-- [x] Income/Expense chart
-- [x] Recent transactions
-- [x] Card carousel
-- [x] Quick actions
+### Accessibility
+- [x] Font size adjustment
+- [x] High contrast mode
+- [x] Color blind modes
+- [x] Reduce motion option
+- [x] Haptic feedback toggle
 
 ### Customization
 - [x] Multi-language (PT, EN, ES)
 - [x] Dark/Light theme toggle
-- [x] Brand switching (ByteBank/HelioBank)
+- [x] Brand switching (MindEase/HelioBank)
 - [x] Persistent user preferences
 
 ---
@@ -622,25 +601,25 @@ Component Updates
 
 ### Critical Issues:
 
-1. **API Token Exposure** (SECURITY)
-   - B3 token hardcoded in source
-   - Needs backend proxy or environment variable
+1. **API Token Management** (SECURITY)
+   - Ensure all API tokens are in environment variables
+   - Needs backend proxy for sensitive tokens
    - Risk: Token quotas exhausted by attackers
 
-2. **No Input Validation** (SECURITY)
-   - Card details validation weak
-   - PIX keys need stronger validation
+2. **Input Validation** (SECURITY)
+   - User inputs need comprehensive validation
+   - Zod schemas should cover all forms
    - Missing sanitization on user inputs
 
 3. **Performance Bundle Size** (PERFORMANCE)
    - No tree-shaking of unused code
    - No lazy loading of heavy components
-   - Consider: react-native-fast-image, expo-image for optimization
+   - Consider: expo-image for optimization
 
 4. **API Caching Strategy** (PERFORMANCE)
-   - B3 quotes fetched fresh every time
+   - API responses fetched fresh every time
    - Should cache with TTL (5-15 minutes)
-   - Add: react-native-cache or simple LRU cache
+   - Add: simple LRU cache
 
 5. **Error Handling** (RELIABILITY)
    - No global error boundary
@@ -683,7 +662,7 @@ Component Updates
 ### High Priority (Tech Challenge Alignment):
 
 1. **Security Hardening**
-   - Move B3 API token to backend
+   - Move API tokens to backend
    - Implement certificate pinning
    - Add biometric auth for sensitive actions
    - Use secure storage for sensitive data
@@ -716,7 +695,7 @@ Component Updates
 
 ## CONCLUSION
 
-The ByteBank App demonstrates **excellent architectural foundations** with:
+The MindEase App demonstrates **excellent architectural foundations** with:
 - Clean separation of concerns
 - Proper use of design patterns
 - Type-safe TypeScript throughout

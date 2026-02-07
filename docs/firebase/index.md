@@ -1,4 +1,4 @@
-# Guia de Integração Firebase no ByteBank
+# Guia de Integração Firebase no MindEase
 
 Este guia reúne a visão geral da arquitetura Firebase utilizada no projeto `mindease -app` e aponta para tutoriais específicos de cada módulo do **React Native Firebase**. O conteúdo foi escrito para quem precisa evoluir o app seguindo o padrão **MVVM + camadas Domain/Data/Presentation** já adotado no código fonte.
 

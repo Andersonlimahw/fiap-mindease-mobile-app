@@ -1,7 +1,7 @@
 # Google Authentication Setup Guide
 
 ## Overview
-This guide helps you configure Google authentication for the ByteBank app using **Expo AuthSession** on native and web. No extra native Google Sign-In package is required; credentials are exchanged with Firebase using the ID token obtained from Google.
+This guide helps you configure Google authentication for the MindEase app using **Expo AuthSession** on native and web. No extra native Google Sign-In package is required; credentials are exchanged with Firebase using the ID token obtained from Google.
 
 ## Prerequisites
 - Google Cloud Console access
@@ -29,7 +29,7 @@ You need to create **4 different OAuth 2.0 Client IDs**:
 #### A. Web Client ID (Required for Firebase)
 1. Click **Create Credentials** > **OAuth 2.0 Client ID**
 2. Application type: **Web application**
-3. Name: `ByteBank Web Client`
+3. Name: `MindEase Web Client`
 4. Authorized origins: 
    - `http://localhost:3000`
    - `https://your-domain.com` (if you have one)
@@ -41,7 +41,7 @@ You need to create **4 different OAuth 2.0 Client IDs**:
 #### B. Android Client ID
 1. Click **Create Credentials** > **OAuth 2.0 Client ID**
 2. Application type: **Android**
-3. Name: `ByteBank Android`
+3. Name: `MindEase Android`
 4. Package name: `com.mindease .app`
 5. SHA-1 certificate fingerprint:
    - For development: Get from `expo credentials:manager`
@@ -51,14 +51,14 @@ You need to create **4 different OAuth 2.0 Client IDs**:
 #### C. iOS Client ID
 1. Click **Create Credentials** > **OAuth 2.0 Client ID**
 2. Application type: **iOS**
-3. Name: `ByteBank iOS`
+3. Name: `MindEase iOS`
 4. Bundle ID: `com.mindease .app`
 5. Save the **Client ID** - you'll need this for `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`
 
 #### D. Expo Client ID (Optional)
 1. Click **Create Credentials** > **OAuth 2.0 Client ID**
 2. Application type: **Web application**
-3. Name: `ByteBank Expo`
+3. Name: `MindEase Expo`
 4. Authorized redirect URIs:
    - `https://auth.expo.io/@your-username/mindease -app`
    - Any other Expo redirect URIs

@@ -1,6 +1,6 @@
 # Componentes
 
-Este documento descreve como os componentes estão implementados no aplicativo ByteBank, incluindo sua arquitetura, padrões e exemplos de uso.
+Este documento descreve como os componentes estão implementados no aplicativo MindEase, incluindo sua arquitetura, padrões e exemplos de uso.
 
 ## Arquitetura de Componentes
 

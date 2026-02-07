@@ -1,6 +1,6 @@
 # Autenticação com `@react-native-firebase/auth`
 
-Este documento explica como integrar novos fluxos de autenticação no ByteBank, reutilizando o `AuthRepository` dentro da arquitetura MVVM. O projeto já fornece duas implementações:
+Este documento explica como integrar novos fluxos de autenticação no MindEase, reutilizando o `AuthRepository` dentro da arquitetura MVVM. O projeto já fornece duas implementações:
 - `GoogleAuthRepository` (`src/data/google/GoogleAuthRepository.ts`) — login via Google Sign-In (sem usar Firebase Auth diretamente).
 - `FirebaseAuthRepository` (`src/data/firebase/FirebaseAuthRepository.ts`) — suporte a email/senha, anônimo e Google via Firebase Auth.
 

@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppConfig from '../config/appConfig';
 
 export type ThemeMode = 'light' | 'dark';
-export type BrandId = 'mindease ' | 'heliobank';
+export type BrandId = 'mindease' | 'heliobank';
 
 export type ThemeColors = {
   primary: string;
@@ -67,7 +67,7 @@ const brandPalettes: Record<BrandId, BrandPalette> = {
       danger: '#EF4444',
       accent: '#C4B5FD',
     },
-    logoText: 'ByteBank',
+    logoText: 'MindEase',
   },
   heliobank: {
     light: {
@@ -148,14 +148,14 @@ export const useThemeStore = create<ThemeState>()(
   devtools(
     persist(
       (set, get) => ({
-        brand: ((AppConfig as any)?.appearance?.brand as BrandId) || 'mindease ',
+        brand: ((AppConfig as any)?.appearance?.brand as BrandId) || 'mindease',
         mode: ((AppConfig as any)?.appearance?.mode as ThemeMode) || 'light',
         setBrand: (brand) => set({ brand }),
         setMode: (mode) => set({ mode }),
         toggleMode: () => set({ mode: get().mode === 'light' ? 'dark' : 'light' }),
       }),
       {
-        name: 'bb_theme',
+        name: 'mindease_theme',
         storage: createJSONStorage(() => AsyncStorage),
         partialize: (state) => ({ brand: state.brand, mode: state.mode }),
       }

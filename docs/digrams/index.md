@@ -1,4 +1,4 @@
-# Bytebank App
+# MindEase App
 
 ## Diagramas de arquitetura geral
 

@@ -1,4 +1,4 @@
-# ByteBank App (Expo + React Native)
+# MindEase - Productivity & Wellness App (Expo + React Native)
 
 - **IMPORTANT! Never run with expo GO, use prebuild and native options**
 
@@ -8,7 +8,7 @@
 - MVVM + Clean Architecture + SOLID-oriented boundaries (lightweight DI)
 - Auth repository with anonymous login (mock by default)
 - Mock mode is available; default mode follows your scripts/env
-- Features: Login, Home (balance + transactions), Dashboard (summary)
+- Features: Login, Home (dashboard), Tasks, Pomodoro Timer, Focus Mode, AI Chat, Accessibility
 - Shared theme tokens for consistent colors, spacing, and typography
 - Whitelabel themes: runtime brand + theme switch (logo, colors, fonts)
 
@@ -54,7 +54,7 @@
 
 - Runtime switching:
   - Go to `Minha Conta` (User) screen → Aparência.
-  - Toggle `Tema` (Claro/Escuro) or select `Marca` (ByteBank/HelioBank).
+  - Toggle `Tema` (Claro/Escuro) or select `Marca`.
   - Changes update app-wide instantly (navigation, components, screens).
 - Persisted preferences:
   - Selected `brand` and `mode` persist via AsyncStorage (`bb_theme`).
@@ -85,10 +85,11 @@
 
 - Mock repositories wired via DI, with automatic fallback if Firebase is misconfigured
 - Auth flow (Google/Apple/Email/Anonymous) + guarded navigation
-- Home shows balance and recent transactions (real-time on Firebase)
-- Dashboard shows income/expense summary and allows adding demo credits/debits
-- Extract supports search, edit, delete, and now adding new transactions (modal) with real-time updates on Firebase
-- PIX screen with send, QR pay/receive, keys, favorites, history, and limits
+- Task management with subtasks, priorities, and progress tracking
+- Pomodoro timer with configurable focus/break sessions and statistics
+- Focus Mode with ambient sounds (rain, forest, ocean, cafe, white noise)
+- AI Chat assistant with productivity tips and quick questions
+- Accessibility settings (font size, high contrast, color blind modes, reduce motion)
 
 ---
 
@@ -98,8 +99,8 @@
 
 | Melhoria | Descrição | Arquivos |
 |----------|-----------|----------|
-| **Token B3 API protegido** | Token movido para variáveis de ambiente, removido do código fonte | `src/data/b3/B3QuoteRepository.ts`, `src/config/appConfig.ts` |
-| **Validação robusta com Zod** | Validação type-safe de CPF, CNPJ, email, telefone, chaves PIX | `src/domain/validation/schemas.ts` |
+| **API tokens protegidos** | Tokens movidos para variáveis de ambiente, removidos do código fonte | `src/config/appConfig.ts` |
+| **Validação robusta com Zod** | Validação type-safe de inputs de tarefas, configurações e formulários | `src/domain/validation/schemas.ts` |
 | **Criptografia de dados** | MMKV com encryption + expo-secure-store para credenciais | `src/infrastructure/storage/SecureStorage.ts` |
 | **Autenticação biométrica** | Face ID / Impressão Digital para ações sensíveis | `src/presentation/hooks/useBiometricAuth.ts`, `src/presentation/components/BiometricLock.tsx` |
 
@@ -109,7 +110,7 @@
 |----------|-----------|----------|
 | **Cache de requisições API** | Cache com TTL e estratégias (Cache-First, Network-First, Stale-While-Revalidate) | `src/infrastructure/cache/CacheManager.ts` |
 | **Lazy loading de telas** | React.lazy + Suspense para carregar telas sob demanda | `src/presentation/navigation/RootNavigator.tsx` |
-| **FlashList** | Substituição de FlatList por FlashList para listas de alta performance | `src/presentation/screens/Extract/ExtractScreen.tsx` |
+| **FlashList** | Substituição de FlatList por FlashList para listas de alta performance | `src/presentation/screens/Tasks/TasksScreen.tsx` |
 | **Otimização de imagens** | expo-image com cache em disco/memória, lazy loading, placeholders | `src/presentation/components/OptimizedImage.tsx` |
 | **Debounce em inputs** | Debounce de 300ms em campos de busca | `src/presentation/hooks/useDebounce.ts` |
 | **Selectors Zustand otimizados** | Selectors individuais para evitar re-renders desnecessários | `src/store/authStore.ts` |
@@ -139,8 +140,8 @@
 Adicione ao seu arquivo `.env`:
 
 ```bash
-# Token da API BRAPI (B3 Quotes)
-EXPO_PUBLIC_BRAPI_TOKEN=seu_token_aqui
+# API tokens (if applicable)
+# EXPO_PUBLIC_API_TOKEN=your_token_here
 ```
 
 ### Arquitetura de Segurança
@@ -225,20 +226,21 @@ Auth Persistence on Native
   - npx expo install @react-native-async-storage/async-storage
   - Then rebuild if using prebuild/EAS.
 
-## Transactions (Firestore)
+## Tasks (Firestore)
 
-- Collection: `transactions` with fields: `userId` (string), `type` ('credit'|'debit'), `amount` (number, cents), `description` (string), `category` (optional string), `createdAt` (serverTimestamp)
+- Collection: `tasks` with fields: `userId` (string), `title` (string), `description` (string), `priority` ('low'|'medium'|'high'), `completed` (boolean), `subTasks` (array), `createdAt` (serverTimestamp)
 - Queries order by `createdAt desc` filtered by `userId` (you may be prompted by Firebase to create a composite index)
-- Real-time: the app subscribes to the recent transactions query, updating Home and Extract live
+- Real-time: the app subscribes to the tasks query, updating the Tasks screen live
 
-## Investments (Firestore)
+## Pomodoro & Focus Sessions (Firestore)
 
-- Collection: `investments` with fields: `userId` (string), `type` (category), `amount` (number, cents)
+- Collection: `pomodoroSessions` with fields: `userId` (string), `mode` (string), `duration` (number), `completedAt` (serverTimestamp)
+- Collection: `focusSessions` with fields: `userId` (string), `duration` (number), `actualDuration` (number), `ambientSound` (string), `startedAt` (serverTimestamp)
 
 Data Standardization Notes
 
 - Firestore transactions use `createdAt` stored as `serverTimestamp()`; readers map Firestore `Timestamp` to epoch milliseconds to match domain model.
-- ViewModels now use application usecases (`GetRecentTransactions`, `GetBalance`, `SignInWithProvider`, `SignOut`) to keep layers consistent with Clean Architecture.
+- ViewModels now use application usecases (`GetTasks`, `GetPomodoroStats`, `SignInWithProvider`, `SignOut`) to keep layers consistent with Clean Architecture.
 - UI uses centralized theme tokens in `src/presentation/theme/theme.ts` to standardize colors (primary, success, danger, text, muted, border), spacing, and radius.
 
 Firebase Initialization (Real Mode)
@@ -248,7 +250,7 @@ Firebase Initialization (Real Mode)
 ## Notes
 
 - Assets are referenced from the repo’s contents/figma folder to reflect designs without duplicating files.
-- Mock mode seeds demo transactions and a sample user so you can navigate immediately.
+- Mock mode seeds demo tasks and a sample user so you can navigate immediately.
 - For production, replace the placeholder EAS projectId in app.json and configure app icons, splash, and bundle ids.
 
 ## Scripts
@@ -260,7 +262,7 @@ Firebase Initialization (Real Mode)
 
 ## Indexes
 
-- Firestore may prompt you to create indexes for queries combining `where('userId','==',...)` and `orderBy('createdAt','desc')` on collections above. Create the suggested index in the Firebase console if requested.
+- Firestore may prompt you to create indexes for queries combining `where('userId','==',...)` and `orderBy('createdAt','desc')` on the collections above. Create the suggested index in the Firebase console if requested.
 
 ## Architeture
 

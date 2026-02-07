@@ -7,12 +7,12 @@ function seed(userId: string): DigitalCard[] {
     {
       id: "c1",
       userId,
-      holderName: "BYTE USER",
+      holderName: "MINDEASE USER",
       number: "4111111111111111",
       cvv: "123",
       expiry: "12/27",
-      brand: "mindease ",
-      nickname: "Byte Digital",
+      brand: "mindease",
+      nickname: "MindEase Digital",
       createdAt: now - 1000 * 60 * 60 * 24 * 60,
     },
     {

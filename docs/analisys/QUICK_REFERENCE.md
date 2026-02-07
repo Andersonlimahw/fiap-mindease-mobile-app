@@ -1,4 +1,4 @@
-# ByteBank App - Quick Reference Guide
+# MindEase App - Quick Reference Guide
 
 ## Project Overview
 
@@ -22,7 +22,8 @@
 | **Code Files** | 113 TypeScript/TSX files |
 | **Screens** | 11 main screens |
 | **Languages** | Portuguese, English, Spanish |
-| **Themes** | ByteBank, HelioBank (dark/light) |
+| **Themes** | MindEase, HelioBank (dark/light) |
+| **App Type** | Productivity & Wellness |
 
 ---
 
@@ -36,11 +37,11 @@ VIEWMODEL (Logic Hooks)
 STATE MANAGEMENT (Zustand)
   ↓ authStore, themeStore, diStore
 APPLICATION (Use Cases)
-  ↓ GetBalance, SignOut, GetRecentTransactions
+  ↓ GetTasks, SignOut, GetPomodoroStats
 DOMAIN (Business Logic)
-  ↓ Entities: User, Transaction, Card, Pix, Investment
+  ↓ Entities: User, Task, PomodoroSession, FocusSession, ChatMessage
 DATA (Repository Implementations)
-  ↓ Firebase, Mock, Google Auth, B3 API, Currency API
+  ↓ Firebase, Mock, Google Auth
 ```
 
 ---
@@ -107,11 +108,11 @@ AuthRepository
 ├── GoogleAuthRepository    (Production - Google Sign-In)
 └── MockAuthRepository      (Development - Mock data)
 
-TransactionRepository
-├── FirebaseTransactionRepository    (Firestore)
-└── MockTransactionRepository        (In-memory)
+TaskRepository
+├── FirebaseTaskRepository           (Firestore)
+└── MockTaskRepository               (In-memory)
 
-[Similar for: Cards, Pix, Investments, Currency, Quotes, Files]
+[Similar for: Pomodoro, FocusMode, Chat, Accessibility, Files]
 ```
 
 ### Switching Strategy
@@ -133,14 +134,10 @@ if (AppConfig.useMock) {
 
 | Collection | Fields | Purpose |
 |-----------|--------|---------|
-| `transactions` | userId, type, amount, description, category, createdAt | User transactions |
-| `cards` | userId, cardNumber, expiry, cvv, holderName, createdAt | Digital cards |
-| `pixKeys` | userId, type, value, active, createdAt | PIX key registry |
-| `pixTransfers` | userId, toKey, amount, status, method, createdAt | PIX history |
-| `pixFavorites` | userId, alias, keyValue, name, createdAt | Saved recipients |
-| `pixLimits` | userId, dailyLimit, nightlyLimit, perTransferLimit | PIX limits |
-| `pixQrCharges` | userId, amount, status, payload, createdAt | QR charges |
-| `investments` | userId, ticker, quantity, price, createdAt | Stock portfolio |
+| `tasks` | userId, title, description, priority, completed, subTasks, createdAt | Task management |
+| `pomodoroSessions` | userId, mode, duration, completedAt | Pomodoro session history |
+| `focusSessions` | userId, duration, actualDuration, ambientSound, startedAt | Focus mode sessions |
+| `chatMessages` | userId, role, content, timestamp | AI chat history |
 | `files` | userId, filename, path, metadata, createdAt | User documents |
 
 ---
@@ -153,36 +150,37 @@ if (AppConfig.useMock) {
 - Anonymous Login
 - Firebase automatic persistence
 
-### Transactions
+### Task Management
+- Create, update, delete tasks with priorities
+- SubTasks for micro-steps
+- Progress tracking
+- Completion timestamps
 - Real-time updates via Firebase
-- Add, Edit, Delete operations
-- Balance calculation
-- Search & filtering
-- Category inference
 
-### Cards
-- Digital card display
-- Flip animation (front/back)
-- Luhn validation
-- Card management
+### Pomodoro Timer
+- Configurable focus sessions (25 min default)
+- Short breaks (5 min) and long breaks (15 min)
+- Auto-transition between modes
+- Session statistics and sound notifications
 
-### PIX System
-- Key registration (CPF, Email, Phone, Random)
-- PIX transfers with validation
-- QR code generation & payment
-- Transfer limits enforcement
-- Favorites & history
+### Focus Mode
+- Timer-based distraction-free sessions
+- Ambient sounds (rain, forest, ocean, cafe, white noise)
+- Notification blocking and brightness dimming
 
-### Dashboard
-- Income/Expense summary
-- Spending by category (chart)
-- Recent transactions
-- Card carousel
-- Quick actions
+### AI Chat
+- Productivity tips and guidance
+- Quick question suggestions
+- Message history with persistence
+
+### Accessibility
+- Font size adjustment (12-24px)
+- High contrast mode and color blind modes
+- Reduce motion option and haptic feedback
 
 ### Customization
 - Dark/Light theme
-- Brand switching (ByteBank/HelioBank)
+- Brand switching (MindEase/HelioBank)
 - 3 languages (PT/EN/ES)
 - Persistent preferences
 
@@ -190,17 +188,15 @@ if (AppConfig.useMock) {
 
 ## Component Structure
 
-### Screen Components (11)
+### Screen Components
 ```
 src/presentation/screens/
-├── Home/           - Balance, recent transactions
-├── Dashboard/      - Summary, spending chart
-├── Extract/        - Transaction history
-├── Investments/    - Stock portfolio
-├── Cards/          - Digital cards
-├── Pix/            - PIX transfers
-├── User/           - User profile, settings
-├── Transactions/   - Add transaction
+├── Home/           - Dashboard, quick actions
+├── Tasks/          - Task management with subtasks
+├── Pomodoro/       - Pomodoro timer
+├── FocusMode/      - Focus mode with ambient sounds
+├── Chat/           - AI chat assistant
+├── User/           - User profile, settings, accessibility
 ├── Auth/           - Login, Register, Onboarding
 └── [Others]
 ```
@@ -208,14 +204,14 @@ src/presentation/screens/
 ### Reusable Components
 ```
 src/presentation/components/
-├── TransactionItem          - Transaction list item
-├── CardVisual               - Digital card display
+├── TaskItem                 - Task list item
+├── SubTaskItem              - Subtask checkbox
+├── TimerCircle              - Circular timer display
 ├── QuickAction              - Action button
 ├── Avatar                   - User avatar
 ├── SwipeableRow             - Swipe actions
 ├── EmptyStateBanner         - Empty state UI
-├── FileUploader             - File picker
-├── HorizontalBarChart       - Spending chart
+├── ChatBubble               - Chat message bubble
 └── [Others]
 ```
 
@@ -230,13 +226,12 @@ src/presentation/hooks/
 src/presentation/viewmodels/
 ├── useAuthViewModel.ts               - Auth logic
 ├── useHomeViewModel.ts               - Home screen
-├── useExtractViewModel.ts            - Transactions list
-├── useDashboardViewModel.ts          - Dashboard
-├── useInvestmentsViewModel.ts        - Investments
-├── useCurrencyQuoteViewModel.ts      - Currency
-├── useDigitalCardsViewModel.ts       - Cards
-├── useFileViewModel.ts               - File uploads
-└── usePixViewModel.ts                - PIX operations
+├── useTasksViewModel.ts              - Task management
+├── usePomodoroViewModel.ts           - Pomodoro timer
+├── useFocusModeViewModel.ts          - Focus mode
+├── useChatViewModel.ts               - AI chat
+├── useAccessibilityViewModel.ts      - Accessibility settings
+└── useFileViewModel.ts               - File uploads
 ```
 
 ---
@@ -253,7 +248,7 @@ src/presentation/viewmodels/
 - ✓ AsyncStorage caching
 
 ### Missing
-- ✗ API response caching (B3 quotes)
+- ✗ API response caching
 - ✗ Image optimization (expo-image)
 - ✗ Code splitting (React.lazy)
 - ✗ Bundle size monitoring
@@ -264,14 +259,12 @@ src/presentation/viewmodels/
 ## Security Issues
 
 ### CRITICAL
-1. **B3 API Token Exposed**
-   - Token: `p6j38bVSefgui6rCkjcCpT`
-   - Location: `src/data/b3/B3QuoteRepository.ts`
+1. **API Tokens in Source Code**
+   - Ensure all API tokens are in environment variables
    - Fix: Move to backend proxy or env variable
 
-2. **Weak Input Validation**
-   - Card: Only Luhn algorithm
-   - PIX: Basic regex only
+2. **Input Validation**
+   - Validate all user inputs with Zod schemas
    - Fix: Add comprehensive sanitization
 
 ### HIGH
@@ -358,24 +351,24 @@ npx expo install
 npx expo prebuild --clean
 ```
 
-### Issue: Card validation failing
+### Issue: Pomodoro timer not persisting
 **Solution:**
-- Check Luhn algorithm
-- CVV must be 3-4 digits
-- Expiry format: MM/YY
+- Check Zustand persist configuration
+- Verify MMKV storage is initialized
+- Check that store migrations are up to date
 
-### Issue: PIX transfer rejected
+### Issue: Focus Mode sounds not playing
 **Solution:**
-- Check transfer limits
-- Verify PIX key format
-- Check daily/nightly window (22:00-06:00)
+- Verify expo-av is properly installed
+- Check audio file paths in assets
+- Ensure audio session is configured for background playback
 
 ---
 
 ## Quick Wins (For Tech Challenge)
 
 ### High Priority (1-2 days)
-1. Move B3 API token to backend proxy
+1. Secure all API tokens in environment variables
 2. Add input validation on all forms
 3. Implement API response caching (5-min TTL)
 4. Add error boundary component
@@ -446,8 +439,8 @@ npx expo prebuild --clean
 - **Screens:** 11
 - **Components:** 10+
 - **ViewModels:** 8
-- **Repositories:** 8+ types
-- **Firebase Collections:** 9
+- **Repositories:** 6+ types
+- **Firebase Collections:** 5
 - **Stores:** 3
 - **Languages:** 3
 

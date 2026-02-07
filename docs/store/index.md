@@ -1,6 +1,6 @@
 # Gerenciamento de Estado com Zustand
 
-O Bytebank App utiliza [Zustand](https://github.com/pmndrs/zustand) para o gerenciamento de estado global da aplicação. Zustand foi escolhido por sua simplicidade, performance e por ter uma API mínima e sem boilerplate.
+O MindEase App utiliza [Zustand](https://github.com/pmndrs/zustand) para o gerenciamento de estado global da aplicação. Zustand foi escolhido por sua simplicidade, performance e por ter uma API mínima e sem boilerplate.
 
 ## Stores
 

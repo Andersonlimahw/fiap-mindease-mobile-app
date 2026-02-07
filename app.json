@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "mindease ",
-    "slug": "mindease -app",
-    "scheme": "mindease ",
+    "name": "MindEase",
+    "slug": "mindease-app",
+    "scheme": "mindease",
     "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./public/assets/images/brand/mindease -fintech-icon-1024.png",
+    "icon": "./public/assets/images/brand/icon-1024.png",
     "splash": {
       "image": "./public/assets/images/brand/splash-1242x2436.png",
       "resizeMode": "contain",
@@ -19,16 +19,16 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.mindease .ios",
+      "bundleIdentifier": "com.mindease.ios",
       "googleServicesFile": "./GoogleService-Info.plist",
       "usesIcloudStorage": true,
       "infoPlist": {
-        "NSPhotoLibraryUsageDescription": "Permitir que o ByteBank acesse suas fotos para selecionar imagens e comprovantes.",
-        "NSPhotoLibraryAddUsageDescription": "Permitir que o ByteBank salve imagens nos seus álbuns."
+        "NSPhotoLibraryUsageDescription": "Permitir que o MindEase acesse suas fotos para selecionar imagens.",
+        "NSPhotoLibraryAddUsageDescription": "Permitir que o MindEase salve imagens nos seus álbuns."
       }
     },
     "android": {
-      "package": "com.bytebankapp.android",
+      "package": "com.mindease.android",
       "googleServicesFile": "./google-services.json",
       "permissions": [
         "READ_MEDIA_IMAGES",

@@ -1,6 +1,6 @@
 # Firebase Storage (`@react-native-firebase/storage`)
 
-Use este guia para adicionar upload e download de arquivos no ByteBank preservando a separação de camadas. No exemplo a seguir criaremos um fluxo de comprovantes de transação (`Files`).
+Use este guia para adicionar upload e download de arquivos no MindEase preservando a separação de camadas. No exemplo a seguir criaremos um fluxo de anexos e documentos (`Files`).
 
 ## 1. Instalação
 

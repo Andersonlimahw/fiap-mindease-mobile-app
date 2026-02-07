@@ -1,5 +1,5 @@
 /**
- * Sistema de Cache do ByteBank
+ * Sistema de Cache do MindEase
  *
  * Fornece cache com TTL e múltiplas estratégias:
  * - Cache-First

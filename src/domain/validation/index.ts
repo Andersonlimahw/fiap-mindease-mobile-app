@@ -1,5 +1,5 @@
 /**
- * Camada de Validação do ByteBank
+ * Camada de Validação do MindEase
  *
  * Este módulo fornece validação robusta e type-safe usando Zod.
  *

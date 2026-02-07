@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /**
- * Validadores centralizados para o ByteBank
+ * Validadores centralizados para o MindEase
  * Utiliza Zod para validação type-safe
  */
 

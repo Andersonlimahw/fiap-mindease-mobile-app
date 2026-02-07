@@ -1,6 +1,6 @@
 # Firestore: Criando uma nova coleção com CRUD completo
 
-Este tutorial mostra, em detalhes, como adicionar uma nova coleção Firestore ao ByteBank seguindo o padrão MVVM e usando `@react-native-firebase/firestore` em conjunto com o wrapper `FirebaseAPI`. Usaremos o exemplo fictício `Goals` (metas financeiras) para ilustrar cada passo.
+Este tutorial mostra, em detalhes, como adicionar uma nova coleção Firestore ao MindEase seguindo o padrão MVVM e usando `@react-native-firebase/firestore` em conjunto com o wrapper `FirebaseAPI`. Usaremos o exemplo fictício `Goals` (metas de produtividade) para ilustrar cada passo.
 
 ## 1. Pré-requisitos
 

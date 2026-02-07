@@ -1,4 +1,4 @@
-ByteBank App — Cards Feature Checklist
+MindEase App — Cards Feature Checklist
 
 - [x] Empty state banner on My Cards
   - Shows themed banner when user has no cards

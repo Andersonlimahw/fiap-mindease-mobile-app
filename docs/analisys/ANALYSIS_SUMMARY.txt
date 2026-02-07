@@ -1,5 +1,5 @@
 ================================================================================
-                    BYTEBANK APP - ANALYSIS SUMMARY
+                    MINDEASE APP - ANALYSIS SUMMARY
 ================================================================================
 
 PROJECT TYPE: React Native (Expo SDK 54) - NOT Flutter
@@ -22,9 +22,9 @@ Layer Structure:
   State Management
     ↓ (Zustand stores: authStore, themeStore, diStore)
   Application Layer
-    ↓ (Use Cases: GetBalance, SignOut, GetRecentTransactions)
+    ↓ (Use Cases: GetTasks, SignOut, GetPomodoroStats)
   Domain Layer
-    ↓ (Entities & Interfaces: User, Transaction, Card, Investment, Pix)
+    ↓ (Entities & Interfaces: User, Task, PomodoroSession, FocusSession, ChatMessage)
   Data Layer
     ↓ (Repository Implementations: Firebase, Mock, Google Auth)
 
@@ -103,7 +103,7 @@ Implemented Optimizations:
    ✓ Smooth list updates
 
 5. Code Splitting
-   ✓ Dynamic imports: require("../screens/Pix/PixScreen")
+   ✓ Dynamic imports: require("../screens/Tasks/TasksScreen")
    ✓ Reduces initial bundle
 
 6. Caching
@@ -113,7 +113,7 @@ Implemented Optimizations:
 Performance Gaps:
 
   ✗ No image optimization (expo-image not used)
-  ✗ No API response caching (B3 quotes fetch fresh every time)
+  ✗ No API response caching (API responses fetch fresh every time)
   ✗ No bundle size monitoring
   ✗ No Hermes engine
   ✗ No React 19 Suspense/concurrent features
@@ -151,17 +151,15 @@ Implemented Security:
 
 CRITICAL VULNERABILITIES:
 
-1. API Token Exposure (CRITICAL)
-   ✗ B3 quote bearer token hardcoded in source
-   ✗ Token visible: p6j38bVSefgui6rCkjcCpT
+1. API Token Management (CRITICAL)
+   ✗ Ensure all API tokens are in environment variables
    ✗ Risk: Attackers can exhaust token quota
    Solution: Move to backend proxy or environment variable
 
-2. Weak Input Validation (CRITICAL)
-   ✗ Card validation only Luhn algorithm (easily bypassed)
-   ✗ No CVV encryption
-   ✗ PIX keys accept formats after basic regex
-   Solution: Add comprehensive input sanitization
+2. Input Validation (CRITICAL)
+   ✗ Comprehensive Zod validation needed on all forms
+   ✗ User inputs need sanitization
+   Solution: Add comprehensive input sanitization with Zod schemas
 
 3. No Biometric Authentication (HIGH)
    ✗ Missing fingerprint/face ID for sensitive actions
@@ -195,22 +193,18 @@ Repositories:
    - GoogleAuthRepository (Production with OAuth 2.0)
    - MockAuthRepository (Development with mock data)
 
-2. TransactionRepository
-   - FirebaseTransactionRepository (Firestore)
-   - MockTransactionRepository (In-memory)
+2. TaskRepository
+   - FirebaseTaskRepository (Firestore)
+   - MockTaskRepository (In-memory)
 
-3. CardRepository, PixRepository, InvestmentRepository
+3. PomodoroRepository, FocusModeRepository, ChatRepository
    - Similar dual implementation pattern
 
 Firebase Collections:
-  - transactions (userId, type, amount, description, createdAt)
-  - cards (userId, cardNumber, expiry, cvv, holderName)
-  - pixKeys (userId, type, value, active, createdAt)
-  - pixTransfers (userId, toKey, amount, status, createdAt)
-  - pixFavorites (userId, alias, keyValue, name)
-  - pixLimits (userId, daily/nightly/perTransfer limits)
-  - pixQrCharges (userId, amount, status, payload)
-  - investments (userId, ticker, quantity, price)
+  - tasks (userId, title, description, priority, completed, subTasks, createdAt)
+  - pomodoroSessions (userId, mode, duration, completedAt)
+  - focusSessions (userId, duration, actualDuration, ambientSound, startedAt)
+  - chatMessages (userId, role, content, timestamp)
   - files (userId, file metadata)
 
 Query Patterns:
@@ -220,17 +214,12 @@ Query Patterns:
   ✓ Real-time: onSnapshot()
 
 External APIs:
-  1. B3 API (brapi.dev) - Stock quotes
-     - Bearer token: CRITICAL SECURITY ISSUE
-     - No caching (fresh fetch every time)
-     - No rate limiting
-
-  2. Currency API (awesome-api) - Exchange rates
-     - No error handling
-     - No caching
-
-  3. Google Sign-In
+  1. Google Sign-In
      - OAuth flow with app credentials
+
+  2. AI Chat API (Ollama - future)
+     - Architecture prepared for integration
+     - Currently using demo responses
 
 Mock Implementation:
   ✓ In-memory Map for user isolation
@@ -239,9 +228,9 @@ Mock Implementation:
   ✓ Seamless switching with Firebase
 
 Real-time Features:
-  ✓ Transaction updates push live to Home
-  ✓ Card modifications instant
-  ✓ PIX transfers update in real-time
+  ✓ Task updates push live to Tasks screen
+  ✓ Pomodoro session stats update in real-time
+  ✓ Chat messages sync across sessions
   ✓ Automatic unsubscribe on unmount
 
 Sync Strategy:
@@ -318,16 +307,16 @@ Alternative: Could use RxJS for:
 
 CRITICAL ISSUES (Must Fix):
 
-1. Security: API Token Exposure
+1. Security: API Token Management
    Impact: High - Token compromise
-   Fix: Move B3 token to backend proxy
+   Fix: Move all API tokens to backend proxy
 
 2. Security: Input Validation
-   Impact: High - Fraud vulnerability
-   Fix: Add comprehensive input sanitization
+   Impact: High - Data integrity
+   Fix: Add comprehensive input sanitization with Zod
 
 3. Performance: API Caching
-   Impact: Medium - Slow quote updates
+   Impact: Medium - Slow API responses
    Fix: Add LRU cache with TTL
 
 ERROR HANDLING & RELIABILITY:
@@ -397,13 +386,13 @@ DEPLOYMENT & CONFIGURATION:
 
 3. Feature Completeness
    - Authentication (Google, Apple, Anonymous)
-   - Real-time transactions
-   - PIX system with limits/validation
-   - Digital cards with animations
+   - Task management with subtasks and priorities
+   - Pomodoro timer with configurable sessions
+   - Focus Mode with ambient sounds
+   - AI Chat assistant
    - Multi-language support (PT, EN, ES)
-   - White-label theming (ByteBank/HelioBank)
-   - Dashboard with charts
-   - Investment tracking
+   - White-label theming (MindEase/HelioBank)
+   - Accessibility settings (WCAG 2.2 AA)
 
 4. Code Organization
    - Clear folder structure
@@ -429,12 +418,12 @@ DEPLOYMENT & CONFIGURATION:
 
 Quick Wins (< 1 day):
 
-1. Remove API Token from Source
-   - Move B3 token to backend
+1. Secure API Tokens
+   - Move all tokens to environment variables
    - Add .env variable
 
 2. Add Simple API Cache
-   - Implement LRU cache for quotes
+   - Implement LRU cache for API responses
    - 5-10 minute TTL
 
 3. Add Error Boundary
@@ -465,7 +454,7 @@ Medium Term (1-2 weeks):
 
 5. Offline Support
    - Add expo-sqlite
-   - Sync transactions locally
+   - Sync tasks locally
 
 Long Term (1-2 months):
 
@@ -488,7 +477,7 @@ Long Term (1-2 months):
 10. COMPARISON WITH TECH CHALLENGE REQUIREMENTS
 ================================================================================
 
-Challenge: FIAP Tech Challenge 4 (presumed banking fintech app)
+Challenge: FIAP Tech Challenge 4 (productivity and wellness app)
 
 Requirement Coverage:
 
@@ -535,7 +524,7 @@ Alignment: 7/10 - Good foundation, needs security/performance hardening
 FINAL ASSESSMENT
 ================================================================================
 
-The ByteBank App is a WELL-ARCHITECTED React Native application demonstrating
+The MindEase App is a WELL-ARCHITECTED React Native application demonstrating
 professional development practices, strong architectural foundations, and
 comprehensive feature implementation.
 

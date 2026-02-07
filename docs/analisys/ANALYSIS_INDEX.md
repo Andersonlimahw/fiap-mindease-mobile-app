@@ -1,8 +1,8 @@
-# ByteBank App - Codebase Analysis Index
+# MindEase App - Codebase Analysis Index
 
 ## Overview
 
-This directory contains a comprehensive analysis of the ByteBank App codebase, a React Native fintech application built with Expo, Firebase, and TypeScript.
+This directory contains a comprehensive analysis of the MindEase App codebase, a React Native productivity and wellness application built with Expo, Firebase, and TypeScript.
 
 **Analysis Date:** October 22, 2025  
 **Analysis Depth:** Very Thorough (Complete Code Review)  
@@ -199,7 +199,7 @@ Weaknesses:
 ## Action Items
 
 ### Critical (MUST FIX) - 2-4 days
-1. Move B3 API token to backend proxy
+1. Move API tokens to backend proxy
 2. Implement comprehensive input validation
 3. Add error boundary component
 4. Set up .env configuration properly
@@ -238,11 +238,12 @@ Weaknesses:
 
 ### Feature Coverage
 - Authentication providers: 3 (Google, Apple, Anonymous)
-- Main features: 6 (Transactions, Cards, PIX, Investments, Dashboard, User)
+- Main features: 6 (Tasks, Pomodoro, Focus Mode, AI Chat, Accessibility, User)
 - Languages supported: 3 (Portuguese, English, Spanish)
-- Themes: 2 with dark/light modes (ByteBank, HelioBank)
+- Themes: 2 with dark/light modes (MindEase, HelioBank)
 - Real-time capabilities: Yes (Firebase listeners)
 - Offline support: No (gap identified)
+- App Type: Productivity & Wellness
 
 ### Assessment Scores
 | Category | Score | Grade |
@@ -364,7 +365,7 @@ fiap-mindease -app/
 **Analysis Depth:** Very Thorough (Comprehensive Code Review)  
 **Time Investment:** ~4-5 hours of deep analysis
 
-**For Team:** FIAP Group 30 - ByteBank App
+**For Team:** FIAP Group 30 - MindEase App
 
 ---
 
@@ -384,6 +385,6 @@ fiap-mindease -app/
 
 ## Summary
 
-The ByteBank App demonstrates professional development practices with excellent architectural foundations. It's ready for FIAP Tech Challenge submission after implementing security and performance improvements. The codebase shows strong technical maturity across architecture, code organization, and feature completeness.
+The MindEase App demonstrates professional development practices with excellent architectural foundations. It's ready for FIAP Tech Challenge submission after implementing security and performance improvements. The codebase shows strong technical maturity across architecture, code organization, and feature completeness.
 
 For questions or clarifications, refer to the detailed analysis documents or specific sections referenced above.

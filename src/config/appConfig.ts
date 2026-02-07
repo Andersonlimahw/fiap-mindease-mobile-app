@@ -107,12 +107,12 @@ validateFirebaseConfig(firebaseConfig);
 // Configuração da aplicação
 const AppConfig: AppConfigType = {
   // App info
-  appName: getEnv('APP_NAME', 'ByteBank'),
-  appSlug: getEnv('APP_SLUG', 'mindease -app'),
-  appScheme: getEnv('APP_SCHEME', 'mindease '),
+  appName: getEnv('APP_NAME', 'MindEase'),
+  appSlug: getEnv('APP_SLUG', 'mindease-app'),
+  appScheme: getEnv('APP_SCHEME', 'mindease'),
   version: getEnv('APP_VERSION', '1.0.1'),
-  bundleIdentifier: getEnv('BUNDLE_IDENTIFIER', 'com.mindease .ios'),
-  androidPackage: getEnv('ANDROID_PACKAGE', 'com.bytebankapp.android-versions'),
+  bundleIdentifier: getEnv('BUNDLE_IDENTIFIER', 'com.mindease.ios'),
+  androidPackage: getEnv('ANDROID_PACKAGE', 'com.mindease.android'),
   projectId: getEnv('PROJECT_ID', ''),
 
   // Firebase

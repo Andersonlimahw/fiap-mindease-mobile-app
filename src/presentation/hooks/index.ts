@@ -1,5 +1,5 @@
 /**
- * Hooks customizados do ByteBank
+ * Hooks customizados do MindEase
  */
 
 export { useDebounce, useDebouncedCallback, useThrottledCallback } from './useDebounce';

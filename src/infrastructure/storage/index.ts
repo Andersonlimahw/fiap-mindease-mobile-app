@@ -1,5 +1,5 @@
 /**
- * Módulo de Storage Seguro do ByteBank
+ * Módulo de Storage Seguro do MindEase
  *
  * Fornece armazenamento criptografado usando:
  * - MMKV com encryption para dados de alta performance
