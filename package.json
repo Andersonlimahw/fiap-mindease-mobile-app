@@ -4,6 +4,10 @@
   "private": true,
   "main": "index.js",
   "scripts": {
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest watch",
     "start": "EXPO_PUBLIC_USE_MOCK=false npx expo prebuild --clean",
     "start:firebase": "EXPO_PUBLIC_USE_MOCK=false npx expo start --clear --dev-client",
     "start:mocks": "EXPO_PUBLIC_USE_MOCK=true npx expo prebuild",
@@ -78,7 +82,9 @@
   "devDependencies": {
     "@react-native-community/cli": "latest",
     "@types/react": "~19.1.10",
+    "@vitest/coverage-v8": "^2.1.9",
     "babel-preset-expo": "~54.0.0",
-    "typescript": "^5.4.0"
+    "typescript": "^5.4.0",
+    "vitest": "^2.1.9"
   }
 }
