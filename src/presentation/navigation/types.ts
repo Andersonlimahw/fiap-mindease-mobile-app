@@ -8,17 +8,20 @@ export type AuthStackParamList = {
 
 export type AppTabParamList = {
   Home: undefined;
-  Dashboard: undefined;
-  Investments: undefined;
-  Extract: undefined;
+  Tasks: undefined;
+  Pomodoro: undefined;
+  FocusMode: undefined;
+  Chat: undefined;
 };
 
 export type RootStackParamList = {
+  App: undefined;
   Back: undefined;
   User: undefined;
   Pix: undefined;
   DigitalCards: undefined;
   AddTransaction: { transactionId?: string };
+  Accessibility: undefined;
 };
 
 // Navigation props for screens in the Auth stack

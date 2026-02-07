@@ -293,9 +293,10 @@ export const es = {
   },
   tabs: {
     home: "Inicio",
-    dashboard: "Panel",
-    investments: "Inversiones",
-    extract: "Extracto",
+    tasks: "Tareas",
+    pomodoro: "Pomodoro",
+    focusMode: "Enfoque",
+    chat: "Chat",
   },
   titles: {
     myAccount: "Mi Cuenta",

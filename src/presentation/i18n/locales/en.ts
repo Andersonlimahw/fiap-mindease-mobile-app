@@ -288,9 +288,9 @@ export const en = {
   tabs: {
     home: "Home",
     tasks: "Tasks",
-    dashboard: "Dashboard",
-    investments: "Investments",
-    extract: "Extract",
+    pomodoro: "Pomodoro",
+    focusMode: "Focus",
+    chat: "Chat",
   },
   titles: {
     myAccount: "My Account",

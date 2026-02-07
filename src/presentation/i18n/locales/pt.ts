@@ -274,9 +274,9 @@ export const pt = {
   tabs: {
     home: "Início",
     tasks: "Tarefas",
-    dashboard: "Dashboard",
-    investments: "Investimentos",
-    extract: "Extrato",
+    pomodoro: "Pomodoro",
+    focusMode: "Foco",
+    chat: "Chat",
   },
   titles: {
     myAccount: "Minha Conta",

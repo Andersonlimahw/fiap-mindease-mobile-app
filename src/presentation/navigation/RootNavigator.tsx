@@ -14,21 +14,6 @@ import { OnboardingScreen } from "../screens/Onboarding/OnboardingScreen";
 import { HomeScreen } from "../screens/Home/HomeScreen";
 
 // Lazy loading de telas secundárias
-const DashboardScreen = lazy(() =>
-  import("../screens/Dashboard/DashboardScreen").then((m) => ({
-    default: m.DashboardScreen,
-  }))
-);
-const InvestmentsScreen = lazy(() =>
-  import("../screens/Investments/InvestmentsScreen").then((m) => ({
-    default: m.InvestmentsScreen,
-  }))
-);
-const ExtractScreen = lazy(() =>
-  import("../screens/Extract/ExtractScreen").then((m) => ({
-    default: m.ExtractScreen,
-  }))
-);
 const UserScreen = lazy(() =>
   import("../screens/User/UserScreen").then((m) => ({
     default: m.UserScreen,
@@ -96,9 +81,6 @@ function withSuspense<P extends object>(
 }
 
 // Componentes com Suspense
-const LazyDashboard = withSuspense(DashboardScreen);
-const LazyInvestments = withSuspense(InvestmentsScreen);
-const LazyExtract = withSuspense(ExtractScreen);
 const LazyUser = withSuspense(UserScreen);
 const LazyPix = withSuspense(PixScreen);
 const LazyDigitalCards = withSuspense(DigitalCardsScreen);
@@ -119,9 +101,9 @@ type AuthStackParamList = {
 type AppTabParamList = {
   Home: undefined;
   Tasks: undefined;
-  Dashboard: undefined;
-  Investments: undefined;
-  Extract: undefined;
+  Pomodoro: undefined;
+  FocusMode: undefined;
+  Chat: undefined;
 };
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
@@ -156,9 +138,9 @@ function AppTabs() {
             "help";
           if (route.name === "Home") iconName = "home";
           else if (route.name === "Tasks") iconName = "check-circle";
-          else if (route.name === "Dashboard") iconName = "dashboard";
-          else if (route.name === "Investments") iconName = "trending-up";
-          else if (route.name === "Extract") iconName = "receipt";
+          else if (route.name === "Pomodoro") iconName = "timer";
+          else if (route.name === "FocusMode") iconName = "self-improvement";
+          else if (route.name === "Chat") iconName = "chat";
           return <MaterialIcons name={iconName} size={size} color={color} />;
         },
       })}
@@ -177,27 +159,27 @@ function AppTabs() {
         }}
       />
       <Tab.Screen
-        name="Dashboard"
-        component={LazyDashboard}
+        name="Pomodoro"
+        component={LazyPomodoro}
         options={{
-          tabBarLabel: t("tabs.dashboard"),
-          headerTitle: t("titles.dashboard"),
+          tabBarLabel: t("tabs.pomodoro"),
+          headerTitle: t("pomodoro.title"),
         }}
       />
       <Tab.Screen
-        name="Investments"
-        component={LazyInvestments}
+        name="FocusMode"
+        component={LazyFocusMode}
         options={{
-          tabBarLabel: t("tabs.investments"),
-          headerTitle: t("titles.investments"),
+          tabBarLabel: t("tabs.focusMode"),
+          headerTitle: t("focusMode.title"),
         }}
       />
       <Tab.Screen
-        name="Extract"
-        component={LazyExtract}
+        name="Chat"
+        component={LazyChat}
         options={{
-          tabBarLabel: t("tabs.extract"),
-          headerTitle: t("titles.extract"),
+          tabBarLabel: t("tabs.chat"),
+          headerTitle: t("chat.title"),
         }}
       />
     </Tab.Navigator>
@@ -295,21 +277,6 @@ export function RootNavigator() {
           presentation: "modal",
           title: t("titles.newTransaction"),
         }}
-      />
-      <AppStack.Screen
-        name="Pomodoro"
-        component={LazyPomodoro}
-        options={{ title: t("pomodoro.title") }}
-      />
-      <AppStack.Screen
-        name="FocusMode"
-        component={LazyFocusMode}
-        options={{ title: t("focusMode.title") }}
-      />
-      <AppStack.Screen
-        name="Chat"
-        component={LazyChat}
-        options={{ title: t("chat.title") }}
       />
       <AppStack.Screen
         name="Accessibility"
