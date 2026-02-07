@@ -18,6 +18,8 @@ import { MockCardRepository } from "@app/data/mock/MockCardRepository";
 import { MockFileRepository } from "@app/data/mock/MockFileRepository";
 import { FirebaseFileRepository } from "@app/data/firebase/FirebaseFileRepository";
 import { MockTaskRepository } from "@app/data/mock/MockTaskRepository";
+import { OllamaChatRepository } from "@app/data/ollama/OllamaChatRepository";
+import { MockChatRepository } from "@app/data/mock/MockChatRepository";
 
 type DIState = {
   container: Container;
@@ -41,6 +43,7 @@ function buildContainer(): Container {
     container.set(TOKENS.CardRepository, new MockCardRepository());
     container.set(TOKENS.FileRepository, new MockFileRepository());
     container.set(TOKENS.TaskRepository, MockTaskRepository);
+    container.set(TOKENS.ChatRepository, new MockChatRepository());
     return container;
   }
 
@@ -62,6 +65,7 @@ function buildContainer(): Container {
     container.set(TOKENS.FileRepository, new FirebaseFileRepository());
     // Tasks use mock for now (Firebase implementation pending)
     container.set(TOKENS.TaskRepository, MockTaskRepository);
+    container.set(TOKENS.ChatRepository, new OllamaChatRepository());
   } catch (e: any) {
     // Keep the app usable in development if Firebase env is missing/misconfigured
     // eslint-disable-next-line no-console
@@ -77,6 +81,7 @@ function buildContainer(): Container {
     container.set(TOKENS.PixRepository, new MockPixRepository());
     container.set(TOKENS.CardRepository, new MockCardRepository());
     container.set(TOKENS.TaskRepository, MockTaskRepository);
+    container.set(TOKENS.ChatRepository, new OllamaChatRepository());
   }
   return container;
 }

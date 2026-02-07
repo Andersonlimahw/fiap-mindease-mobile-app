@@ -27,6 +27,9 @@ type AppConfigType = {
   // External APIs
   brapiToken: string;
 
+  // AI / Ollama
+  ollamaUrl: string;
+
   // Feature flags
   useMock: boolean;
   isDevelopment: boolean;
@@ -120,6 +123,9 @@ const AppConfig: AppConfigType = {
 
   // External APIs
   brapiToken: getEnv('BRAPI_TOKEN', 'p6j38bVSefgui6rCkjcCpT'),
+
+  // AI / Ollama
+  ollamaUrl: getEnv('OLLAMA_URL', 'http://localhost:11434'),
 
   // Feature flags
   useMock: false, // getEnv('USE_MOCK', 'false') === 'true',

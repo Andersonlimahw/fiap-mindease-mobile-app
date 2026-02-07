@@ -19,6 +19,11 @@ export interface ChatResponse {
   confidence?: number;
 }
 
+export type OllamaMessage = {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+};
+
 // Demo responses for the AI assistant
 export const DEMO_RESPONSES: Record<string, string> = {
   pomodoro:

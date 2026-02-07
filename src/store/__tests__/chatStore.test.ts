@@ -5,6 +5,22 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useChatStore } from '../chatStore';
+import { useDIStore } from '@store/diStore';
+import { TOKENS } from '@app/core/di/container';
+
+// Helper to configure the mock DI to return a specific ChatRepository
+function mockChatRepository(repo: {
+  sendMessage: ReturnType<typeof vi.fn>;
+} | null) {
+  vi.mocked(useDIStore.getState).mockReturnValue({
+    di: {
+      resolve: vi.fn((token: unknown) => {
+        if (token === TOKENS.ChatRepository) return repo;
+        return undefined;
+      }),
+    },
+  } as any);
+}
 
 describe('chatStore', () => {
   beforeEach(() => {
@@ -13,6 +29,8 @@ describe('chatStore', () => {
       messages: [],
       isLoading: false,
     });
+    // Default: no repository (tests fallback/demo path)
+    mockChatRepository(null);
   });
 
   describe('initial state', () => {
@@ -218,6 +236,89 @@ describe('chatStore', () => {
       const response = useChatStore.getState().messages[1];
       expect(response.role).toBe('assistant');
       expect(response.content.length).toBeGreaterThan(0);
+    });
+  });
+
+  describe('ChatRepository integration', () => {
+    it('should use repository response when available', async () => {
+      const mockRepo = {
+        sendMessage: vi.fn().mockResolvedValue({
+          content: 'Resposta real do Ollama',
+        }),
+      };
+      mockChatRepository(mockRepo);
+
+      const { sendMessage } = useChatStore.getState();
+      await sendMessage('Teste com Ollama');
+
+      const state = useChatStore.getState();
+      expect(state.messages.length).toBe(2);
+      expect(state.messages[1].content).toBe('Resposta real do Ollama');
+      expect(mockRepo.sendMessage).toHaveBeenCalledTimes(1);
+    });
+
+    it('should pass message history and system prompt to repository', async () => {
+      const mockRepo = {
+        sendMessage: vi.fn().mockResolvedValue({
+          content: 'OK',
+        }),
+      };
+      mockChatRepository(mockRepo);
+
+      const { sendMessage } = useChatStore.getState();
+      await sendMessage('Primeira pergunta');
+
+      const call = mockRepo.sendMessage.mock.calls[0];
+      // First argument: messages array (should include the user message)
+      expect(call[0]).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ role: 'user', content: 'Primeira pergunta' }),
+        ])
+      );
+      // Second argument: system prompt string
+      expect(typeof call[1]).toBe('string');
+      expect(call[1]).toContain('MindEase');
+    });
+
+    it('should fallback to demo response when repository throws', async () => {
+      const mockRepo = {
+        sendMessage: vi.fn().mockRejectedValue(new Error('Network error')),
+      };
+      mockChatRepository(mockRepo);
+
+      const { sendMessage } = useChatStore.getState();
+      await sendMessage('pomodoro');
+
+      const state = useChatStore.getState();
+      expect(state.messages.length).toBe(2);
+      expect(state.messages[1].role).toBe('assistant');
+      // Should get demo response, not empty
+      expect(state.messages[1].content.length).toBeGreaterThan(0);
+      expect(state.isLoading).toBe(false);
+    });
+
+    it('should fallback to demo response when no repository is registered', async () => {
+      mockChatRepository(null);
+
+      const { sendMessage } = useChatStore.getState();
+      await sendMessage('foco');
+
+      const state = useChatStore.getState();
+      expect(state.messages.length).toBe(2);
+      expect(state.messages[1].role).toBe('assistant');
+      expect(state.messages[1].content.length).toBeGreaterThan(0);
+    });
+
+    it('should set isLoading false even when repository throws', async () => {
+      const mockRepo = {
+        sendMessage: vi.fn().mockRejectedValue(new Error('Timeout')),
+      };
+      mockChatRepository(mockRepo);
+
+      const { sendMessage } = useChatStore.getState();
+      await sendMessage('test');
+
+      expect(useChatStore.getState().isLoading).toBe(false);
     });
   });
 });
