@@ -6,7 +6,7 @@
 - [ ] Criar `src/presentation/screens/WebView/WebViewScreen.tsx` com montagem de URL e validações.
 - [ ] Registrar rota no `AppStack` em `src/presentation/navigation/RootNavigator.tsx`.
 - [ ] Validar tema/i18n no header (título, cores, ações).
-- [ ] (Opcional) Adicionar Linking config em `App.tsx` para `bytebank://webview`.
+- [ ] (Opcional) Adicionar Linking config em `App.tsx` para `mindease ://webview`.
 - [ ] iOS: revisar ATS em `app.json` (`ios.infoPlist.NSAppTransportSecurity`) caso use HTTP/domínios não-padrão.
 - [ ] Android: decidir sobre `mixedContentMode` (evitar; só se necessário HTTP).
 - [ ] Testar em Android (hardware back) e iOS (gestos de navegação).

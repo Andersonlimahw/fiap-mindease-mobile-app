@@ -177,7 +177,7 @@ const theme = useTheme();
 // Access: theme.colors, theme.spacing, theme.radius, theme.text
 ```
 
-Brands: `bytebank` | `heliobank`
+Brands: `mindease ` | `heliobank`
 Modes: `light` | `dark`
 
 ## Navigation

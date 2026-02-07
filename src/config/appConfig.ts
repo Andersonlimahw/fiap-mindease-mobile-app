@@ -108,10 +108,10 @@ validateFirebaseConfig(firebaseConfig);
 const AppConfig: AppConfigType = {
   // App info
   appName: getEnv('APP_NAME', 'ByteBank'),
-  appSlug: getEnv('APP_SLUG', 'bytebank-app'),
-  appScheme: getEnv('APP_SCHEME', 'bytebank'),
+  appSlug: getEnv('APP_SLUG', 'mindease -app'),
+  appScheme: getEnv('APP_SCHEME', 'mindease '),
   version: getEnv('APP_VERSION', '1.0.1'),
-  bundleIdentifier: getEnv('BUNDLE_IDENTIFIER', 'com.bytebank.ios'),
+  bundleIdentifier: getEnv('BUNDLE_IDENTIFIER', 'com.mindease .ios'),
   androidPackage: getEnv('ANDROID_PACKAGE', 'com.bytebankapp.android-versions'),
   projectId: getEnv('PROJECT_ID', ''),
 

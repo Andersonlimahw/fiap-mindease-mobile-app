@@ -148,7 +148,7 @@ Key Features:
 
 **2. Theme Store (`themeStore.ts`)**
 ```typescript
-- State: brand (bytebank/heliobank), mode (light/dark)
+- State: brand (mindease /heliobank), mode (light/dark)
 - Actions: setBrand, setMode, toggleMode
 - Persistence: AsyncStorage with brand/mode keys
 - Theme Building: Runtime theme generation from brand palettes

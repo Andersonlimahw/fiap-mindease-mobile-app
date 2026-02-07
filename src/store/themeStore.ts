@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppConfig from '../config/appConfig';
 
 export type ThemeMode = 'light' | 'dark';
-export type BrandId = 'bytebank' | 'heliobank';
+export type BrandId = 'mindease ' | 'heliobank';
 
 export type ThemeColors = {
   primary: string;
@@ -40,7 +40,7 @@ type BrandPalette = {
 };
 
 const brandPalettes: Record<BrandId, BrandPalette> = {
-  bytebank: {
+  mindease: {
     light: {
       primary: '#4F46E5',
       background: '#ffffff',
@@ -148,7 +148,7 @@ export const useThemeStore = create<ThemeState>()(
   devtools(
     persist(
       (set, get) => ({
-        brand: ((AppConfig as any)?.appearance?.brand as BrandId) || 'bytebank',
+        brand: ((AppConfig as any)?.appearance?.brand as BrandId) || 'mindease ',
         mode: ((AppConfig as any)?.appearance?.mode as ThemeMode) || 'light',
         setBrand: (brand) => set({ brand }),
         setMode: (mode) => set({ mode }),

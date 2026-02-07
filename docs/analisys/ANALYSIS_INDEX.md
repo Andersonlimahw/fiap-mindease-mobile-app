@@ -284,7 +284,7 @@ Weaknesses:
 ## File Locations in Project
 
 ```
-fiap-bytebank-app/
+fiap-mindease -app/
 ├── CODEBASE_ANALYSIS.md          (detailed technical analysis)
 ├── ANALYSIS_SUMMARY.txt          (executive summary)
 ├── QUICK_REFERENCE.md            (developer guide)

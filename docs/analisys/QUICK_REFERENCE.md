@@ -63,14 +63,14 @@ signOut()                      // Logout
 signInAnonymously()            // Guest access
 
 // Persistence
-AsyncStorage key: "@bytebank-app/auth:v2"
+AsyncStorage key: "@mindease -app/auth:v2"
 Version: 2 (with migrations)
 ```
 
 #### 2. Theme Store (`src/store/themeStore.ts`)
 ```typescript
 // State
-brand: 'bytebank' | 'heliobank'
+brand: 'mindease ' | 'heliobank'
 mode: 'light' | 'dark'
 
 // Actions

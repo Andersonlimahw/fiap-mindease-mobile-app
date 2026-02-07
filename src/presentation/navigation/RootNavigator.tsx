@@ -19,24 +19,10 @@ const UserScreen = lazy(() =>
     default: m.UserScreen,
   }))
 );
-const PixScreen = lazy(() =>
-  import("../screens/Pix/PixScreen").then((m) => ({
-    default: m.PixScreen,
-  }))
-);
-const DigitalCardsScreen = lazy(() =>
-  import("../screens/Cards/DigitalCardsScreen").then((m) => ({
-    default: m.DigitalCardsScreen,
-  }))
-);
+
 const RegisterScreen = lazy(() =>
   import("../screens/Auth/RegisterScreen").then((m) => ({
     default: m.RegisterScreen,
-  }))
-);
-const AddTransactionScreen = lazy(() =>
-  import("../screens/Transactions/AddTransactionScreen").then((m) => ({
-    default: m.AddTransactionScreen,
   }))
 );
 const TasksScreen = lazy(() =>
@@ -82,10 +68,7 @@ function withSuspense<P extends object>(
 
 // Componentes com Suspense
 const LazyUser = withSuspense(UserScreen);
-const LazyPix = withSuspense(PixScreen);
-const LazyDigitalCards = withSuspense(DigitalCardsScreen);
 const LazyRegister = withSuspense(RegisterScreen);
-const LazyAddTransaction = withSuspense(AddTransactionScreen);
 const LazyTasks = withSuspense(TasksScreen);
 const LazyPomodoro = withSuspense(PomodoroScreen);
 const LazyFocusMode = withSuspense(FocusModeScreen);
@@ -259,24 +242,6 @@ export function RootNavigator() {
         name="User"
         component={LazyUser}
         options={{ title: t("titles.myAccount") }}
-      />
-      <AppStack.Screen
-        name="Pix"
-        component={LazyPix}
-        options={{ title: t("titles.pix") }}
-      />
-      <AppStack.Screen
-        name="DigitalCards"
-        component={LazyDigitalCards}
-        options={{ title: t("titles.digitalCards") }}
-      />
-      <AppStack.Screen
-        name="AddTransaction"
-        component={LazyAddTransaction}
-        options={{
-          presentation: "modal",
-          title: t("titles.newTransaction"),
-        }}
       />
       <AppStack.Screen
         name="Accessibility"

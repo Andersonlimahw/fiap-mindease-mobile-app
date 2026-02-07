@@ -1,4 +1,4 @@
-export type CardBrand = 'bytebank' | 'nubank' | 'oyapal' | 'visa' | 'mastercard' | 'amex' | 'elo' | 'hipercard' | 'other';
+export type CardBrand = 'mindease ' | 'nubank' | 'oyapal' | 'visa' | 'mastercard' | 'amex' | 'elo' | 'hipercard' | 'other';
 
 export type DigitalCard = {
   id: string;

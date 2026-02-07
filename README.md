@@ -59,7 +59,7 @@
 - Persisted preferences:
   - Selected `brand` and `mode` persist via AsyncStorage (`bb_theme`).
 - Default via env (optional):
-  - `EXPO_PUBLIC_BRAND=bytebank|heliobank`
+  - `EXPO_PUBLIC_BRAND=mindease |heliobank`
   - `EXPO_PUBLIC_THEME_MODE=light|dark` (alias: `THEME_MODE`)
   - Set in `.env` — see `.env.example` — and start the app.
 - Brand assets:
@@ -196,7 +196,7 @@ EXPO_PUBLIC_BRAPI_TOKEN=seu_token_aqui
    - Google Sign-In uses expo-auth-session. Set one of:
      - EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID (works on Expo Go), or
      - Platform-specific: EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID / ANDROID / WEB.
-   - Redirect handling: app.json includes `"scheme": "bytebank"` and the code uses `makeRedirectUri({ scheme: 'bytebank', useProxy: true })` on native for easy dev. For production builds, AuthSession will use your app scheme.
+   - Redirect handling: app.json includes `"scheme": "mindease "` and the code uses `makeRedirectUri({ scheme: 'mindease ', useProxy: true })` on native for easy dev. For production builds, AuthSession will use your app scheme.
    - Apple Sign-In works only on iOS. Ensure your Apple capabilities are configured for your Bundle ID.
 
 4. Install required packages if not present

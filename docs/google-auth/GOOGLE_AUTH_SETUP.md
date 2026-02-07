@@ -5,14 +5,14 @@ This guide helps you configure Google authentication for the ByteBank app using 
 
 ## Prerequisites
 - Google Cloud Console access
-- Firebase project (projeto-bytebank)
+- Firebase project (projeto-mindease )
 - Expo CLI installed
 
 ## Step 1: Google Cloud Console Setup
 
 ### 1.1 Access Google Cloud Console
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Select your project: `projeto-bytebank`
+2. Select your project: `projeto-mindease `
 3. Navigate to **APIs & Services** > **Credentials**
 
 ### 1.2 Enable Required APIs
@@ -42,7 +42,7 @@ You need to create **4 different OAuth 2.0 Client IDs**:
 1. Click **Create Credentials** > **OAuth 2.0 Client ID**
 2. Application type: **Android**
 3. Name: `ByteBank Android`
-4. Package name: `com.bytebank.app`
+4. Package name: `com.mindease .app`
 5. SHA-1 certificate fingerprint:
    - For development: Get from `expo credentials:manager`
    - For production: Get from your keystore
@@ -52,7 +52,7 @@ You need to create **4 different OAuth 2.0 Client IDs**:
 1. Click **Create Credentials** > **OAuth 2.0 Client ID**
 2. Application type: **iOS**
 3. Name: `ByteBank iOS`
-4. Bundle ID: `com.bytebank.app`
+4. Bundle ID: `com.mindease .app`
 5. Save the **Client ID** - you'll need this for `EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID`
 
 #### D. Expo Client ID (Optional)
@@ -60,7 +60,7 @@ You need to create **4 different OAuth 2.0 Client IDs**:
 2. Application type: **Web application**
 3. Name: `ByteBank Expo`
 4. Authorized redirect URIs:
-   - `https://auth.expo.io/@your-username/bytebank-app`
+   - `https://auth.expo.io/@your-username/mindease -app`
    - Any other Expo redirect URIs
 5. Save the **Client ID** - you'll need this for `EXPO_PUBLIC_GOOGLE_EXPO_CLIENT_ID`
 
@@ -131,7 +131,7 @@ npm run build:ios:dev
    - Check that Google Sign-In is enabled in Firebase Authentication
 
 3. If AuthSession fails to open
-   - Ensure `scheme` is configured in `app.json` and matches the `makeRedirectUri({ scheme: 'bytebank' })` usage
+   - Ensure `scheme` is configured in `app.json` and matches the `makeRedirectUri({ scheme: 'mindease ' })` usage
    - On native dev, AuthSession will use the Expo proxy automatically
 
 4. **"Login Google cancelado"**

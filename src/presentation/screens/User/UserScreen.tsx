@@ -83,7 +83,7 @@ export const UserScreen: React.FC<any> = () => {
         <View style={styles.card}>
           <TouchableOpacity
             style={styles.row}
-            onPress={() => Linking.openURL("mailto:suporte@bytebank.app")}
+            onPress={() => Linking.openURL("mailto:suporte@mindease .app")}
           >
             <Text style={styles.label}>{t("user.supportContact")}</Text>
             <Text style={styles.link}>{t("user.sendEmail")}</Text>
@@ -93,7 +93,7 @@ export const UserScreen: React.FC<any> = () => {
             style={styles.row}
             onPress={() =>
               Linking.openURL(
-                "https://shell-projeto-bytebank-gp-30.vercel.app/home"
+                "https://shell-projeto-mindease -gp-30.vercel.app/home"
               )
             }
           >
@@ -105,7 +105,7 @@ export const UserScreen: React.FC<any> = () => {
             style={styles.row}
             onPress={() =>
               Linking.openURL(
-                "https://shell-projeto-bytebank-gp-30.vercel.app/home"
+                "https://shell-projeto-mindease -gp-30.vercel.app/home"
               )
             }
           >

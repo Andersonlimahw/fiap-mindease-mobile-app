@@ -59,7 +59,7 @@ Store Details:
    - Features: Typed selectors, devtools integration
 
 2. THEME STORE (themeStore.ts)
-   - State: brand (bytebank/heliobank), mode (light/dark)
+   - State: brand (mindease /heliobank), mode (light/dark)
    - Actions: setBrand, setMode, toggleMode
    - Persistence: AsyncStorage (bb_theme key)
    - Features: Dynamic theme generation, white-label support

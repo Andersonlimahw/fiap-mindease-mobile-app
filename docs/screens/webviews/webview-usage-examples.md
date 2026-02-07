@@ -53,7 +53,7 @@ navigation.navigate('WebView', {
   url: 'https://app.exemplo.com/area',
   headers: {
     Authorization: `Bearer ${token}`,
-    'X-Client': 'bytebank-app',
+    'X-Client': 'mindease -app',
   },
 });
 ```

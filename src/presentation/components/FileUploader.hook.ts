@@ -50,7 +50,7 @@ export async function uploadToFirebase(userId: string, transactionId: string) {
       .replace(/_+/g, '_')
       .replace(/^_|_$/g, '');
 
-    const objectPath = `bytebank-files/users/${userId}/transactions/${transactionId}/${sanitizedFileName}`;
+    const objectPath = `mindease -files/users/${userId}/transactions/${transactionId}/${sanitizedFileName}`;
 
     // 4) RNFirebase espera caminho de arquivo local (na prática, remover o prefixo file:// é mais seguro)
     const filePath = localUri.startsWith('file://') ? localUri.replace('file://', '') : localUri;

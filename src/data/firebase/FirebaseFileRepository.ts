@@ -21,7 +21,7 @@ export function getFilePath({
 }: GetFilePathInput) {
   const tx = transactionId || Date.now().toString();
   // use directories (no leading slash)
-  const base = `bytebank-files/users/${userId}/transactions/${tx}`;
+  const base = `mindease -files/users/${userId}/transactions/${tx}`;
   // when fileName === "" return only the directory prefix
   return fileName ? `${base}/${fileName}` : base;
 }
@@ -29,7 +29,7 @@ export function getFilePath({
 export async function pingStorage(): Promise<boolean> {
   try {
     const ref = storage().refFromURL(
-      "gs://projeto-bytebank.firebasestorage.app/__health/ping.txt"
+      "gs://projeto-mindease .firebasestorage.app/__health/ping.txt"
     );
     await ref.putString("ok"); // smoke-test
     return true;
@@ -89,101 +89,101 @@ export class FirebaseFileRepository implements FileRepository {
         throw new Error(`Missing required parameters: userId=${userId}, transactionId=${transactionId}, fileUri=${fileUri}`);
       }
 
-    const localUri = await ensureLocalReadableFile(fileUri, fileName || "file");
+      const localUri = await ensureLocalReadableFile(fileUri, fileName || "file");
 
-    // Sanitize fileName to avoid Firebase Storage issues
-    const sanitizedFileName = (fileName || 'file')
-      .replace(/[^a-zA-Z0-9.-]/g, '_')
-      .replace(/_+/g, '_')
-      .replace(/^_|_$/g, '');
+      // Sanitize fileName to avoid Firebase Storage issues
+      const sanitizedFileName = (fileName || 'file')
+        .replace(/[^a-zA-Z0-9.-]/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^_|_$/g, '');
 
-    const objectPath = `bytebank-files/users/${userId}/transactions/${transactionId}/${sanitizedFileName}`;
+      const objectPath = `mindease -files/users/${userId}/transactions/${transactionId}/${sanitizedFileName}`;
 
-    // Prepare file path for putFile - RNFirebase expects local file path without file:// prefix
-    let filePath = localUri;
-    if (Platform.OS === "ios" && localUri.startsWith('file://')) {
-      filePath = localUri.replace('file://', '');
-    } else if (Platform.OS === "android") {
-      // Android URIs from expo-document-picker should work as-is
-      filePath = localUri;
-    }
-
-    console.log("FirebaseFileRepository.upload paths:", {
-      objectPath,
-      filePath,
-      localUri,
-      platform: Platform.OS
-    });
-
-    // Verify file exists before uploading
-    try {
-      const fileInfo = await getInfoAsync(filePath);
-      console.log("File info:", fileInfo);
-
-      if (!fileInfo.exists) {
-        throw new Error(`File does not exist at path: ${filePath}`);
+      // Prepare file path for putFile - RNFirebase expects local file path without file:// prefix
+      let filePath = localUri;
+      if (Platform.OS === "ios" && localUri.startsWith('file://')) {
+        filePath = localUri.replace('file://', '');
+      } else if (Platform.OS === "android") {
+        // Android URIs from expo-document-picker should work as-is
+        filePath = localUri;
       }
-    } catch (fileCheckError) {
-      console.error("Error checking file existence:", fileCheckError);
-      throw new Error(`Cannot access file at path: ${filePath}. Error: ${fileCheckError}`);
-    }
 
-    const task = storage()
-      .ref(objectPath)
-      .putFile(filePath, {
-        contentType: mime ?? undefined,
+      console.log("FirebaseFileRepository.upload paths:", {
+        objectPath,
+        filePath,
+        localUri,
+        platform: Platform.OS
       });
 
-    // (opcional) progresso
-    task.on("state_changed",
-      (taskSnapshot) => {
-        const progress = (taskSnapshot.bytesTransferred / taskSnapshot.totalBytes) * 100;
-        console.log(`FirebaseFileRepository upload progress: ${progress.toFixed(2)}%`);
+      // Verify file exists before uploading
+      try {
+        const fileInfo = await getInfoAsync(filePath);
+        console.log("File info:", fileInfo);
 
-        switch (taskSnapshot.state) {
-          case TaskState.RUNNING:
-            console.log(`Upload is running: ${progress.toFixed(2)}%`);
-            break;
-          case TaskState.PAUSED:
-            console.log("Upload is paused.");
-            break;
-          case TaskState.CANCELLED:
-            console.log("Upload was canceled");
-            break;
-          case TaskState.ERROR:
-            console.error("Upload error occurred in state_changed");
-            break;
-          case TaskState.SUCCESS:
-            console.log("Upload completed successfully");
-            break;
+        if (!fileInfo.exists) {
+          throw new Error(`File does not exist at path: ${filePath}`);
         }
-      },
-      (error) => {
-        console.error("FirebaseFileRepository upload error:", {
-          code: error.code,
-          message: error.message,
-          nativeErrorCode: error.nativeErrorCode,
-          nativeErrorMessage: error.nativeErrorMessage,
-          objectPath,
-          filePath,
-          platform: Platform.OS
+      } catch (fileCheckError) {
+        console.error("Error checking file existence:", fileCheckError);
+        throw new Error(`Cannot access file at path: ${filePath}. Error: ${fileCheckError}`);
+      }
+
+      const task = storage()
+        .ref(objectPath)
+        .putFile(filePath, {
+          contentType: mime ?? undefined,
         });
 
-        // More specific error handling
-        if (error.code === 'storage/object-not-found') {
-          throw new Error(`Firebase Storage: File path not accessible. Check file permissions and authentication. Path: ${objectPath}`);
-        } else if (error.code === 'storage/unauthorized') {
-          throw new Error('Firebase Storage: Unauthorized access. Check Firebase Storage rules and user authentication.');
-        } else if (error.code === 'storage/canceled') {
-          throw new Error('Upload was canceled by user or system.');
-        } else {
-          throw new Error(`Firebase Storage upload failed: ${error.message} (Code: ${error.code})`);
-        }
-      }
-    );
+      // (opcional) progresso
+      task.on("state_changed",
+        (taskSnapshot) => {
+          const progress = (taskSnapshot.bytesTransferred / taskSnapshot.totalBytes) * 100;
+          console.log(`FirebaseFileRepository upload progress: ${progress.toFixed(2)}%`);
 
-    // Await upload completion
-    const uploadResult = await task;
+          switch (taskSnapshot.state) {
+            case TaskState.RUNNING:
+              console.log(`Upload is running: ${progress.toFixed(2)}%`);
+              break;
+            case TaskState.PAUSED:
+              console.log("Upload is paused.");
+              break;
+            case TaskState.CANCELLED:
+              console.log("Upload was canceled");
+              break;
+            case TaskState.ERROR:
+              console.error("Upload error occurred in state_changed");
+              break;
+            case TaskState.SUCCESS:
+              console.log("Upload completed successfully");
+              break;
+          }
+        },
+        (error) => {
+          console.error("FirebaseFileRepository upload error:", {
+            code: error.code,
+            message: error.message,
+            nativeErrorCode: error.nativeErrorCode,
+            nativeErrorMessage: error.nativeErrorMessage,
+            objectPath,
+            filePath,
+            platform: Platform.OS
+          });
+
+          // More specific error handling
+          if (error.code === 'storage/object-not-found') {
+            throw new Error(`Firebase Storage: File path not accessible. Check file permissions and authentication. Path: ${objectPath}`);
+          } else if (error.code === 'storage/unauthorized') {
+            throw new Error('Firebase Storage: Unauthorized access. Check Firebase Storage rules and user authentication.');
+          } else if (error.code === 'storage/canceled') {
+            throw new Error('Upload was canceled by user or system.');
+          } else {
+            throw new Error(`Firebase Storage upload failed: ${error.message} (Code: ${error.code})`);
+          }
+        }
+      );
+
+      // Await upload completion
+      const uploadResult = await task;
 
       // Get download URL from the storage reference
       const storageRef = storage().ref(objectPath);

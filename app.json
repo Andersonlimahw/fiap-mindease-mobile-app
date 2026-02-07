@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "bytebank",
-    "slug": "bytebank-app",
-    "scheme": "bytebank",
+    "name": "mindease ",
+    "slug": "mindease -app",
+    "scheme": "mindease ",
     "version": "1.0.1",
     "orientation": "portrait",
-    "icon": "./public/assets/images/brand/bytebank-fintech-icon-1024.png",
+    "icon": "./public/assets/images/brand/mindease -fintech-icon-1024.png",
     "splash": {
       "image": "./public/assets/images/brand/splash-1242x2436.png",
       "resizeMode": "contain",
@@ -14,10 +14,12 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.bytebank.ios",
+      "bundleIdentifier": "com.mindease .ios",
       "googleServicesFile": "./GoogleService-Info.plist",
       "usesIcloudStorage": true,
       "infoPlist": {
@@ -61,7 +63,10 @@
       [
         "react-native-permissions",
         {
-          "iosPermissions": ["PhotoLibrary", "PhotoLibraryAddOnly"],
+          "iosPermissions": [
+            "PhotoLibrary",
+            "PhotoLibraryAddOnly"
+          ],
           "androidPermissions": [
             "android.permission.READ_MEDIA_IMAGES",
             "android.permission.READ_EXTERNAL_STORAGE",

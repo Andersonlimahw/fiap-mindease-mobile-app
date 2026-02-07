@@ -46,14 +46,14 @@ Este guia cobre ajustes de configuração para iOS e Android usando Expo, manten
 
 ## Linking (Deep Link/Universal Link) — Opcional
 
-Seu `app.json` já define `"scheme": "bytebank"`. Para acessar a tela pela URL `bytebank://webview?...`, adicione um `linking` no `NavigationContainer` em `App.tsx`:
+Seu `app.json` já define `"scheme": "mindease "`. Para acessar a tela pela URL `mindease ://webview?...`, adicione um `linking` no `NavigationContainer` em `App.tsx`:
 
 ```tsx
 import { NavigationContainer, LinkingOptions } from '@react-navigation/native';
 import { RootStackParamList } from './src/presentation/navigation/types';
 
 const linking: LinkingOptions<RootStackParamList> = {
-  prefixes: ['bytebank://'],
+  prefixes: ['mindease ://'],
   config: {
     screens: {
       WebView: 'webview',
@@ -71,7 +71,7 @@ const linking: LinkingOptions<RootStackParamList> = {
 Isso permite algo como:
 
 ```
-bytebank://webview?url=https%3A%2F%2Fapp.exemplo.com%2Fportal&token=abc&lang=pt
+mindease ://webview?url=https%3A%2F%2Fapp.exemplo.com%2Fportal&token=abc&lang=pt
 ```
 
 Na `WebViewScreen`, os parâmetros chegam em `route.params` conforme mapeamento do React Navigation.

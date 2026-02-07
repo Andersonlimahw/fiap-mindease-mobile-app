@@ -97,7 +97,7 @@ export const CardVisualView: React.FC<Props> = ({ card, style }) => {
   const backgroundStyle = useMemo(() => {
     const base: ViewStyle = { backgroundColor: theme.colors.card };
     switch (resolvedBrand) {
-      case "bytebank":
+      case "mindease ":
         return { ...base, backgroundColor: "#0f172a" } as ViewStyle;
       case "nubank":
         return { ...base, backgroundColor: "#6D28D9" } as ViewStyle;
@@ -119,7 +119,7 @@ export const CardVisualView: React.FC<Props> = ({ card, style }) => {
   }, [resolvedBrand, theme]);
 
   const brandText = useMemo(() => {
-    if (resolvedBrand === "bytebank") return "BYTEBANK";
+    if (resolvedBrand === "mindease ") return "BYTEBANK";
     if (resolvedBrand === "nubank") return "NuBank";
     if (resolvedBrand === "oyapal") return "OyaPay";
     if (resolvedBrand === "visa") return "VISA";

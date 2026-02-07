@@ -5,7 +5,7 @@ import type { AuthProvider } from "@domain/entities/AuthProvider";
 const demoUser: User = {
   id: "demo-user-1",
   name: "Demo User",
-  email: "demo@bytebank.app",
+  email: "demo@mindease .app",
   photoUrl: undefined,
 };
 
@@ -19,7 +19,7 @@ export class MockAuthRepository implements AuthRepository {
   onAuthStateChanged(cb: (user: User | null) => void): () => void {
     // Mock: no live events; just return noop and keep last state
     cb(this.user);
-    return () => {};
+    return () => { };
   }
 
   async signIn(

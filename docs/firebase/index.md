@@ -1,6 +1,6 @@
 # Guia de Integração Firebase no ByteBank
 
-Este guia reúne a visão geral da arquitetura Firebase utilizada no projeto `bytebank-app` e aponta para tutoriais específicos de cada módulo do **React Native Firebase**. O conteúdo foi escrito para quem precisa evoluir o app seguindo o padrão **MVVM + camadas Domain/Data/Presentation** já adotado no código fonte.
+Este guia reúne a visão geral da arquitetura Firebase utilizada no projeto `mindease -app` e aponta para tutoriais específicos de cada módulo do **React Native Firebase**. O conteúdo foi escrito para quem precisa evoluir o app seguindo o padrão **MVVM + camadas Domain/Data/Presentation** já adotado no código fonte.
 
 > ⚠️ Sempre verifique se `AppConfig.useMock` está `false` (`src/config/appConfig.ts`) antes de consumir os serviços reais. Em modo mock, os repositórios Firebase não são carregados.
 

@@ -32,7 +32,7 @@ type PersistShape = {
 let initialized = false;
 let unsubscribe: (() => void) | undefined;
 
-const STORAGE_KEY = "@bytebank-app/auth:v2";
+const STORAGE_KEY = "@mindease -app/auth:v2";
 const STORAGE_VERSION = 2;
 
 export const useAuthStore = create<AuthState>()(
