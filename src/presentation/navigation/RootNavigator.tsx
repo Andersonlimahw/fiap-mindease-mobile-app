@@ -117,13 +117,16 @@ function AppTabs() {
       screenOptions={({ route }) => ({
         ...commonTabOptions,
         tabBarIcon: ({ color, size }) => {
-          let iconName: React.ComponentProps<typeof MaterialIcons>["name"] =
-            "help";
-          if (route.name === "Home") iconName = "home";
-          else if (route.name === "Tasks") iconName = "check-circle";
-          else if (route.name === "Pomodoro") iconName = "timer";
-          else if (route.name === "FocusMode") iconName = "self-improvement";
-          else if (route.name === "Chat") iconName = "chat";
+          const icons: Record<string, React.ComponentProps<typeof MaterialIcons>["name"]> = {
+            Home: "home",
+            Tasks: "check-circle",
+            Pomodoro: "timer",
+            FocusMode: "self-improvement",
+            Chat: "chat",
+          };
+
+          const iconName = icons[route.name] || "help";
+
           return <MaterialIcons name={iconName} size={size} color={color} />;
         },
       })}
