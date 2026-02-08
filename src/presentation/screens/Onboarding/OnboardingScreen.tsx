@@ -41,7 +41,7 @@ export const OnboardingScreen: React.FC<any> = ({ navigation }) => {
         key: "insights",
         title: t("onboarding.slides.insights.title"),
         subtitle: t("onboarding.slides.insights.subtitle"),
-        image: require("../../../../public/assets/images/icons/Gráfico pizza.png"),
+        image: require("../../../../public/assets/images/banners/register.png"),
       },
       {
         key: "login",
