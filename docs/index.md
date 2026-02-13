@@ -49,3 +49,12 @@ Documentação sobre a implementação das telas do aplicativo e padrões de nav
 Guias e detalhes sobre a integração com os serviços do Firebase.
 
 -   [Visão Geral do Firebase](./firebase/index.md)
+
+## Testes
+
+Os testes unitários são executados com **Vitest** e cobrem os stores (Tasks, Pomodoro, Focus Mode, Accessibility, Chat) e o `FirebaseTaskRepository`.
+
+- `npm run test:run` — executa todas as suítes
+- `npm run test:coverage` — relatório opcional de cobertura
+- `npm run typecheck` — garante consistência de tipos
+- [Guia completo de testes](./testing/index.md)

@@ -53,7 +53,7 @@ Referências: [https://rnfirebase.io/crashlytics/usage](https://rnfirebase.io/cr
 **Uso**: métricas de latência e uso de rede.
 
 1. Instale `@react-native-firebase/perf`.
-2. Crie um helper para iniciar traces (`perf().newTrace('fetch_transactions')`).
+2. Crie um helper para iniciar traces (`perf().newTrace('fetch_tasks')`).
 3. Utilize nas camadas Data (ex.: envolver chamada Firestore) para medir tempo de resposta.
 
 Referências: [https://rnfirebase.io/perf/usage](https://rnfirebase.io/perf/usage)

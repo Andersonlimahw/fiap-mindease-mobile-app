@@ -20,7 +20,7 @@ No Firebase Console habilite o Storage e configure as regras (por exemplo, restr
    export interface File {
      id: string;
      userId: string;
-     transactionId: string;
+     recordId: string;
      downloadUrl: string;
      sizeInBytes: number;
      mimeType: string;
@@ -34,11 +34,11 @@ No Firebase Console habilite o Storage e configure as regras (por exemplo, restr
    export interface FileRepository {
      upload(params: {
        userId: string;
-       transactionId: string;
+       recordId: string;
        fileUri: string;
        mimeType?: string;
      }): Promise<File>;
-     listByTransaction(userId: string, transactionId: string): Promise<File[]>;
+     listByRecord(userId: string, recordId: string): Promise<File[]>;
      remove(file: File): Promise<void>;
      getDownloadUrl(file: File): Promise<string>;
    }
@@ -68,8 +68,8 @@ import type { FileRepository } from "@domain/repositories/FileRepository";
 import type { File } from "@domain/entities/File";
 import { FirebaseAPI } from "../../infrastructure/firebase/firebase";
 
-function filePath(userId: string, transactionId: string, filename: string) {
-  return `files/${userId}/${transactionId}/${filename}`;
+function filePath(userId: string, recordId: string, filename: string) {
+  return `files/${userId}/${recordId}/${filename}`;
 }
 
 export class FirebaseFileRepository implements FileRepository {
@@ -81,17 +81,17 @@ export class FirebaseFileRepository implements FileRepository {
 
   async upload({
     userId,
-    transactionId,
+    recordId,
     fileUri,
     mimeType,
   }: {
     userId: string;
-    transactionId: string;
+    recordId: string;
     fileUri: string;
     mimeType?: string;
   }): Promise<File> {
     const filename = fileUri.split("/").pop() ?? `file-${Date.now()}.jpg`;
-    const path = filePath(userId, transactionId, filename);
+    const path = filePath(userId, recordId, filename);
 
     if (Platform.OS === "web") {
       const response = await fetch(fileUri);
@@ -103,7 +103,7 @@ export class FirebaseFileRepository implements FileRepository {
       return {
         id: path,
         userId,
-        transactionId,
+        recordId,
         downloadUrl,
         sizeInBytes: task.totalBytes,
         mimeType: metadata?.contentType ?? blob.type,
@@ -119,7 +119,7 @@ export class FirebaseFileRepository implements FileRepository {
     return {
       id: path,
       userId,
-      transactionId,
+      recordId,
       downloadUrl,
       sizeInBytes: result.totalBytes,
       mimeType:
@@ -128,11 +128,11 @@ export class FirebaseFileRepository implements FileRepository {
     };
   }
 
-  async listByTransaction(
+  async listByRecord(
     userId: string,
-    transactionId: string
+    recordId: string
   ): Promise<File[]> {
-    const prefix = `files/${userId}/${transactionId}`;
+    const prefix = `files/${userId}/${recordId}`;
     if (Platform.OS === "web") {
       const storageRef = ref(this.webStorage(), prefix);
       const { items } = await listAll(storageRef);
@@ -142,7 +142,7 @@ export class FirebaseFileRepository implements FileRepository {
         results.push({
           id: item.fullPath,
           userId,
-          transactionId,
+          recordId,
           downloadUrl,
           sizeInBytes: 0,
           mimeType: "application/octet-stream",
@@ -160,7 +160,7 @@ export class FirebaseFileRepository implements FileRepository {
       files.push({
         id: item.fullPath,
         userId,
-        transactionId,
+        recordId,
         downloadUrl,
         sizeInBytes: metadata.size ?? 0,
         mimeType: metadata.contentType ?? "application/octet-stream",
@@ -203,7 +203,7 @@ Implemente `src/data/mock/MockFileRepository.ts` anotando uploads em memória e 
 2. Crie `useFilesViewModel`:
 
    ```ts
-   export function useFilesViewModel(transactionId: string) {
+   export function useFilesViewModel(recordId: string) {
      const { user } = useAuth();
      const di = useDI();
      const repo = useMemo(
@@ -216,24 +216,24 @@ Implemente `src/data/mock/MockFileRepository.ts` anotando uploads em memória e 
      const refresh = useCallback(async () => {
        if (!user) return;
        setLoading(true);
-       const list = await repo.listByTransaction(user.id, transactionId);
+       const list = await repo.listByRecord(user.id, recordId);
        setFiles(list);
        setLoading(false);
-     }, [repo, user, transactionId]);
+     }, [repo, user, recordId]);
 
      const upload = useCallback(
        async (fileUri: string, mimeType?: string) => {
          if (!user) throw new Error("User not authenticated");
          const file = await repo.upload({
            userId: user.id,
-           transactionId,
+           recordId,
            fileUri,
            mimeType,
          });
          setFiles((prev) => [file, ...prev]);
          return file;
        },
-       [repo, user, transactionId]
+       [repo, user, recordId]
      );
 
      const remove = useCallback(
@@ -252,7 +252,7 @@ Implemente `src/data/mock/MockFileRepository.ts` anotando uploads em memória e 
    }
    ```
 
-3. Conecte o ViewModel a um componente em `src/presentation/screens/Transactions/FileUploader.tsx` (por exemplo) para exibir previews e botões de upload.
+3. Conecte o ViewModel a um componente em `src/presentation/screens/Records/FileUploader.tsx` (por exemplo) para exibir previews e botões de upload.
 
 ## 6. UI e permissões
 
@@ -268,7 +268,7 @@ Exemplo básico (Firebase Console → Storage Rules):
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    match /files/{userId}/{transactionId}/{allPaths=**} {
+    match /files/{userId}/{recordId}/{allPaths=**} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
   }

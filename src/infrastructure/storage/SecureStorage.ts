@@ -211,22 +211,15 @@ export const StorageKeys = {
 
   // User data (cached)
   USER_PROFILE: 'user_profile',
-  USER_BALANCE: 'user_balance',
-  RECENT_TRANSACTIONS: 'recent_transactions',
-
-  // PIX
-  PIX_KEYS: 'pix_keys',
-  PIX_FAVORITES: 'pix_favorites',
+  TASKS_CACHE: 'tasks_cache',
+  FOCUS_STATS: 'focus_stats',
 
   // Preferences
   THEME_MODE: 'theme_mode',
-  THEME_BRAND: 'theme_brand',
   LANGUAGE: 'language',
   ONBOARDING_COMPLETED: 'onboarding_completed',
 
   // Cache
-  INVESTMENTS_CACHE: 'investments_cache',
-  CURRENCY_CACHE: 'currency_cache',
   CACHE_TIMESTAMP: 'cache_timestamp',
 } as const;
 

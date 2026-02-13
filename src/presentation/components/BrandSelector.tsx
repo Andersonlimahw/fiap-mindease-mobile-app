@@ -1,13 +1,19 @@
 import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { BrandLogo } from '@components/BrandLogo';
-import { useTheme, useThemeActions, BrandId } from '@presentation/theme/theme';
-import { getAvailableBrands } from '@presentation/theme/theme';
+import {
+  useTheme,
+  useThemeActions,
+  BrandId,
+  getAvailableBrands,
+} from '@presentation/theme/theme';
 import { useI18n } from '@presentation/i18n/I18nProvider';
 
-type Props = { compact?: boolean };
+type Props = {
+  compact?: boolean;
+};
 
-export const BrandSelector: React.FC<Props> = ({ compact = false }) => {
+export function BrandSelector({ compact = false }: Props) {
   const theme = useTheme();
   const { setBrand } = useThemeActions();
   const brands = useMemo(() => getAvailableBrands(), []);
@@ -28,34 +34,38 @@ export const BrandSelector: React.FC<Props> = ({ compact = false }) => {
           backgroundColor: theme.colors.surface,
         },
         chipActive: { borderColor: theme.colors.primary },
-        chipText: { marginLeft: 8, color: theme.colors.text, fontFamily: theme.fonts.medium },
+        chipText: {
+          marginLeft: 8,
+          color: theme.colors.text,
+          fontFamily: theme.fonts.medium,
+        },
         spacer: { width: 12 },
       }),
     [theme]
   );
 
-  const displayName = (id: BrandId) => {
-    // Prefer theme-specific logoText when active brand, otherwise title-case id
-    if (id === theme.brand) return theme.logoText;
-    return id.replace(/(^|[-_])(\w)/g, (_, __, c) => c.toUpperCase());
+  const getLabel = (brand: BrandId) => {
+    if (brand === 'mindease') return 'MindEase';
+    if (brand === 'neon') return 'Neon';
+    return brand;
   };
 
   return (
     <View style={styles.row}>
-      {brands.map((b, i) => (
-        <React.Fragment key={b}>
+      {brands.map((brand, idx) => (
+        <React.Fragment key={brand}>
           <TouchableOpacity
-            onPress={() => setBrand(b)}
-            style={[styles.chip, b === theme.brand && styles.chipActive]}
+            onPress={() => setBrand(brand)}
+            style={[styles.chip, brand === theme.brand && styles.chipActive]}
             accessibilityRole="button"
-            accessibilityLabel={`${t('common.selectBrand')}: ${b}`}
+            accessibilityLabel={`${t('common.selectBrand')}: ${getLabel(brand)}`}
           >
-            <BrandLogo size={compact ? 20 : 28} brand={b} mode={theme.mode} />
-            {!compact && <Text style={styles.chipText}>{displayName(b)}</Text>}
+            <BrandLogo size={compact ? 20 : 28} brand={brand} mode={theme.mode} />
+            {!compact && <Text style={styles.chipText}>{getLabel(brand)}</Text>}
           </TouchableOpacity>
-          {i < brands.length - 1 && <View style={styles.spacer} />}
+          {idx < brands.length - 1 && <View style={styles.spacer} />}
         </React.Fragment>
       ))}
     </View>
   );
-};
+}

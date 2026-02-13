@@ -6,7 +6,7 @@ import {
 
 type RootStackParamList = {
   Login: undefined;
-  Back: undefined;
+  App: undefined;
   // Add other screen names and their params here
   [key: string]: object | undefined;
 };
@@ -64,7 +64,7 @@ export function goToLogin(navigation: NavigationType): void {
  */
 export function goToHome(navigation: NavigationType): void {
   try {
-    navigation.navigate("Back");
+    navigation.navigate("App");
   } catch (error) {
     console.error("Failed to navigate to home:", error);
   }

@@ -23,12 +23,6 @@ export const UserScreen: React.FC<any> = () => {
   const { toggleMode } = useThemeActions();
   const styles = useMemo(() => makeUserStyles(theme), [theme]);
 
-  const accountNumber = useMemo(() => {
-    const id = user?.id || "000000";
-    const numeric = id.replace(/\D/g, "").padEnd(8, "0").slice(0, 8);
-    return `${numeric.slice(0, 4)}-${numeric.slice(4)}`;
-  }, [user?.id]);
-
   return (
     <ScrollView
       style={styles.container}
@@ -67,11 +61,6 @@ export const UserScreen: React.FC<any> = () => {
           </View>
           <View style={styles.divider} />
           <View style={styles.row}>
-            <Text style={styles.label}>{t("user.account")}</Text>
-            <Text style={styles.value}>{accountNumber}</Text>
-          </View>
-          <View style={styles.divider} />
-          <View style={styles.row}>
             <Text style={styles.label}>{t("user.appVersion")}</Text>
             <Text style={styles.value}>{version}</Text>
           </View>
@@ -83,7 +72,7 @@ export const UserScreen: React.FC<any> = () => {
         <View style={styles.card}>
           <TouchableOpacity
             style={styles.row}
-            onPress={() => Linking.openURL("mailto:suporte@mindease .app")}
+            onPress={() => Linking.openURL("mailto:suporte@mindease.app")}
           >
             <Text style={styles.label}>{t("user.supportContact")}</Text>
             <Text style={styles.link}>{t("user.sendEmail")}</Text>
@@ -93,7 +82,7 @@ export const UserScreen: React.FC<any> = () => {
             style={styles.row}
             onPress={() =>
               Linking.openURL(
-                "https://shell-projeto-mindease -gp-30.vercel.app/home"
+                "https://shell-projeto-mindease-gp-30.vercel.app/home"
               )
             }
           >
@@ -105,7 +94,7 @@ export const UserScreen: React.FC<any> = () => {
             style={styles.row}
             onPress={() =>
               Linking.openURL(
-                "https://shell-projeto-mindease -gp-30.vercel.app/home"
+                "https://shell-projeto-mindease-gp-30.vercel.app/home"
               )
             }
           >
@@ -129,7 +118,7 @@ export const UserScreen: React.FC<any> = () => {
           <View style={styles.divider} />
           <View style={styles.row}>
             <Text style={styles.label}>{t("user.brand")}</Text>
-            <BrandSelector />
+            <BrandSelector compact />
           </View>
         </View>
       </View>

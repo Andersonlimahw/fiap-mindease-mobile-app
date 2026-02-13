@@ -34,11 +34,10 @@ Edite `src/presentation/navigation/types.ts` e adicione a rota `WebView` no `Roo
 
 ```ts
 export type RootStackParamList = {
-  Back: undefined;
+  App: undefined;
   User: undefined;
-  Tasks: undefined;
-  DigitalCards: undefined;
-  AddTransaction: { transactionId?: string };
+  Accessibility: undefined;
+  ContentReader: undefined;
   WebView: {
     url?: string; // URL completa OU será montada via baseUrl + queryParams
     baseUrl?: string; // opcional, caso prefira montar com base
@@ -273,4 +272,3 @@ sequenceDiagram
 - Use títulos claros (`title`) e mantenha contraste adequado nas cores via `useTheme()`.
 - Exiba progresso durante o carregamento (já incluso).
 - No Android, respeite o botão físico de voltar (já incluso).
-

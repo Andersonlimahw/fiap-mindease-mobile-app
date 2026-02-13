@@ -40,6 +40,7 @@ export const HomeScreen: React.FC<any> = ({ navigation }) => {
       { key: "pomodoro", label: t("home.pomodoro"), icon: "timer", color: "#DC2626", route: "Pomodoro" },
       { key: "focus", label: t("home.focus"), icon: "self-improvement", color: "#8B5CF6", route: "FocusMode" },
       { key: "chat", label: t("home.chat"), icon: "chat", color: "#2563EB", route: "Chat" },
+      { key: "reader", label: t("home.reader"), icon: "menu-book", color: "#0891B2", route: "ContentReader" },
       { key: "accessibility", label: t("home.accessibility"), icon: "accessibility", color: "#6366F1", route: "Accessibility" },
     ],
     [t]

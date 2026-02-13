@@ -23,13 +23,13 @@ export function useFileViewModel() {
     console.log(
       "uploadFile: File ViewModel User => ",
       user.id,
-      "uploading file for transaction ",
-      input.transactionId
+      "uploading file for record ",
+      input.recordId
     );
 
     const file = await repo.upload({
       userId: user.id,
-      transactionId: input.transactionId != "" ? input.transactionId : user.id,
+      recordId: input.recordId != "" ? input.recordId : user.id,
       fileUri: input.fileUri,
       fileName: input.fileName,
       mimeType: input.mimeType,
@@ -49,10 +49,10 @@ export function useFileViewModel() {
   );
 
   const refresh = useCallback(
-    async (transactionId: string) => {
+    async (recordId: string) => {
       if (!user) return;
       setLoading(true);
-      const list = await repo.listByTransaction(user.id, transactionId);
+      const list = await repo.listByRecord(user.id, recordId);
       setFiles(list);
       setLoading(false);
     },

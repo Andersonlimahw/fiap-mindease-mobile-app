@@ -22,10 +22,9 @@ graph LR
   C --> D[AppStack]
   D --> E[Tabs]
   D --> F[User]
-  D --> G[Tasks]
-  D --> H[DigitalCards]
-  D --> I[AddTransaction]
-  D --> J[WebView (nova)]
+  D --> G[Accessibility]
+  D --> H[ContentReader]
+  D --> I[WebView (nova)]
 ```
 
 ## Segurança por padrão
@@ -33,4 +32,3 @@ graph LR
 - Apenas `https` permitido se não houver `allowDomains`.
 - Whitelist de domínios via `allowDomains`.
 - Conteúdo em `http` é desencorajado (use ATS e `https`).
-

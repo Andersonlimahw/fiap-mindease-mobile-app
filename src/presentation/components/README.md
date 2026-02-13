@@ -8,15 +8,15 @@ By creating a library of reusable components, we can ensure a consistent look an
 
 - **`Avatar`:** Displays a user's avatar or a default image.
 - **`BrandLogo`:** Displays the application's logo.
-- **`BrandSelector`:** Allows the user to select a brand.
+- **`BrandSelector`:** Allows switching between MindEase and Neon palettes.
 - **`Button`:** A customizable button component.
-- **`DigitalCard`:** Displays a digital card with a flip animation.
-- **`EmptyStateBanner`:** A banner that is displayed when there is no data to show.
+- **`FileUploader`:** Handles file selection/upload in staged or bound mode.
+- **`EmptyStateBanner`:** A banner shown when there is no data to present.
 - **`Input`:** A customizable text input component.
-- **`QuickAction`:** A button with an icon and a label.
+- **`QuickAction`:** A button with an icon and a label for the Home shortcuts.
 - **`Skeleton`:** A component that displays a placeholder loading animation.
 - **`SwipeableRow`:** A row that can be swiped to reveal actions.
-- **`TransactionItem`:** Displays a single transaction.
+- **`TaskItem`:** Displays a task row with priority indicators.
 - **`charts/HorizontalBarChart`:** A horizontal bar chart.
 
 ### Mermaid Diagram: Component Hierarchy
@@ -25,11 +25,11 @@ Here is a diagram that illustrates the component hierarchy:
 
 ```mermaid
 graph TD
-    A[Screen] --> B(Container);
-    B --> C{Avatar};
-    B --> D{Button};
-    B --> E{DigitalCard};
-    B --> F{Input};
-    B --> G{TransactionItem};
-    G --> H{SwipeableRow};
+    A[Screen] --> B(Container)
+    B --> C{Avatar}
+    B --> D{Button}
+    B --> E{FileUploader}
+    B --> F{Input}
+    B --> G{TaskItem}
+    G --> H{SwipeableRow}
 ```

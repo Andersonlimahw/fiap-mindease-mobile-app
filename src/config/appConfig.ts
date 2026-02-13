@@ -24,9 +24,6 @@ type AppConfigType = {
   // Firebase
   firebase: FirebaseConfig;
 
-  // External APIs
-  brapiToken: string;
-
   // AI / Ollama
   ollamaUrl: string;
 
@@ -120,9 +117,6 @@ const AppConfig: AppConfigType = {
 
   // Firebase
   firebase: firebaseConfig,
-
-  // External APIs
-  brapiToken: getEnv('BRAPI_TOKEN', 'p6j38bVSefgui6rCkjcCpT'),
 
   // AI / Ollama
   ollamaUrl: getEnv('OLLAMA_URL', 'http://localhost:11434'),

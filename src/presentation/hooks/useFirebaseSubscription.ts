@@ -22,13 +22,13 @@ type SubscriptionOptions = {
  * @example
  * // Subscription simples
  * useFirebaseSubscription(
- *   () => repo.subscribeRecent(userId, 10, setTransactions),
+ *   () => repo.subscribeRecent(userId, 10, setItems),
  *   [userId]
  * );
  *
  * // Com opções
  * useFirebaseSubscription(
- *   () => repo.subscribeRecent(userId, 10, setTransactions),
+ *   () => repo.subscribeRecent(userId, 10, setItems),
  *   [userId],
  *   {
  *     enabled: !!userId,
@@ -106,8 +106,8 @@ export function useFirebaseSubscription(
  * const { addSubscription, clearAll } = useFirebaseSubscriptions();
  *
  * useEffect(() => {
- *   addSubscription('transactions', repo.subscribeRecent(userId, 10, setTx));
- *   addSubscription('balance', repo.subscribeBalance(userId, setBal));
+ *   addSubscription('tasks', repo.subscribeRecent(userId, 10, setTasks));
+ *   addSubscription('focus', repo.subscribeFocus(userId, setFocus));
  * }, [userId]);
  */
 export function useFirebaseSubscriptions() {

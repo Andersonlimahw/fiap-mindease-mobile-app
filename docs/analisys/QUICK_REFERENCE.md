@@ -22,7 +22,7 @@
 | **Code Files** | 113 TypeScript/TSX files |
 | **Screens** | 11 main screens |
 | **Languages** | Portuguese, English, Spanish |
-| **Themes** | MindEase, HelioBank (dark/light) |
+| **Themes** | MindEase & Neon (light/dark) |
 | **App Type** | Productivity & Wellness |
 
 ---
@@ -33,11 +33,11 @@
 PRESENTATION (UI Layer)
   ↓ Views, Screens, Components, Navigation
 VIEWMODEL (Logic Hooks)
-  ↓ useHomeViewModel, useExtractViewModel, etc.
+  ↓ useAuthViewModel, useFileViewModel
 STATE MANAGEMENT (Zustand)
   ↓ authStore, themeStore, diStore
 APPLICATION (Use Cases)
-  ↓ GetTasks, SignOut, GetPomodoroStats
+  ↓ SignInWithProvider, SignOut
 DOMAIN (Business Logic)
   ↓ Entities: User, Task, PomodoroSession, FocusSession, ChatMessage
 DATA (Repository Implementations)
@@ -71,16 +71,16 @@ Version: 2 (with migrations)
 #### 2. Theme Store (`src/store/themeStore.ts`)
 ```typescript
 // State
-brand: 'mindease ' | 'heliobank'
+brand: 'mindease' | 'neon'
 mode: 'light' | 'dark'
 
 // Actions
-setBrand(brand)                // Switch brand
-setMode(mode)                  // Toggle theme
+setBrand(brand)                // Switch branding (MindEase/Neon)
+setMode(mode)                  // Define explicit mode
 toggleMode()                   // Light ↔ Dark
 
 // Persistence
-AsyncStorage key: "bb_theme"
+AsyncStorage key: "mindease_theme"
 Dynamic theme generation from brand palettes
 ```
 
@@ -180,7 +180,6 @@ if (AppConfig.useMock) {
 
 ### Customization
 - Dark/Light theme
-- Brand switching (MindEase/HelioBank)
 - 3 languages (PT/EN/ES)
 - Persistent preferences
 
@@ -191,7 +190,7 @@ if (AppConfig.useMock) {
 ### Screen Components
 ```
 src/presentation/screens/
-├── Home/           - Dashboard, quick actions
+├── Home/           - Productivity hub, quick actions
 ├── Tasks/          - Task management with subtasks
 ├── Pomodoro/       - Pomodoro timer
 ├── FocusMode/      - Focus mode with ambient sounds
@@ -205,14 +204,13 @@ src/presentation/screens/
 ```
 src/presentation/components/
 ├── TaskItem                 - Task list item
-├── SubTaskItem              - Subtask checkbox
-├── TimerCircle              - Circular timer display
-├── QuickAction              - Action button
+├── QuickAction              - Home shortcut button
 ├── Avatar                   - User avatar
 ├── SwipeableRow             - Swipe actions
 ├── EmptyStateBanner         - Empty state UI
+├── FileUploader             - Attachments (staged/bound modes)
 ├── ChatBubble               - Chat message bubble
-└── [Others]
+└── Skeleton                 - Loading placeholder
 ```
 
 ### Custom Hooks
@@ -224,13 +222,7 @@ src/presentation/hooks/
 ### ViewModels (Custom Hooks)
 ```
 src/presentation/viewmodels/
-├── useAuthViewModel.ts               - Auth logic
-├── useHomeViewModel.ts               - Home screen
-├── useTasksViewModel.ts              - Task management
-├── usePomodoroViewModel.ts           - Pomodoro timer
-├── useFocusModeViewModel.ts          - Focus mode
-├── useChatViewModel.ts               - AI chat
-├── useAccessibilityViewModel.ts      - Accessibility settings
+├── useAuthViewModel.ts               - Auth logic wrappers
 └── useFileViewModel.ts               - File uploads
 ```
 
@@ -320,17 +312,22 @@ npm run build            # TypeScript compilation
 
 ## Testing Status
 
-| Type | Status | Coverage |
-|------|--------|----------|
-| Unit Tests | ✗ None | 0% |
-| Integration Tests | ✗ None | 0% |
-| E2E Tests | ✗ None | 0% |
-| Type Checking | ✓ Enabled | 100% |
+| Type | Status | Coverage / Notes |
+|------|--------|------------------|
+| Unit Tests | ✓ Active | Zustand stores (tasks, pomodoro, focus, accessibility, chat) + FirebaseTaskRepository |
+| Integration Tests | ✗ Pending | Not implemented yet |
+| E2E Tests | ✗ Pending | Not implemented yet |
+| Type Checking | ✓ Enabled | `npm run typecheck` |
 
-### Recommendations
-- Jest + React Native Testing Library
-- Test ViewModels with mock repositories
-- Detox/Maestro for E2E
+### Commands
+- `npm run test:run` — executa todas as suítes do Vitest
+- `npm run test:coverage` — gera relatório de cobertura (opcional)
+- `npm run typecheck` — validação TypeScript
+
+### Próximos Passos
+- Adicionar testes de UI com React Native Testing Library
+- Automatizar fluxos críticos com Detox ou Maestro para E2E
+- Cobrir ViewModels/usecases em nível de integração
 
 ---
 
@@ -460,7 +457,7 @@ npx expo prebuild --clean
 **Weaknesses:**
 - Security gaps (API token, validation)
 - Performance optimization (caching, images)
-- No testing infrastructure
+- Automated tests restritos a unidade (faltam integração/E2E)
 - No error tracking/monitoring
 - Limited offline support
 

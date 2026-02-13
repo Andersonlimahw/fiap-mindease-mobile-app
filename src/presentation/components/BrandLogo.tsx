@@ -1,8 +1,12 @@
 import React, { useMemo } from "react";
 import { Image, Text, View, StyleSheet, ImageStyle } from "react-native";
-import { useTheme, BrandId, ThemeMode } from "../theme/theme";
+import {
+  useTheme,
+  ThemeMode,
+  BrandId,
+  getBrandLogoText,
+} from "../theme/theme";
 import { brandLogos } from "../theme/brandAssets";
-import { getBrandLogoText } from "@store/themeStore";
 
 type Props = {
   size?: number;
@@ -14,8 +18,8 @@ type Props = {
 export const BrandLogo: React.FC<Props> = ({
   size = 96,
   style,
-  brand,
   mode,
+  brand,
 }) => {
   const theme = useTheme();
   const b = brand ?? theme.brand;

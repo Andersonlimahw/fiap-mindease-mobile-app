@@ -26,13 +26,13 @@
 
   - [ ] ✅ Usar `React.lazy()` para carregar telas sob demanda
   - [ ] ✅ Implementar componente `Suspense` com loading states
-  - [ ] ✅ Aplicar lazy loading nas telas: PIX, Investimentos, Cartões
+  - [ ] ✅ Aplicar lazy loading nas telas principais (Home, Tasks, Pomodoro, Focus, Chat)
   - [ ] ✅ Criar componente de `Loading` reutilizável
   - Arquivo sugerido: `src/presentation/navigation/NavigationStack.tsx`
 
 - [ ] **Implementar pré-carregamento de dados críticos**
-  - [ ] ✅ Pré-carregar saldo e transações recentes ao fazer login
-  - [ ] ✅ Implementar prefetch de dados do dashboard
+  - [ ] ✅ Pré-carregar tarefas e sessões recentes ao fazer login
+  - [ ] ✅ Implementar prefetch de dados do painel de produtividade
   - [ ] ✅ Cache de imagens de perfil e logos
   - Arquivos: `src/presentation/screens/Home/HomeViewModel.ts`
 
@@ -46,10 +46,10 @@
   - [ ] ✅ Estratégia: Cache-First com revalidação em background
   - Arquivo sugerido: `src/infrastructure/cache/CacheManager.ts`
 
-- [ ] **Cache de transações e dados do usuário**
+- [ ] **Cache de dados do usuário**
 
-  - [ ] ✅ Implementar cache local de transações recentes (últimos 30 dias)
-  - [ ] ✅ Cache de saldo com sincronização
+  - [ ] ✅ Implementar cache local de tarefas recentes (últimos 30 dias)
+  - [ ] ✅ Cache de estatísticas com sincronização
   - [ ] ✅ Implementar estratégia de invalidação de cache
   - Arquivos: `src/data/firebase/FirebaseTransactionRepository.ts`
 
@@ -63,10 +63,10 @@
 
 - [ ] **Melhorar performance de listas**
 
-  - [ ] ✅ Implementar `FlashList` no lugar de `FlatList` (transações, PIX)
+  - [ ] ✅ Implementar `FlashList` no lugar de `FlatList` (tarefas, histórico do leitor)
   - [ ] ✅ Adicionar `windowSize` e `maxToRenderPerBatch` otimizados
   - [ ] ✅ Implementar virtualização em listas longas
-  - Arquivos: `src/presentation/screens/Extract/`, `src/presentation/screens/Pix/`
+  - Arquivos: `src/presentation/screens/Tasks/`, `src/presentation/screens/ContentReader/`
 
 - [ ] **Bundle size e otimização de build**
   - [ ] ✅ Analisar bundle size com `npx expo-optimize`
@@ -95,7 +95,7 @@
 - [ ] **Implementar criptografia de dados locais**
 
   - [ ] ✅ Migrar de AsyncStorage para MMKV com encryption
-  - [ ] ✅ Criptografar dados sensíveis: saldo, transações, PIX keys
+  - [ ] ✅ Criptografar dados sensíveis: perfil, arquivos privados e estatísticas
   - [ ] ✅ Usar expo-secure-store para credenciais
   - [ ] ✅ Implementar encryption key rotation
   - Arquivos: `src/infrastructure/storage/SecureStorage.ts`
@@ -114,7 +114,7 @@
   - [ ] ✅ Validar todos os inputs de formulário
   - [ ] ✅ Sanitizar dados antes de enviar ao Firebase
   - [ ] ✅ Implementar validação de CPF/CNPJ
-  - [ ] ✅ Validar chaves PIX (email, telefone, CPF, aleatória)
+  - [ ] ✅ Validar entradas críticas (email, senha, textos livres)
   - Arquivo sugerido: `src/domain/validation/`
 
 
@@ -126,8 +126,8 @@
 
 - [ ] **Implementar debounce/throttle em inputs**
 
-  - [ ] ✅ Search bar de transações (Extract)
-  - [ ] ✅ Busca de favoritos PIX
+  - [ ] ✅ Search bar de tarefas
+  - [ ] ✅ Ajustar debounce em buscas (tarefas, conteúdo)
   - [ ] ✅ Filtros de categoria
   - Arquivo: `src/presentation/screens/Extract/ExtractScreen.tsx`
 
@@ -185,7 +185,7 @@
   - [ ] Demonstrar login com google
   - [ ] Mostrar melhorias de performance (tempo de carregamento)
   - [ ] Demonstrar features principais funcionando
-  - [ ] Mostrar transações em tempo real
+  - [ ] Destacar produtividade em tempo real (tarefas/pomodoro)
   - [ ] Destacar arquitetura MVVM + Clean Architecture
   - [ ] Mencionar segurança implementada
   - ⚠️ **Requisito obrigatório da entrega**

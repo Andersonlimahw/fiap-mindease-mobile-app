@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, useEffect, use } from "react";
+import React, { useCallback, useMemo, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -24,13 +24,13 @@ type Mode = "staged" | "bound";
 
 export type FileUploaderProps = {
   /**
-   * 'staged': coleta arquivos antes de existir transactionId e expõe via onStagedChange
-   * 'bound' : já existe transactionId e o componente lista/enrola uploads/remover/abrir
+   * 'staged': coleta arquivos antes de existir recordId e expõe via onStagedChange
+   * 'bound' : já existe recordId e o componente lista/enrola uploads/remover/abrir
    */
   mode: Mode;
 
   /** Necessário em modo 'bound' */
-  transactionId?: string;
+  recordId?: string;
 
   /** Chamado quando a lista local (staged) é alterada (modo 'staged') */
   onStagedChange?: (files: PickedFile[]) => void;
@@ -47,7 +47,7 @@ export type FileUploaderProps = {
 
 export const FileUploader: React.FC<FileUploaderProps> = ({
   mode,
-  transactionId,
+  recordId,
   onStagedChange,
   maxFiles = 10,
   disabled,
@@ -69,9 +69,9 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
   }, [mode, picked, onStagedChange]);
 
   useEffect(() => {
-    if (!transactionId || mode !== "bound") return;
-    fileVM.refresh(transactionId!);
-  }, [fileVM.refresh, transactionId]);
+    if (!recordId || mode !== "bound") return;
+    fileVM.refresh(recordId!);
+  }, [fileVM.refresh, recordId]);
 
   const handleDocumentPicking = useCallback(async () => {
     try {
@@ -107,14 +107,14 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
       if (mode === "staged" && fileVM.user) {
         // In staged mode, just store locally for later upload
         console.log("handleDocumentPicking: staged mode - files stored locally");
-      } else if (mode === "bound" && transactionId && fileVM.user) {
+      } else if (mode === "bound" && recordId && fileVM.user) {
         // In bound mode, upload immediately
         console.log("handleDocumentPicking: bound mode - uploading immediately");
         setUploading(true);
         for (const f of mapped) {
           try {
             await fileVM.uploadFile({
-              transactionId,
+              recordId,
               fileUri: f.uri,
               fileName: f.name,
               mimeType: f.type || undefined,
@@ -127,7 +127,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
         }
         setUploading(false);
         // Refresh the file list
-        fileVM.refresh(transactionId);
+        fileVM.refresh(recordId);
       }
     } catch (err: any) {
       console.error("handleDocumentPicking: error", err);
@@ -136,7 +136,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
         err?.message || "Falha ao selecionar arquivos"
       );
     }
-  }, [disabled, picked, maxFiles, mode, transactionId, fileVM, t]);
+  }, [disabled, picked, maxFiles, mode, recordId, fileVM, t]);
 
   const removeLocal = useCallback(
     (index: number) => {
@@ -204,7 +204,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
   const titleLabel = title ?? t("files.title");
   useEffect(() => {
     pingStorage();
-  }, [picked, transactionId, uploading]);
+  }, [picked, recordId, uploading]);
 
   return (
     <View
@@ -240,7 +240,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
         </View>
       )}
 
-      {/* STAGED: aguardando salvar transação */}
+      {/* STAGED: aguardando salvar o registro principal */}
       {mode === "staged" && picked.length > 0 && (
         <>
           <Text style={styles.sectionLabel}>{t("files.pendingToUpload")}</Text>
@@ -278,7 +278,7 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
         </>
       )}
 
-      {/* BOUND: já enviados no Storage (gerenciados pelo VM — exige transactionId) */}
+      {/* BOUND: já enviados no Storage (gerenciados pelo VM — exige recordId) */}
       {mode === "bound" && fileVM.files.length > 0 && (
         <>
           <Text style={styles.sectionLabel}>{t("files.alreadyUploaded")}</Text>

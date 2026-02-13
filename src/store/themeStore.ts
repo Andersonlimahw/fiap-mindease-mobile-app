@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AppConfig from '../config/appConfig';
 
 export type ThemeMode = 'light' | 'dark';
-export type BrandId = 'mindease' | 'heliobank';
+export type BrandId = 'mindease' | 'neon';
 
 export type ThemeColors = {
   primary: string;
@@ -69,7 +69,7 @@ const brandPalettes: Record<BrandId, BrandPalette> = {
     },
     logoText: 'MindEase',
   },
-  heliobank: {
+  neon: {
     light: {
       primary: '#0EA5E9',
       background: '#ffffff',
@@ -96,12 +96,7 @@ const brandPalettes: Record<BrandId, BrandPalette> = {
       danger: '#FB7185',
       accent: '#67E8F9',
     },
-    fonts: Platform.select({
-      ios: { regular: 'System', medium: 'System', bold: 'System' },
-      android: { regular: 'Roboto', medium: 'Roboto-Medium', bold: 'Roboto-Bold' },
-      default: { regular: 'System', medium: 'System', bold: 'System' },
-    }) as AppTheme['fonts'],
-    logoText: 'HelioBank',
+    logoText: 'Neon',
   },
 };
 
@@ -110,7 +105,7 @@ export function getAvailableBrands(): BrandId[] {
 }
 
 export function getBrandLogoText(brand: BrandId): string {
-  return brandPalettes[brand]?.logoText || 'App';
+  return brandPalettes[brand]?.logoText || 'MindEase';
 }
 
 function buildTheme(brand: BrandId, mode: ThemeMode): AppTheme {
@@ -122,7 +117,7 @@ function buildTheme(brand: BrandId, mode: ThemeMode): AppTheme {
   }) as AppTheme['fonts'];
 
   const fonts = { ...defaultFonts, ...(brandPalettes[brand].fonts || {}) };
-  const logoText = brandPalettes[brand].logoText || 'App';
+  const logoText = getBrandLogoText(brand);
 
   return {
     brand,
@@ -144,11 +139,13 @@ type ThemeState = {
   toggleMode: () => void;
 };
 
+const DEFAULT_BRAND: BrandId = 'mindease';
+
 export const useThemeStore = create<ThemeState>()(
   devtools(
     persist(
       (set, get) => ({
-        brand: ((AppConfig as any)?.appearance?.brand as BrandId) || 'mindease',
+        brand: ((AppConfig as any)?.appearance?.brand as BrandId) || DEFAULT_BRAND,
         mode: ((AppConfig as any)?.appearance?.mode as ThemeMode) || 'light',
         setBrand: (brand) => set({ brand }),
         setMode: (mode) => set({ mode }),

@@ -2,22 +2,22 @@ import type { File } from "@domain/entities/File";
 
 export type UploadFileInput = {
   userId: string;
-  transactionId: string;
+  recordId: string;
   fileUri: string;
   mimeType?: string;
   fileName?: string;
 };
 
-export type ListByTransactionInput = {
+export type ListByRecordInput = {
   userId: string;
-  transactionId: string;
+  recordId: string;
 };
 
-export type GetDownloadUrlInput = ListByTransactionInput;
+export type GetDownloadUrlInput = ListByRecordInput;
 
 export interface FileRepository {
   upload(input: UploadFileInput): Promise<File>;
-  listByTransaction(userId: string, transactionId: string): Promise<File[]>;
+  listByRecord(userId: string, recordId: string): Promise<File[]>;
   delete(input: File): Promise<void>;
   getDownloadUrl(input: File): Promise<string>;
 }

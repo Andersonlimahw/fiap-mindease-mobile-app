@@ -6,14 +6,13 @@ type BrandLogos = Record<
   Partial<Record<ThemeMode, ImageSourcePropType>>
 >;
 
-// Map static assets per brand/mode. If an entry is missing, the UI will
-// gracefully fall back to rendering `theme.logoText` instead of an image.
+// Map static assets per brand/mode. When an entry is missing, the UI gracefully
+// falls back to using `theme.logoText` instead of an image.
 export const brandLogos: BrandLogos = {
   mindease: {
     light: require("../../../public/assets/images/icons/Logo.png"),
-    // dark: provide a dark variant if available
   },
-  heliobank: {
-    // No custom image provided; falls back to text logo
+  neon: {
+    // Provide a logo if available; otherwise the UI will render the brand name
   },
 };

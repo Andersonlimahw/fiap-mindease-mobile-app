@@ -6,6 +6,10 @@ export type {
   ThemeColors,
   BrandId,
 } from "@store/themeStore";
-export { useTheme, useThemeActions } from "@store/themeStore";
-export { getNavigationTheme } from "@store/themeStore";
-export { getAvailableBrands } from "@store/themeStore";
+export {
+  useTheme,
+  useThemeActions,
+  getAvailableBrands,
+  getBrandLogoText,
+  getNavigationTheme,
+} from "@store/themeStore";

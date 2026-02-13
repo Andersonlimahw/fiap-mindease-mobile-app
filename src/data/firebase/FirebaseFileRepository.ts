@@ -1,27 +1,23 @@
 import { Platform } from "react-native";
 import storage, { TaskState } from "@react-native-firebase/storage";
 import type { File } from "@domain/entities/File";
-import {
-  FileRepository,
-  UploadFileInput,
-  ListByTransactionInput,
-} from "@app/domain/repositories/FileRepository";
+import { FileRepository, UploadFileInput } from "@app/domain/repositories/FileRepository";
 import { cacheDirectory, makeDirectoryAsync, copyAsync, getInfoAsync } from "expo-file-system/legacy";
 
 type GetFilePathInput = {
   userId: string;
-  transactionId: string;
+  recordId: string;
   fileName: string; // passe "" quando quiser o prefixo da pasta
 };
 
 export function getFilePath({
   userId,
-  transactionId,
+  recordId,
   fileName,
 }: GetFilePathInput) {
-  const tx = transactionId || Date.now().toString();
+  const tx = recordId || Date.now().toString();
   // use directories (no leading slash)
-  const base = `mindease -files/users/${userId}/transactions/${tx}`;
+  const base = `mindease -files/users/${userId}/records/${tx}`;
   // when fileName === "" return only the directory prefix
   return fileName ? `${base}/${fileName}` : base;
 }
@@ -83,10 +79,10 @@ export class FirebaseFileRepository implements FileRepository {
     console.log("FirebaseFileRepository.upload started with input:", input);
 
     try {
-      const { userId, transactionId, fileUri, mimeType: mime, fileName } = input;
+      const { userId, recordId, fileUri, mimeType: mime, fileName } = input;
 
-      if (!userId || !transactionId || !fileUri) {
-        throw new Error(`Missing required parameters: userId=${userId}, transactionId=${transactionId}, fileUri=${fileUri}`);
+      if (!userId || !recordId || !fileUri) {
+        throw new Error(`Missing required parameters: userId=${userId}, recordId=${recordId}, fileUri=${fileUri}`);
       }
 
       const localUri = await ensureLocalReadableFile(fileUri, fileName || "file");
@@ -97,7 +93,7 @@ export class FirebaseFileRepository implements FileRepository {
         .replace(/_+/g, '_')
         .replace(/^_|_$/g, '');
 
-      const objectPath = `mindease -files/users/${userId}/transactions/${transactionId}/${sanitizedFileName}`;
+      const objectPath = `mindease -files/users/${userId}/records/${recordId}/${sanitizedFileName}`;
 
       // Prepare file path for putFile - RNFirebase expects local file path without file:// prefix
       let filePath = localUri;
@@ -191,7 +187,7 @@ export class FirebaseFileRepository implements FileRepository {
       const resultFile: File = {
         id: downloadUrl,
         userId,
-        transactionId,
+        recordId,
         downloadUrl,
         sizeInBytes: 0,
         mimeType: mime || "application/octet-stream",
@@ -216,11 +212,11 @@ export class FirebaseFileRepository implements FileRepository {
     }
   }
 
-  async listByTransaction(userId: string, transactionId: string): Promise<File[]> {
+  async listByRecord(userId: string, recordId: string): Promise<File[]> {
     try {
       const prefix = getFilePath({
         userId,
-        transactionId,
+        recordId,
         fileName: "",
       });
       const dirRef = storage().ref(prefix);
@@ -243,7 +239,7 @@ export class FirebaseFileRepository implements FileRepository {
         files.push({
           id: item.fullPath,
           userId,
-          transactionId,
+          recordId,
           downloadUrl,
           sizeInBytes: (metadata as any)?.size ?? 0,
           mimeType:

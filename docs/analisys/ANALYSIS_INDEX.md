@@ -74,7 +74,7 @@ High-level summary covering:
 - Features: A
 - Performance: B-
 - Security: C+
-- Testing: D
+- Testing: C
 - Documentation: B+
 
 ---
@@ -152,7 +152,7 @@ Strengths:
 Weaknesses:
 - Security vulnerabilities (API token exposure)
 - Performance gaps (no caching)
-- No testing infrastructure
+- Testes automatizados restritos a unidade (falta integração/E2E)
 - Limited error tracking
 
 ---
@@ -192,7 +192,7 @@ Weaknesses:
 - Read: CODEBASE_ANALYSIS.md section 11
 - Check: QUICK_REFERENCE.md testing status
 - Review: Repository pattern for unit test setup
-- Implement: Jest + React Native Testing Library
+- Expand: React Native Testing Library & Detox on top of the Vitest suites
 
 ---
 
@@ -211,7 +211,7 @@ Weaknesses:
 8. Implement retry logic with exponential backoff
 
 ### Medium Priority (NICE TO HAVE) - 1-2 weeks
-9. Set up Jest testing infrastructure
+9. Expand automated testing (React Native Testing Library / Detox)
 10. Optimize images (banner, icons)
 11. Implement offline support
 12. Add Firebase Analytics
@@ -240,7 +240,7 @@ Weaknesses:
 - Authentication providers: 3 (Google, Apple, Anonymous)
 - Main features: 6 (Tasks, Pomodoro, Focus Mode, AI Chat, Accessibility, User)
 - Languages supported: 3 (Portuguese, English, Spanish)
-- Themes: 2 with dark/light modes (MindEase, HelioBank)
+- Themes: MindEase & Neon palettes (light/dark)
 - Real-time capabilities: Yes (Firebase listeners)
 - Offline support: No (gap identified)
 - App Type: Productivity & Wellness
@@ -253,7 +253,7 @@ Weaknesses:
 | Features | 9/10 | A |
 | Performance | 6/10 | B- |
 | Security | 5/10 | C+ |
-| Testing | 4/10 | D |
+| Testing | 6/10 | C |
 | Documentation | 8/10 | B+ |
 | **Overall** | **8.5/10** | **B+** |
 
@@ -321,7 +321,7 @@ fiap-mindease -app/
 **A:** Good OAuth implementation but has critical issues: API token exposed, weak input validation, no biometric auth. See security section.
 
 ### Q: Are there tests?
-**A:** No unit, integration, or E2E tests. Full TypeScript coverage provides some safety.
+**A:** Vitest suites cover the main Zustand stores (Tasks, Pomodoro, Focus Mode, Accessibility, Chat) plus `FirebaseTaskRepository`; integration and E2E automation remain pending.
 
 ### Q: Is it ready for production?
 **A:** Not yet. Security hardening required (API token, input validation). Performance optimization recommended (caching). Testing infrastructure needed.

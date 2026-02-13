@@ -342,7 +342,7 @@ function buildContainer(): Container {
 
 ## 7. ViewModel
 
-Crie `src/presentation/viewmodels/useGoalsViewModel.ts` inspirado em `useDigitalCardsViewModel.ts`:
+Crie `src/presentation/viewmodels/useGoalsViewModel.ts` inspirado em `useContentReaderViewModel.ts`:
 
 ```ts
 import { useCallback, useEffect, useMemo, useState } from "react";

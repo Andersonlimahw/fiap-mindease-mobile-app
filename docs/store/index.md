@@ -38,10 +38,11 @@ O estado da aplicação é dividido em "stores" (lojas) separadas, cada uma com 
 ### `themeStore`
 
 -   **Localização**: `src/store/themeStore.ts`
--   **Responsabilidade**: Gerenciar o tema da aplicação (Light/Dark mode) e a marca selecionada (whitelabel).
+-   **Responsabilidade**: Gerenciar branding (`MindEase` | `Neon`), modo Claro/Escuro e tokens de espaçamento/typography.
 -   **Estado**:
-    -   `theme`: O tema atual da aplicação.
-    -   `brand`: A marca (brand) selecionada.
+    -   `brand`: Marca atual (`mindease` | `neon`).
+    -   `mode`: Modo de cor atual (`light` | `dark`).
 -   **Ações**:
-    -   `setTheme`: Altera o tema da aplicação.
-    -   `setBrand`: Altera a marca da aplicação.
+    -   `setBrand`: Alterna entre as marcas.
+    -   `setMode`: Altera explicitamente o modo.
+    -   `toggleMode`: Alterna entre claro e escuro.

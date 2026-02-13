@@ -16,11 +16,7 @@ export type AppTabParamList = {
 
 export type RootStackParamList = {
   App: undefined;
-  Back: undefined;
   User: undefined;
-  Pix: undefined;
-  DigitalCards: undefined;
-  AddTransaction: { transactionId?: string };
   Accessibility: undefined;
 };
 

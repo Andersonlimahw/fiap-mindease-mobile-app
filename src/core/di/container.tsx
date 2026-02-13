@@ -1,10 +1,4 @@
 import type { AuthRepository } from "@app/domain/repositories/AuthRepository";
-import type { TransactionRepository } from "@app/domain/repositories/TransactionRepository";
-import type { InvestmentRepository } from "@app/domain/repositories/InvestmentRepository";
-import type { PixRepository } from "@app/domain/repositories/PixRepository";
-import type { CardRepository } from "@app/domain/repositories/CardRepository";
-import type { QuoteRepository } from "@app/data/b3/B3QuoteRepository";
-import type { CurrencyRepository } from "@app/domain/repositories/CurrencyRepository";
 import type { FileRepository } from "@app/domain/repositories/FileRepository";
 import type { TaskRepository } from "@app/domain/repositories/TaskRepository";
 import type { ChatRepository } from "@app/domain/repositories/ChatRepository";
@@ -32,16 +26,6 @@ export type DI = { resolve<T>(token: Token<T>): T };
 
 export const TOKENS = {
   AuthRepository: Symbol("AuthRepository") as Token<AuthRepository>,
-  TransactionRepository: Symbol(
-    "TransactionRepository"
-  ) as Token<TransactionRepository>,
-  InvestmentRepository: Symbol(
-    "InvestmentRepository"
-  ) as Token<InvestmentRepository>,
-  QuoteRepository: Symbol("QuoteRepository") as Token<QuoteRepository>,
-  PixRepository: Symbol("PixRepository") as Token<PixRepository>,
-  CardRepository: Symbol("CardRepository") as Token<CardRepository>,
-  CurrencyRepository: Symbol("CurrencyRepository") as Token<CurrencyRepository>,
   FileRepository: Symbol("FileRepository") as Token<FileRepository>,
   TaskRepository: Symbol("TaskRepository") as Token<TaskRepository>,
   ChatRepository: Symbol("ChatRepository") as Token<ChatRepository>,

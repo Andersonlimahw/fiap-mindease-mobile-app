@@ -4,4 +4,4 @@
 
 [Arquitetura geral](./architeture.md)
 [Autenticação](./architeture.md)
-[Recuperar transações / Balanço](./architeture.md)
+[Produtividade e estatísticas](./architeture.md)

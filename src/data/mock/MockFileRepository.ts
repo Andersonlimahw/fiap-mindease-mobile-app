@@ -8,7 +8,7 @@ export class MockFileRepository implements FileRepository {
   private file: File = {
     id: "1",
     userId: "1",
-    transactionId: "1",
+    recordId: "1",
     downloadUrl: "https://www.google.com",
     sizeInBytes: 0,
     mimeType: "",
@@ -17,7 +17,7 @@ export class MockFileRepository implements FileRepository {
   upload(input: UploadFileInput): Promise<File> {
     return Promise.resolve(this.file);
   }
-  listByTransaction(userId: string, transactionId: string): Promise<File[]> {
+  listByRecord(userId: string, recordId: string): Promise<File[]> {
     return Promise.resolve([this.file]);
   }
   delete(file: File): Promise<void> {

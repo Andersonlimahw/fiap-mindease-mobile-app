@@ -18,11 +18,11 @@ Layer Structure:
   Presentation Layer
     ↓ (React Navigation, Screens, Components)
   ViewModel Layer
-    ↓ (Custom React Hooks: useHomeViewModel, useExtractViewModel, etc.)
+    ↓ (Custom React Hooks: useAuthViewModel, useFileViewModel)
   State Management
     ↓ (Zustand stores: authStore, themeStore, diStore)
   Application Layer
-    ↓ (Use Cases: GetTasks, SignOut, GetPomodoroStats)
+    ↓ (Use Cases: SignInWithProvider, SignOut)
   Domain Layer
     ↓ (Entities & Interfaces: User, Task, PomodoroSession, FocusSession, ChatMessage)
   Data Layer
@@ -59,7 +59,7 @@ Store Details:
    - Features: Typed selectors, devtools integration
 
 2. THEME STORE (themeStore.ts)
-   - State: brand (mindease /heliobank), mode (light/dark)
+   - State: mode (light/dark)
    - Actions: setBrand, setMode, toggleMode
    - Persistence: AsyncStorage (bb_theme key)
    - Features: Dynamic theme generation, white-label support
@@ -255,8 +255,8 @@ Implemented Reactive Patterns:
 1. Callback-based Listeners
    - Repository.subscribe() returns unsubscribe function
    - Example:
-     const unsub = repo.subscribeRecent(userId, 10, (txs) => {
-       setTransactions(txs);
+     const unsub = repo.subscribeTasks(userId, (tasks) => {
+       setTasks(tasks);
      });
      return () => unsub();
 
@@ -391,7 +391,7 @@ DEPLOYMENT & CONFIGURATION:
    - Focus Mode with ambient sounds
    - AI Chat assistant
    - Multi-language support (PT, EN, ES)
-   - White-label theming (MindEase/HelioBank)
+   - Light/dark MindEase theming
    - Accessibility settings (WCAG 2.2 AA)
 
 4. Code Organization

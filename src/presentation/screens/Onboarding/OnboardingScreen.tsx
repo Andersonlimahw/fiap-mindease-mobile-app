@@ -32,21 +32,21 @@ export const OnboardingScreen: React.FC<any> = ({ navigation }) => {
   const slides: Slide[] = useMemo(
     () => [
       {
-        key: "secure-banking",
-        title: t("onboarding.slides.secureBanking.title"),
-        subtitle: t("onboarding.slides.secureBanking.subtitle"),
+        key: "focus",
+        title: t("onboarding.slides.focus.title"),
+        subtitle: t("onboarding.slides.focus.subtitle"),
         image: require("../../../../public/assets/images/banners/home.png"),
       },
       {
-        key: "insights",
-        title: t("onboarding.slides.insights.title"),
-        subtitle: t("onboarding.slides.insights.subtitle"),
+        key: "tasks",
+        title: t("onboarding.slides.tasks.title"),
+        subtitle: t("onboarding.slides.tasks.subtitle"),
         image: require("../../../../public/assets/images/banners/register.png"),
       },
       {
-        key: "login",
-        title: t("onboarding.slides.login.title"),
-        subtitle: t("onboarding.slides.login.subtitle"),
+        key: "wellness",
+        title: t("onboarding.slides.wellness.title"),
+        subtitle: t("onboarding.slides.wellness.subtitle"),
         image: require("../../../../public/assets/images/banners/login.png"),
       },
     ],

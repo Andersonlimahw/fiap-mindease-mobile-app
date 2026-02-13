@@ -27,7 +27,7 @@ npm run android
 ```
 src/
 ├── application/         # Use cases (business rules)
-│   └── usecases/       # GetBalance, SignIn, etc.
+│   └── usecases/       # SignIn, SignOut, etc.
 ├── config/             # Environment configuration
 ├── core/               # DI container and tokens
 │   └── di/
@@ -177,7 +177,7 @@ const theme = useTheme();
 // Access: theme.colors, theme.spacing, theme.radius, theme.text
 ```
 
-Brands: `mindease ` | `heliobank`
+Brands: `mindease` | `neon`
 Modes: `light` | `dark`
 
 ## Navigation

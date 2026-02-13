@@ -43,7 +43,7 @@ export function PomodoroScreen() {
     usePomodoroActions();
 
   const [settingsVisible, setSettingsVisible] = useState(false);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Timer tick effect
   useEffect(() => {

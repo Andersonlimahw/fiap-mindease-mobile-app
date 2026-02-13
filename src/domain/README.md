@@ -11,11 +11,13 @@ The `entities` directory contains the domain entities of the application. An ent
 ### Entity List
 
 - **`AuthProvider`:** Defines the available authentication providers.
-- **`Card`:** Represents a digital card with properties like card number, holder name, and brand.
-- **`Investment`:** Represents an investment with properties like type and amount.
-- **`Pix`:** Contains types related to PIX transfers, keys, favorites, and limits.
-- **`Transaction`:** Represents a financial transaction with properties like type, amount, and description.
-- **`User`:** Represents a user of the application.
+- **`Task`:** Represents a productivity task with priorities, subtasks, and completion metadata.
+- **`PomodoroSession`:** Logs the history of Pomodoro timers (focus/break cycles).
+- **`FocusSession`:** Captures distraction-free sessions with sound settings and durations.
+- **`ChatMessage`:** Stores messages exchanged with the AI assistant.
+- **`ContentItem`:** Represents curated reading content (title, summary, body).
+- **`File`:** Describes uploaded attachments tied to a user + logical record (e.g., task note).
+- **`User`:** Represents a MindEase user and profile preferences.
 
 ## Repositories
 
@@ -29,59 +31,45 @@ Here is a diagram that illustrates the relationship between the main entities:
 
 ```mermaid
 erDiagram
-    USER ||--o{ TRANSACTION : has
-    USER ||--o{ CARD : has
-    USER ||--o{ INVESTMENT : has
-    USER ||--o{ PIX_KEY : has
-    USER ||--o{ PIX_TRANSFER : has
+    USER ||--o{ TASK : has
+    USER ||--o{ POMODOROSESSION : has
+    USER ||--o{ FOCUSSESSION : has
+    USER ||--o{ CHATMESSAGE : has
+    USER ||--o{ CONTENTITEM : bookmarks
+    USER ||--o{ FILE : uploads
 
-    TRANSACTION {
+    TASK {
         string id
         string userId
-        string type
-        number amount
+        string title
         string description
-        string category
+        string priority
+        bool completed
         number createdAt
     }
 
-    CARD {
+    POMODOROSESSION {
         string id
         string userId
-        string holderName
-        string number
-        string cvv
-        string expiry
-        string brand
-        string nickname
-        number createdAt
+        number duration
+        string phase
+        number completedAt
     }
 
-    INVESTMENT {
+    FOCUSSESSION {
         string id
         string userId
-        string type
-        number amount
+        number duration
+        string ambientSound
+        number startedAt
     }
 
-    PIX_KEY {
+    FILE {
         string id
         string userId
-        string type
-        string value
+        string recordId
+        string downloadUrl
+        string mimeType
         number createdAt
-        boolean active
-    }
-
-    PIX_TRANSFER {
-        string id
-        string userId
-        string toKey
-        string toName
-        number amount
-        string description
-        number createdAt
-        string status
-        string method
     }
 ```

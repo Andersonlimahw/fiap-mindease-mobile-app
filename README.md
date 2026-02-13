@@ -8,9 +8,9 @@
 - MVVM + Clean Architecture + SOLID-oriented boundaries (lightweight DI)
 - Auth repository with anonymous login (mock by default)
 - Mock mode is available; default mode follows your scripts/env
-- Features: Login, Home (dashboard), Tasks, Pomodoro Timer, Focus Mode, AI Chat, Accessibility
+- Features: Login, Home (productivity hub), Tasks, Pomodoro Timer, Focus Mode, AI Chat, Accessibility
 - Shared theme tokens for consistent colors, spacing, and typography
-- Whitelabel themes: runtime brand + theme switch (logo, colors, fonts)
+- Adaptive MindEase theme with light/dark preference and persistent spacing/type tokens
 
 ## Project Structure
 
@@ -50,22 +50,20 @@
    - Force real (Firebase) mode: set `EXPO_PUBLIC_USE_MOCK=false` in `.env` before running `npm run start`.
    - Force mock mode: set `EXPO_PUBLIC_USE_MOCK=true` in `.env` before running `npm run start`.
 
-## Whitelabel Themes
+## Theme Preferences
 
 - Runtime switching:
   - Go to `Minha Conta` (User) screen → Aparência.
-  - Toggle `Tema` (Claro/Escuro) or select `Marca`.
-  - Changes update app-wide instantly (navigation, components, screens).
+  - Toggle `Tema` (Claro/Escuro) or select `Marca` to swap between **MindEase** and **Neon** palettes.
 - Persisted preferences:
-  - Selected `brand` and `mode` persist via AsyncStorage (`bb_theme`).
+  - The selected `brand` + `mode` persist via AsyncStorage (`mindease_theme`).
 - Default via env (optional):
-  - `EXPO_PUBLIC_BRAND=mindease |heliobank`
-  - `EXPO_PUBLIC_THEME_MODE=light|dark` (alias: `THEME_MODE`)
-  - Set in `.env` — see `.env.example` — and start the app.
+  - `EXPO_PUBLIC_BRAND=mindease|neon`
+  - `EXPO_PUBLIC_THEME_MODE=light|dark`
+  - Set them in `.env` — see `.env.example` — and start the app.
 - Brand assets:
   - Static logos are mapped in `src/presentation/theme/brandAssets.ts`.
-  - If a brand has no image, the UI falls back to the text logo defined by the brand (`theme.logoText`).
-  - Add your assets and map `{ light, dark }` entries per brand.
+  - When no image is available, UI falls back to the brand text (e.g., “MindEase”, “Neon”).
 
 ## Troubleshooting
 
@@ -156,7 +154,7 @@ Adicione ao seu arquivo `.env`:
 │         ▼                ▼                     ▼              │
 │  ┌────────────────────────────────────────────────────────┐  │
 │  │              VALIDATION (Zod Schemas)                  │  │
-│  │  - CPF/CNPJ  - Email  - Phone  - PIX Keys  - Amount   │  │
+│  │  - Email  - Task Inputs  - Focus Settings  - Files    │  │
 │  └────────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
                               │
@@ -239,8 +237,8 @@ Auth Persistence on Native
 
 Data Standardization Notes
 
-- Firestore transactions use `createdAt` stored as `serverTimestamp()`; readers map Firestore `Timestamp` to epoch milliseconds to match domain model.
-- ViewModels now use application usecases (`GetTasks`, `GetPomodoroStats`, `SignInWithProvider`, `SignOut`) to keep layers consistent with Clean Architecture.
+- Firestore documents use `createdAt` stored as `serverTimestamp()`; readers map Firestore `Timestamp` to epoch milliseconds to match domain model.
+- ViewModels now use application usecases (`SignInWithProvider`, `SignOut`) to keep layers consistent with Clean Architecture.
 - UI uses centralized theme tokens in `src/presentation/theme/theme.ts` to standardize colors (primary, success, danger, text, muted, border), spacing, and radius.
 
 Firebase Initialization (Real Mode)
@@ -306,4 +304,3 @@ Read the documentation in this file and install the application in its latest ve
 > RM362540
 
 [lemon.dev](https://lemon.dev.br/)
-

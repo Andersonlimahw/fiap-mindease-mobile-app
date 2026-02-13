@@ -16,9 +16,6 @@ src/presentation/screens/
 ├── Home/
 │   ├── HomeScreen.tsx
 │   └── HomeScreen.styles.ts
-├── Dashboard/
-│   ├── DashboardScreen.tsx
-│   └── DashboardScreen.styles.ts
 ├── Tasks/
 │   └── TasksScreen.tsx
 ├── Pomodoro/
@@ -35,22 +32,22 @@ src/presentation/screens/
 
 ### Padrões de Implementação
 
-#### 1. Screen Básica com ViewModel
+#### 1. Screen Básica com Stores + Hooks
 
 **Exemplo: HomeScreen.tsx**
 
 ```typescript
 import React, { useMemo } from "react";
-import { useHomeViewModel } from "@view-models/useHomeViewModel";
 import { useAuth } from "@store/authStore";
-import { useTheme } from "@presentation/theme/theme";
-import { useFadeSlideInOnFocus } from "../../hooks/animations";
+import { usePendingTasks } from "@store/tasksStore";
+import { usePomodoroStats } from "@store/pomodoroStore";
+import { useFadeSlideInOnFocus } from "@presentation/hooks/animations";
 
 export const HomeScreen: React.FC<any> = ({ navigation }) => {
-  const { loading, tasks, stats, refresh } = useHomeViewModel();
   const { user, signOut } = useAuth();
+  const pendingTasks = usePendingTasks();
+  const { completedSessions, totalFocusTime } = usePomodoroStats();
   const { animatedStyle } = useFadeSlideInOnFocus();
-  const { t } = useI18n();
   const theme = useTheme();
   const styles = useMemo(() => makeHomeStyles(theme), [theme]);
 
@@ -63,46 +60,10 @@ export const HomeScreen: React.FC<any> = ({ navigation }) => {
 ```
 
 **Características:**
-- Uso de ViewModels para lógica de negócio
-- Integração com store global (Auth)
+- Uso direto dos stores Zustand para lógica de negócio
+- Integração com Auth + Pomodoro + Tasks
 - Animações de entrada com hooks customizados
 - Tema e internacionalização
-
-#### 2. Screen Complexa com Múltiplos ViewModels
-
-**Exemplo: DashboardScreen.tsx**
-
-```typescript
-export const TasksOverviewScreen: React.FC<any> = ({ navigation }) => {
-  const { user, tasks, loading, refresh } = useTasksViewModel();
-  const { stats } = usePomodoroViewModel();
-  const { animatedStyle } = useFadeSlideInOnFocus();
-  const { animatedStyle: chartStyle } = useChartEntranceAndPulse(
-    tasks?.length ?? 0
-  );
-
-  const goAddTask = useCallback(
-    () => navigation?.navigate?.("AddTask"),
-    [navigation]
-  );
-
-  return (
-    <Animated.ScrollView>
-      {/* Header com informações do usuário */}
-      {/* Estatísticas de produtividade */}
-      {/* Ações rápidas */}
-      {/* Tarefas recentes */}
-      {/* Sessões de foco */}
-    </Animated.ScrollView>
-  );
-};
-```
-
-**Características:**
-- Múltiplos ViewModels para diferentes funcionalidades
-- Navegação programática com callbacks
-- Componentes de produtividade (timers, task lists)
-- Animações específicas para diferentes seções
 
 ## Screens Principais
 

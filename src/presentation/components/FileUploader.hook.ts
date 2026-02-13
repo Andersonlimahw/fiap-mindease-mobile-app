@@ -30,7 +30,7 @@ export async function pickAndStageOne(): Promise<PickAndStageResult> {
   };
 }
 
-export async function uploadToFirebase(userId: string, transactionId: string) {
+export async function uploadToFirebase(userId: string, recordId: string) {
   let loading = true;
 
   try {
@@ -40,7 +40,7 @@ export async function uploadToFirebase(userId: string, transactionId: string) {
       mime,
       localUri,
       userId,
-      transactionId,
+      recordId,
     });
 
     // 3) montar path final no bucket
@@ -50,7 +50,7 @@ export async function uploadToFirebase(userId: string, transactionId: string) {
       .replace(/_+/g, '_')
       .replace(/^_|_$/g, '');
 
-    const objectPath = `mindease -files/users/${userId}/transactions/${transactionId}/${sanitizedFileName}`;
+    const objectPath = `mindease -files/users/${userId}/records/${recordId}/${sanitizedFileName}`;
 
     // 4) RNFirebase espera caminho de arquivo local (na prática, remover o prefixo file:// é mais seguro)
     const filePath = localUri.startsWith('file://') ? localUri.replace('file://', '') : localUri;

@@ -216,7 +216,6 @@ export function TasksScreen() {
         <FlashList
           data={filteredTasks}
           renderItem={renderTask}
-          estimatedItemSize={120}
           contentContainerStyle={styles.listContent}
           ListEmptyComponent={renderEmptyState}
           keyExtractor={(item) => item.id}

@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-The MindEase App is a **React Native** application built with Expo, implementing a modern productivity and wellness platform with comprehensive clean architecture principles, TypeScript support, and multi-brand white-label capabilities.
+The MindEase App is a **React Native** application built with Expo, implementing a modern productivity and wellness platform with comprehensive clean architecture principles and TypeScript support.
 
 **Technology Stack:**
 - React Native 0.81.4 with Expo SDK 54
@@ -45,7 +45,7 @@ src/
 │   ├── entities/                    # Data models (User, Task, PomodoroSession, etc.)
 │   └── repositories/                # Repository interfaces (abstract contracts)
 ├── application/
-│   └── usecases/                    # Business logic (GetTasks, SignOut, etc.)
+│   └── usecases/                    # Business logic (SignIn, SignOut, etc.)
 ├── data/                            # Data layer implementations
 │   ├── firebase/                    # Firebase repository implementations
 │   ├── mock/                        # Mock repository implementations
@@ -59,7 +59,7 @@ src/
 │   ├── navigation/                  # React Navigation setup
 │   ├── viewmodels/                  # ViewModel hooks (MVVM pattern)
 │   ├── hooks/                       # Custom React hooks
-│   ├── theme/                       # Theme system & white-label support
+│   ├── theme/                       # Theme system & spacing/typography tokens
 │   └── i18n/                        # Internationalization (i18n)
 ├── store/                           # Zustand stores (global state)
 ├── types/                           # TypeScript type definitions
@@ -80,7 +80,7 @@ Total Files: 113 TypeScript/TSX files
 
 2. **Application Layer** (Use Cases)
    - Orchestrates domain logic
-   - Examples: GetTasks, SignOut, GetPomodoroStats, SignInWithProvider
+  - Examples: SignInWithProvider, SignOut
    - Dependency-injected repository implementations
 
 3. **Data Layer** (Repository Implementations)
@@ -95,10 +95,10 @@ Total Files: 113 TypeScript/TSX files
    - Global API instances and lifecycle management
 
 5. **Presentation Layer** (UI & State)
-   - **ViewModels:** Custom React hooks (useHomeViewModel, useExtractViewModel, etc.)
+  - **ViewModels:** Targeted hooks (useAuthViewModel, useFileViewModel)
    - **Navigation:** React Navigation with native stack & bottom tabs
    - **Components:** Reusable UI building blocks
-   - **Theme:** Dynamic white-label support (MindEase/HelioBank brands)
+  - **Theme:** Dynamic MindEase palette with light/dark switching
    - **i18n:** Multi-language support (Portuguese, English, Spanish)
 
 **Key Features:** Task management, Pomodoro timer, Focus Mode with ambient sounds, AI Chat assistant, Accessibility settings
@@ -149,17 +149,16 @@ Key Features:
 
 **2. Theme Store (`themeStore.ts`)**
 ```typescript
-- State: brand (mindease /heliobank), mode (light/dark)
+- State: brand (mindease | neon), mode (light/dark)
 - Actions: setBrand, setMode, toggleMode
 - Persistence: AsyncStorage with brand/mode keys
 - Theme Building: Runtime theme generation from brand palettes
 ```
 
 Features:
-- White-label support with multiple brand palettes
 - Platform-specific fonts (iOS System vs Android Roboto)
 - Dynamic navigation theme integration
-- Responsive to theme changes across entire app
+- Responsive to theme/brand changes across entire app
 
 **3. DI Store (`diStore.ts`)**
 ```typescript
@@ -474,7 +473,7 @@ Component Updates
                      │
 ┌────────────────────▼────────────────────────────┐
 │    ViewModel Layer (Custom React Hooks)         │
-│  - useAuthViewModel, useHomeViewModel, etc.     │
+│  - useAuthViewModel, useFileViewModel           │
 └────────────────────┬────────────────────────────┘
                      │
 ┌────────────────────▼────────────────────────────┐
@@ -484,7 +483,7 @@ Component Updates
                      │
 ┌────────────────────▼────────────────────────────┐
 │    Application Layer (Use Cases)                │
-│  - GetTasks, SignOut, GetPomodoroStats           │
+│  - SignInWithProvider, SignOut                  │
 └────────────────────┬────────────────────────────┘
                      │
 ┌────────────────────▼────────────────────────────┐
@@ -546,7 +545,7 @@ Component Updates
 ### Customization
 - [x] Multi-language (PT, EN, ES)
 - [x] Dark/Light theme toggle
-- [x] Brand switching (MindEase/HelioBank)
+- [x] Light/Dark theme toggles
 - [x] Persistent user preferences
 
 ---
@@ -627,10 +626,10 @@ Component Updates
    - No retry logic for failed requests
 
 6. **Testing Coverage** (QUALITY)
-   - No unit tests visible
-   - No integration tests
-   - No E2E test setup
-   - Recommendation: Jest + React Native Testing Library
+   - Vitest cobre stores (Tasks, Pomodoro, Focus Mode, Accessibility, Chat) e FirebaseTaskRepository
+   - Ainda faltam testes de integração/viewmodel
+   - Não há E2E automatizado
+   - Recommendation: React Native Testing Library + Detox/Maestro sobre a base atual
 
 7. **Logging & Monitoring** (OBSERVABILITY)
    - console.log in production
@@ -704,7 +703,7 @@ The MindEase App demonstrates **excellent architectural foundations** with:
 
 **Key Strengths:**
 - Scalable clean architecture
-- White-label multi-brand support
+- Consistent theming with reusable tokens
 - Real-time Firebase integration
 - Comprehensive feature set
 - Good code organization
@@ -717,4 +716,3 @@ The MindEase App demonstrates **excellent architectural foundations** with:
 - Offline-first capabilities
 
 The project is well-structured for a FIAP tech challenge and demonstrates professional-grade mobile development practices.
-

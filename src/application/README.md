@@ -10,11 +10,8 @@ The `usecases` directory contains the concrete implementations of the applicatio
 
 ### Use Cases List
 
-- **GetBalance:** Fetches the current balance for a user.
-- **GetInvestments:** Retrieves a list of investments for a user.
-- **GetRecentTransactions:** Gets a list of recent transactions for a user.
-- **SignInWithProvider:** Handles user authentication using a specified provider (e.g., Google, Apple).
-- **SignOut:** Signs the user out of the application.
+- **SignInWithProvider:** Handles user authentication using a specified provider (e.g., Google, Apple, anonymous).
+- **SignOut:** Signs the user out of the application and clears stores.
 
 ### Mermaid Diagram: Use Case Flow
 

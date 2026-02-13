@@ -20,7 +20,7 @@ Ative o Realtime Database no console e escolha o modo `Locked Mode`. Defina regr
    export interface RealtimeNotification {
      id: string;
      userId: string;
-     kind: "transaction" | "goal" | "system";
+     kind: "task" | "goal" | "system";
      payload: Record<string, unknown>;
      createdAt: number;
      readAt?: number;

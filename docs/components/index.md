@@ -57,7 +57,7 @@ export const Button: React.FC<Props> = ({
 
 ```typescript
 export const FileUploader: React.FC<FileUploaderProps> = ({
-  mode, transactionId, onStagedChange, maxFiles = 10
+  mode, recordId, onStagedChange, maxFiles = 10
 }) => {
   const fileUploaderHook = useFileUploader();
   const fileVM = useFileViewModel();
@@ -75,31 +75,6 @@ export const FileUploader: React.FC<FileUploaderProps> = ({
 - Integração com ViewModels
 - Suporte a diferentes modos de operação
 
-#### 3. Componentes Visuais com Animações
-
-**Exemplo: DigitalCard.tsx**
-
-```typescript
-export const CardVisualView: React.FC<Props> = ({ card, style }) => {
-  const [flipped, setFlipped] = useState(false);
-  const rotate = useRef(new Animated.Value(0)).current;
-
-  const flipTo = (toBack: boolean) => {
-    setFlipped(toBack);
-    Animated.spring(rotate, {
-      toValue: toBack ? 1 : 0,
-      useNativeDriver: true,
-      friction: 8,
-    }).start();
-  };
-```
-
-**Características:**
-- Animações fluídas com `Animated.View`
-- Estados visuais dinâmicos
-- Interações gestuais
-- Derivação automática de dados (ex: brand do número do cartão)
-
 ## Componentes Principais
 
 ### 1. Button
@@ -111,27 +86,22 @@ export const CardVisualView: React.FC<Props> = ({ card, style }) => {
 - **Localização**: `src/presentation/components/FileUploader.tsx`
 - **Propósito**: Upload e gerenciamento de arquivos
 - **Modos**:
-  - `staged`: Coleta arquivos antes da transação
-  - `bound`: Gerencia uploads já vinculados a transação
+  - `staged`: Coleta arquivos antes de existir um registro persistido
+  - `bound`: Gerencia uploads já vinculados a um registro salvo
 
-### 3. DigitalCard
-- **Localização**: `src/presentation/components/DigitalCard.tsx`
-- **Propósito**: Visualização animada de cartões digitais
-- **Features**: Animação flip, detecção automática de bandeira
+### 3. TaskItem
+- **Localização**: `src/presentation/components/TaskItem.tsx`
+- **Propósito**: Item de lista para tarefas com prioridades e subtarefas
+- **Features**: Indicadores de prioridade, ações rápidas
 
-### 4. TransactionItem
-- **Localização**: `src/presentation/components/TransactionItem.tsx`
-- **Propósito**: Item de lista para transações
-- **Features**: Formatação de moeda, categorização visual
-
-### 5. Avatar
+### 4. Avatar
 - **Localização**: `src/presentation/components/Avatar.tsx`
 - **Propósito**: Exibição de foto de usuário ou iniciais
 - **Features**: Fallback para iniciais, tamanhos configuráveis
 
-### 6. QuickAction
+### 5. QuickAction
 - **Localização**: `src/presentation/components/QuickAction.tsx`
-- **Propósito**: Ações rápidas na home/dashboard
+- **Propósito**: Ações rápidas na home
 - **Features**: Ícones, labels, navegação
 
 ## Padrões de Design
