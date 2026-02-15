@@ -21,7 +21,6 @@ import type { ChatRepository } from "@app/domain/repositories/ChatRepository";
 type DIState = {
   container: Container;
   di: DI;
-  repositorySelector?: RepositorySelector;
 };
 
 function buildChatRepositoryWithSelector(): ChatRepository {
@@ -36,6 +35,9 @@ function buildChatRepositoryWithSelector(): ChatRepository {
 
   // Criar seletor com as implementações
   const selector = new RepositorySelector(repos);
+
+  // Armazenar seletor globalmente para debug/analytics
+  (global as any).__aiRepositorySelector = selector;
 
   // Criar wrapper que usa o seletor
   const wrappedRepo: ChatRepository = {
@@ -73,9 +75,6 @@ function buildChatRepositoryWithSelector(): ChatRepository {
       return cloud.clearMessages(userId);
     },
   };
-
-  // Armazenar seletor no DI store para debug/analytics
-  useDIStore.setState({ repositorySelector: selector });
 
   return wrappedRepo;
 }
@@ -131,6 +130,6 @@ export function useDI(): DI {
  * Útil para debug - obter seletor de repositório
  */
 export function getRepositorySelector(): RepositorySelector | undefined {
-  return useDIStore.getState().repositorySelector;
+  return (global as any).__aiRepositorySelector;
 }
 
