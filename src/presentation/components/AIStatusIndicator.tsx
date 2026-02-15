@@ -86,7 +86,7 @@ export function AIStatusIndicator({
           {sourceLabel}
         </Text>
         {metadata.latencyMs > 0 && (
-          <Text style={[styles.latency, { color: theme.colors.textSecondary }]}>
+          <Text style={[styles.latency, { color: theme.colors.muted }]}>
             {metadata.latencyMs}ms
             {metadata.model && ` • ${metadata.model}`}
           </Text>

@@ -89,12 +89,20 @@ export class RepositorySelector {
         ]);
 
         const latencyMs = Date.now() - startTime;
+        let modelName: string | undefined;
+        
+        if (source === ResponseSource.OLLAMA) {
+          modelName = AppConfig.ai.ollama.model;
+        } else if (source === ResponseSource.LOCAL) {
+          modelName = AppConfig.ai.torch.modelName;
+        }
+        
         lastMetadata = {
           source,
           latencyMs,
           cached: false,
           timestamp: Date.now(),
-          model: AppConfig.ai[source as keyof typeof AppConfig.ai]?.['model'] || undefined,
+          model: modelName,
         };
 
         // Registrar sucesso

@@ -32,11 +32,11 @@ export class OllamaChatRepository implements ChatRepository {
         OLLAMA_TIMEOUT_MS
       );
 
-      const response = await fetch(`${AppConfig.ollamaUrl}/api/chat`, {
+      const response = await fetch(`${AppConfig.ai.ollama.url}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          model: 'llama3',
+          model: AppConfig.ai.ollama.model,
           messages: ollamaMessages,
           stream: false,
         }),

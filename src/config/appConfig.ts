@@ -134,9 +134,23 @@ const getPrimaryAIRepository = (): AIRepositoryType => {
   return 'firebase';
 };
 
+// Configurações do Firebase
+const firebaseConfig: FirebaseConfig = {
+  apiKey: getEnv('FIREBASE_API_KEY'),
+  authDomain: getEnv('FIREBASE_AUTH_DOMAIN'),
+  projectId: getEnv('FIREBASE_PROJECT_ID'),
+  appId: getEnv('FIREBASE_APP_ID'),
+  storageBucket: getEnv('FIREBASE_STORAGE_BUCKET', ''),
+  messagingSenderId: getEnv('FIREBASE_MESSAGING_SENDER_ID', ''),
+  databaseURL: getEnv('FIREBASE_DATABASE_URL', '')
+};
+
+// Valida as configurações do Firebase
+validateFirebaseConfig(firebaseConfig);
+
 const aiConfig: AIConfigType = {
   primaryRepository: getPrimaryAIRepository(),
-  fallbackRepositories: ['demo'], // Will be filled dynamically
+  fallbackRepositories: ['ollama', 'firebase', 'mock'] as AIRepositoryType[], // Will be filled dynamically
   
   torch: {
     enabled: getEnv('AI_TORCH_ENABLED', 'true') === 'true',
@@ -164,13 +178,13 @@ const aiConfig: AIConfigType = {
 // Build fallback chain based on primary selection
 if (!__DEV__ && !getEnv('USE_MOCK', 'false').includes('true')) {
   // Production: torch → firebase → demo
-  aiConfig.fallbackRepositories = ['firebase', 'mock'];
+  aiConfig.fallbackRepositories = ['firebase', 'mock'] as AIRepositoryType[];
   if (!aiConfig.torch.enabled) {
     aiConfig.primaryRepository = 'firebase';
   }
 } else {
   // Development: torch → ollama → firebase → demo
-  aiConfig.fallbackRepositories = ['ollama', 'firebase', 'mock'];
+  aiConfig.fallbackRepositories = ['ollama', 'firebase', 'mock'] as AIRepositoryType[];
 }
 
 // Configuração da aplicação

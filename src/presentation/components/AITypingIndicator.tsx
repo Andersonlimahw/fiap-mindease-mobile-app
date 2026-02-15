@@ -79,7 +79,7 @@ export function AITypingIndicator({ visible, source }: AITypingIndicatorProps) {
         ))}
       </View>
       {source && (
-        <Text style={[styles.text, { color: theme.colors.textSecondary }]}>
+        <Text style={[styles.text, { color: theme.colors.muted }]}>
           Processando via {source}...
         </Text>
       )}
