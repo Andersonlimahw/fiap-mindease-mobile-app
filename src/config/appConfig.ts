@@ -11,6 +11,41 @@ type FirebaseConfig = {
   databaseURL: string;
 };
 
+type AIRepositoryType = 'torch' | 'ollama' | 'firebase' | 'mock';
+
+type AIConfigType = {
+  // Primary repository selection strategy
+  primaryRepository: AIRepositoryType;
+  
+  // Fallback chain (tried in order if primary fails)
+  fallbackRepositories: AIRepositoryType[];
+  
+  // Torch-specific config
+  torch: {
+    enabled: boolean;
+    modelName: string;
+    modelUrl: string;
+    cacheDir: string;
+    maxInputLength: number;
+    timeout: number; // ms
+  };
+  
+  // Ollama config
+  ollama: {
+    url: string;
+    model: string;
+    timeout: number; // ms
+  };
+  
+  // Response timeout per repository (ms)
+  timeouts: {
+    torch: number;
+    ollama: number;
+    firebase: number;
+    demo: number;
+  };
+};
+
 type AppConfigType = {
   // App info
   appName: string;
@@ -24,8 +59,8 @@ type AppConfigType = {
   // Firebase
   firebase: FirebaseConfig;
 
-  // AI / Ollama
-  ollamaUrl: string;
+  // AI Configuration
+  ai: AIConfigType;
 
   // Feature flags
   useMock: boolean;
@@ -90,19 +125,53 @@ const validateFirebaseConfig = (config: FirebaseConfig): void => {
   }
 };
 
-// Configurações do Firebase
-const firebaseConfig: FirebaseConfig = {
-  apiKey: getEnv('FIREBASE_API_KEY'),
-  authDomain: getEnv('FIREBASE_AUTH_DOMAIN'),
-  projectId: getEnv('FIREBASE_PROJECT_ID'),
-  appId: getEnv('FIREBASE_APP_ID'),
-  storageBucket: getEnv('FIREBASE_STORAGE_BUCKET', ''),
-  messagingSenderId: getEnv('FIREBASE_MESSAGING_SENDER_ID', ''),
-  databaseURL: getEnv('FIREBASE_DATABASE_URL', '')
+// Validação e configuração de IA
+const getPrimaryAIRepository = (): AIRepositoryType => {
+  const value = getEnv('AI_PRIMARY_REPOSITORY', 'firebase');
+  if (['torch', 'ollama', 'firebase', 'mock'].includes(value)) {
+    return value as AIRepositoryType;
+  }
+  return 'firebase';
 };
 
-// Valida as configurações do Firebase
-validateFirebaseConfig(firebaseConfig);
+const aiConfig: AIConfigType = {
+  primaryRepository: getPrimaryAIRepository(),
+  fallbackRepositories: ['demo'], // Will be filled dynamically
+  
+  torch: {
+    enabled: getEnv('AI_TORCH_ENABLED', 'true') === 'true',
+    modelName: getEnv('AI_TORCH_MODEL', 'distilbert-base-multilingual-cased'),
+    modelUrl: getEnv('AI_TORCH_MODEL_URL', 'https://models.example.com/distilbert.pt'),
+    cacheDir: 'torch-models',
+    maxInputLength: 512,
+    timeout: 3000, // 3s for local inference
+  },
+  
+  ollama: {
+    url: getEnv('AI_OLLAMA_URL', getEnv('OLLAMA_URL', 'http://localhost:11434')),
+    model: getEnv('AI_OLLAMA_MODEL', 'llama3'),
+    timeout: 30000, // 30s for Ollama
+  },
+  
+  timeouts: {
+    torch: 3000,   // Local on-device
+    ollama: 30000, // Local/Dev server
+    firebase: 10000, // Cloud function
+    demo: 1000,    // Demo responses
+  },
+};
+
+// Build fallback chain based on primary selection
+if (!__DEV__ && !getEnv('USE_MOCK', 'false').includes('true')) {
+  // Production: torch → firebase → demo
+  aiConfig.fallbackRepositories = ['firebase', 'mock'];
+  if (!aiConfig.torch.enabled) {
+    aiConfig.primaryRepository = 'firebase';
+  }
+} else {
+  // Development: torch → ollama → firebase → demo
+  aiConfig.fallbackRepositories = ['ollama', 'firebase', 'mock'];
+}
 
 // Configuração da aplicação
 const AppConfig: AppConfigType = {
@@ -118,16 +187,18 @@ const AppConfig: AppConfigType = {
   // Firebase
   firebase: firebaseConfig,
 
-  // AI / Ollama
-  ollamaUrl: getEnv('OLLAMA_URL', 'http://localhost:11434'),
+  // AI Configuration
+  ai: aiConfig,
 
   // Feature flags
-  useMock: false, // getEnv('USE_MOCK', 'false') === 'true',
+  useMock: getEnv('USE_MOCK', 'false') === 'true',
   isDevelopment: __DEV__
 };
 
 // Exporta a configuração
 export default AppConfig;
+
+export type { AIConfigType, AIRepositoryType };
 
 // Log das configurações carregadas (apenas em desenvolvimento)
 if (__DEV__) {

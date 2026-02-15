@@ -11,12 +11,74 @@ import { MockTaskRepository } from "@app/data/mock/MockTaskRepository";
 import { FirebaseTaskRepository } from "@app/data/firebase/FirebaseTaskRepository";
 import { FirebaseChatRepository } from "@app/data/firebase/FirebaseChatRepository";
 import { OllamaChatRepository } from "@app/data/ollama/OllamaChatRepository";
+import { TorchChatRepository } from "@app/data/torch/TorchChatRepository";
 import { MockChatRepository } from "@app/data/mock/MockChatRepository";
+import { RepositorySelector } from "@app/core/ai/RepositorySelector";
+import type { AIResponseSource } from "@app/types/ai";
+import { AIResponseSource as ResponseSource } from "@app/types/ai";
+import type { ChatRepository } from "@app/domain/repositories/ChatRepository";
 
 type DIState = {
   container: Container;
   di: DI;
+  repositorySelector?: RepositorySelector;
 };
+
+function buildChatRepositoryWithSelector(): ChatRepository {
+  // Criar todas as implementações disponíveis
+  const repos: Record<AIResponseSource, ChatRepository> = {
+    [ResponseSource.LOCAL]: new TorchChatRepository(),
+    [ResponseSource.LOCAL_CACHED]: new MockChatRepository(), // Placeholder para cache
+    [ResponseSource.OLLAMA]: new OllamaChatRepository(),
+    [ResponseSource.CLOUD]: new FirebaseChatRepository(),
+    [ResponseSource.DEMO]: new MockChatRepository(),
+  };
+
+  // Criar seletor com as implementações
+  const selector = new RepositorySelector(repos);
+
+  // Criar wrapper que usa o seletor
+  const wrappedRepo: ChatRepository = {
+    async sendMessage(userId, messages, systemPrompt) {
+      const { response, metadata } = await selector.sendMessage(userId, messages, systemPrompt);
+      
+      // Log do resultado (útil para debug)
+      if (__DEV__) {
+        console.log(
+          `[ChatRepository] Response from ${metadata.source} (${metadata.latencyMs}ms)`,
+          metadata
+        );
+      }
+      
+      return response;
+    },
+
+    async getMessages(userId) {
+      const cloud = repos[ResponseSource.CLOUD];
+      return cloud.getMessages(userId);
+    },
+
+    subscribe(userId, callback) {
+      const cloud = repos[ResponseSource.CLOUD];
+      return cloud.subscribe(userId, callback);
+    },
+
+    async deleteMessage(id) {
+      const cloud = repos[ResponseSource.CLOUD];
+      return cloud.deleteMessage(id);
+    },
+
+    async clearMessages(userId) {
+      const cloud = repos[ResponseSource.CLOUD];
+      return cloud.clearMessages(userId);
+    },
+  };
+
+  // Armazenar seletor no DI store para debug/analytics
+  useDIStore.setState({ repositorySelector: selector });
+
+  return wrappedRepo;
+}
 
 function buildContainer(): Container {
   const container = new Container();
@@ -36,7 +98,9 @@ function buildContainer(): Container {
     container.set(TOKENS.AuthRepository, new FirebaseAuthRepository());
     container.set(TOKENS.FileRepository, new FirebaseFileRepository());
     container.set(TOKENS.TaskRepository, new FirebaseTaskRepository());
-    container.set(TOKENS.ChatRepository, new FirebaseChatRepository());
+    
+    // Chat com estratégia inteligente de seleção
+    container.set(TOKENS.ChatRepository, buildChatRepositoryWithSelector());
   } catch (e: any) {
     // Keep the app usable in development if Firebase env is missing/misconfigured
     // eslint-disable-next-line no-console
@@ -61,5 +125,12 @@ export const useDIStore = create<DIState>()(
 export function useDI(): DI {
   type S = ReturnType<typeof useDIStore.getState>;
   return useDIStore((s: S) => s.di);
+}
+
+/**
+ * Útil para debug - obter seletor de repositório
+ */
+export function getRepositorySelector(): RepositorySelector | undefined {
+  return useDIStore.getState().repositorySelector;
 }
 
