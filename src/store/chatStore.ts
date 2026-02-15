@@ -5,6 +5,7 @@ import type { ChatRepository } from '@app/domain/repositories/ChatRepository';
 import { getAIResponse } from '@app/domain/entities/ChatMessage';
 import { zustandSecureStorage } from '@app/infrastructure/storage/SecureStorage';
 import { useDIStore } from '@app/store/diStore';
+import { useAuthStore } from '@app/store/authStore';
 import { TOKENS } from '@app/core/di/container';
 
 const SYSTEM_PROMPT =
@@ -61,10 +62,13 @@ export const useChatStore = create<ChatState>()(
         let responseContent: string;
 
         const repo = getChatRepository();
+        const user = useAuthStore.getState().user;
+        const userId = user?.id || 'anonymous';
+
         if (repo) {
           try {
             const allMessages = [...get().messages];
-            const result = await repo.sendMessage(allMessages, SYSTEM_PROMPT);
+            const result = await repo.sendMessage(userId, allMessages, SYSTEM_PROMPT);
             responseContent = result.content;
           } catch {
             // Fallback to demo responses

@@ -269,15 +269,17 @@ describe('chatStore', () => {
       await sendMessage('Primeira pergunta');
 
       const call = mockRepo.sendMessage.mock.calls[0];
-      // First argument: messages array (should include the user message)
-      expect(call[0]).toEqual(
+      // First argument: userId (string)
+      expect(typeof call[0]).toBe('string');
+      // Second argument: messages array (should include the user message)
+      expect(call[1]).toEqual(
         expect.arrayContaining([
           expect.objectContaining({ role: 'user', content: 'Primeira pergunta' }),
         ])
       );
-      // Second argument: system prompt string
-      expect(typeof call[1]).toBe('string');
-      expect(call[1]).toContain('MindEase');
+      // Third argument: system prompt string
+      expect(typeof call[2]).toBe('string');
+      expect(call[2]).toContain('MindEase');
     });
 
     it('should fallback to demo response when repository throws', async () => {

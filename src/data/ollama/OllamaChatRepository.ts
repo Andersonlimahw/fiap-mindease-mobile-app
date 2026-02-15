@@ -11,6 +11,7 @@ const OLLAMA_TIMEOUT_MS = 30_000;
 
 export class OllamaChatRepository implements ChatRepository {
   async sendMessage(
+    userId: string,
     messages: ChatMessage[],
     systemPrompt: string
   ): Promise<ChatResponse> {
@@ -62,5 +63,27 @@ export class OllamaChatRepository implements ChatRepository {
         content: getAIResponse(lastUserMsg?.content ?? ''),
       };
     }
+  }
+
+  async getMessages(userId: string): Promise<ChatMessage[]> {
+    // Ollama doesn't persist messages, return empty array
+    return [];
+  }
+
+  subscribe(
+    userId: string,
+    callback: (messages: ChatMessage[]) => void
+  ): () => void {
+    // No-op subscription for Ollama (stateless)
+    callback([]);
+    return () => {};
+  }
+
+  async deleteMessage(id: string): Promise<void> {
+    // No-op delete
+  }
+
+  async clearMessages(userId: string): Promise<void> {
+    // No-op clear
   }
 }

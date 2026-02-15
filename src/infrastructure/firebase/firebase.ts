@@ -120,6 +120,16 @@ export async function getFireStorage(): Promise<any> {
   return fireStorageInstance;
 }
 
+/**
+ * Get current authenticated user ID
+ * Should be called after user is authenticated
+ */
+let currentUserId: string | null = null;
+
+export function setCurrentUserId(userId: string | null) {
+  currentUserId = userId;
+}
+
 export const FirebaseAPI = {
   ensureFirebase() {
     // fire-and-forget init (caller can optionally await initFirebase())
@@ -137,6 +147,9 @@ export const FirebaseAPI = {
   },
   get storage() {
     return fireStorageInstance ?? getFireStorage();
+  },
+  getCurrentUserId() {
+    return currentUserId;
   },
 };
 

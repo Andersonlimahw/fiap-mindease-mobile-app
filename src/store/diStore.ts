@@ -9,6 +9,7 @@ import { MockFileRepository } from "@app/data/mock/MockFileRepository";
 import { FirebaseFileRepository } from "@app/data/firebase/FirebaseFileRepository";
 import { MockTaskRepository } from "@app/data/mock/MockTaskRepository";
 import { FirebaseTaskRepository } from "@app/data/firebase/FirebaseTaskRepository";
+import { FirebaseChatRepository } from "@app/data/firebase/FirebaseChatRepository";
 import { OllamaChatRepository } from "@app/data/ollama/OllamaChatRepository";
 import { MockChatRepository } from "@app/data/mock/MockChatRepository";
 
@@ -35,7 +36,7 @@ function buildContainer(): Container {
     container.set(TOKENS.AuthRepository, new FirebaseAuthRepository());
     container.set(TOKENS.FileRepository, new FirebaseFileRepository());
     container.set(TOKENS.TaskRepository, new FirebaseTaskRepository());
-    container.set(TOKENS.ChatRepository, new OllamaChatRepository());
+    container.set(TOKENS.ChatRepository, new FirebaseChatRepository());
   } catch (e: any) {
     // Keep the app usable in development if Firebase env is missing/misconfigured
     // eslint-disable-next-line no-console
@@ -45,7 +46,7 @@ function buildContainer(): Container {
     container.set(TOKENS.AuthRepository, new MockAuthRepository());
     container.set(TOKENS.FileRepository, new MockFileRepository());
     container.set(TOKENS.TaskRepository, MockTaskRepository);
-    container.set(TOKENS.ChatRepository, new OllamaChatRepository());
+    container.set(TOKENS.ChatRepository, new MockChatRepository());
   }
   return container;
 }
@@ -61,3 +62,4 @@ export function useDI(): DI {
   type S = ReturnType<typeof useDIStore.getState>;
   return useDIStore((s: S) => s.di);
 }
+
