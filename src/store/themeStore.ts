@@ -2,10 +2,9 @@ import { create } from 'zustand';
 import { devtools, persist, createJSONStorage } from 'zustand/middleware';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import AppConfig from '../config/appConfig';
 
 export type ThemeMode = 'light' | 'dark';
-export type BrandId = 'mindease' | 'neon';
+export type BrandId = 'mindease' | 'neon' | 'bytebank';
 
 export type ThemeColors = {
   primary: string;
@@ -98,6 +97,35 @@ const brandPalettes: Record<BrandId, BrandPalette> = {
     },
     logoText: 'Neon',
   },
+  bytebank: {
+    light: {
+      primary: '#0EA5E9',
+      background: '#ffffff',
+      text: '#0F172A',
+      muted: '#64748B',
+      border: '#E2E8F0',
+      card: '#0F172A',
+      cardText: '#ffffff',
+      surface: '#F1F5F9',
+      success: '#10B981',
+      danger: '#F43F5E',
+      accent: '#22D3EE',
+    },
+    dark: {
+      primary: '#38BDF8',
+      background: '#0B1220',
+      text: '#E2E8F0',
+      muted: '#94A3B8',
+      border: '#172036',
+      card: '#0F172A',
+      cardText: '#F8FAFC',
+      surface: '#0B1324',
+      success: '#34D399',
+      danger: '#FB7185',
+      accent: '#67E8F9',
+    },
+    logoText: 'ByteBank',
+  },
 };
 
 export function getAvailableBrands(): BrandId[] {
@@ -105,22 +133,24 @@ export function getAvailableBrands(): BrandId[] {
 }
 
 export function getBrandLogoText(brand: BrandId): string {
-  return brandPalettes[brand]?.logoText || 'MindEase';
+  return brandPalettes[brand]?.logoText || 'bytebank';
 }
 
 function buildTheme(brand: BrandId, mode: ThemeMode): AppTheme {
-  const palette = brandPalettes[brand][mode];
+  // Fallback to default brand if brand doesn't exist
+  const safeBrand = brandPalettes[brand] ? brand : DEFAULT_BRAND;
+  const palette = brandPalettes[safeBrand][mode];
   const defaultFonts = Platform.select({
     ios: { regular: 'System', medium: 'System', bold: 'System' },
     android: { regular: 'Roboto', medium: 'Roboto-Medium', bold: 'Roboto-Bold' },
     default: { regular: 'System', medium: 'System', bold: 'System' },
   }) as AppTheme['fonts'];
 
-  const fonts = { ...defaultFonts, ...(brandPalettes[brand].fonts || {}) };
-  const logoText = getBrandLogoText(brand);
+  const fonts = { ...defaultFonts, ...(brandPalettes[safeBrand].fonts || {}) };
+  const logoText = getBrandLogoText(safeBrand);
 
   return {
-    brand,
+    brand: safeBrand,
     mode,
     colors: palette,
     radius: { sm: 8, md: 12, lg: 20 },
@@ -139,20 +169,20 @@ type ThemeState = {
   toggleMode: () => void;
 };
 
-const DEFAULT_BRAND: BrandId = 'mindease';
+const DEFAULT_BRAND: BrandId = 'bytebank';
 
 export const useThemeStore = create<ThemeState>()(
   devtools(
     persist(
       (set, get) => ({
-        brand: ((AppConfig as any)?.appearance?.brand as BrandId) || DEFAULT_BRAND,
-        mode: ((AppConfig as any)?.appearance?.mode as ThemeMode) || 'light',
+        brand: DEFAULT_BRAND,
+        mode: 'light',
         setBrand: (brand) => set({ brand }),
         setMode: (mode) => set({ mode }),
         toggleMode: () => set({ mode: get().mode === 'light' ? 'dark' : 'light' }),
       }),
       {
-        name: 'mindease_theme',
+        name: 'bytebank_theme',
         storage: createJSONStorage(() => AsyncStorage),
         partialize: (state) => ({ brand: state.brand, mode: state.mode }),
       }
