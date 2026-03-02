@@ -1,320 +1,395 @@
-# Arquitetura Híbrida de IA - MindEase Mobile
+# Arquitetura Híbrida de IA — MindEase Mobile
 
-## 📊 Visão Geral
+Sistema de IA com múltiplos backends, fallback automático e streaming de respostas.
 
-O MindEase Mobile implementa um sistema inteligente de IA com múltiplas estratégias de fallback, garantindo melhor performance e experiência do usuário:
+---
+
+## Visão Geral
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│           User sends message (ChatScreen)               │
-└─────────────────────────────────┬───────────────────────┘
-                                  ↓
-                    ┌─────────────────────────┐
-                    │  RepositorySelector     │
-                    │  (Strategy + Cache)     │
-                    └─────────┬───────────────┘
-                              ↓
-        ┌─────────────────────────────────────────────┐
-        │ Try repositories in order:                 │
-        ├─────────────────────────────────────────────┤
-        │ 1️⃣ TorchChatRepository (on-device)         │
-        │    ├─ <500ms (modelo leve)                  │
-        │    └─ Offline funcionando                   │
-        │                                             │
-        │ 2️⃣ OllamaChatRepository (dev server)       │
-        │    ├─ <2s (llama3 local)                    │
-        │    └─ Qualidade high                        │
-        │                                             │
-        │ 3️⃣ FirebaseChatRepository + Cloud Function │
-        │    ├─ <3s (nuvem)                          │
-        │    └─ Melhor qualidade                      │
-        │                                             │
-        │ 4️⃣ MockChatRepository (demo)               │
-        │    ├─ <1s (hardcoded)                       │
-        │    └─ Sempre funciona                       │
-        └─────────────────────────────────┬───────────┘
-                                          ↓
-                    ┌─────────────────────────────┐
-                    │ Return with metadata:       │
-                    ├─────────────────────────────┤
-                    │ • source (torch/cloud/demo) │
-                    │ • latencyMs                 │
-                    │ • cached (sim/não)          │
-                    │ • model name                │
-                    └─────────────────────────────┘
-                              ↓
-                    ┌─────────────────────────────┐
-                    │  Display with indicator:    │
-                    ├─────────────────────────────┤
-                    │ 🟢 Local (torch)           │
-                    │ 🔵 Local Dev (ollama)      │
-                    │ 🟠 Cloud (firebase)        │
-                    │ ⚪ Demo (fallback)         │
-                    └─────────────────────────────┘
+ChatScreen → chatStore → DI Container → RepositorySelector → [Torch | Ollama | Firebase | Demo]
 ```
 
-## 🏗️ Componentes Principais
+O `RepositorySelector` encapsula a lógica de fallback e é transparente para a UI — o store enxerga apenas um `ChatRepository` unificado.
 
-### 1. **RepositorySelector** (`src/core/ai/RepositorySelector.ts`)
-- Orquestra fallback chain
-- Implementa retry com timeout
-- Cache de respostas com TTL
-- Rastreamento de stats por repositório
+---
 
-**Responsabilidades:**
-- Tentar repositório principal primeiro
-- Fallback automático em timeout/erro
-- Cachear respostas bem-sucedidas (1 hora TTL)
-- Registrar métricas (latência, taxa de sucesso)
+## Diagrama de Classes
 
-### 2. **TorchChatRepository** (`src/data/torch/TorchChatRepository.ts`)
-- Executa modelos PyTorch localmente (when ready)
-- On-device inference, sem conectividade
-- Fallback para respostas demo se modelo não carregar
+```mermaid
+classDiagram
+    class ChatRepository {
+        <<interface>>
+        +sendMessage(userId, messages, systemPrompt, onChunk?) ChatResponse
+        +getMessages(userId) ChatMessage[]
+        +subscribe(userId, callback) () => void
+        +deleteMessage(id) void
+        +clearMessages(userId) void
+    }
 
-**Status Atual:**
-- ✅ Estrutura criada
-- ⏳ Aguardando disponibilidade de expo-torch estável
-- 📋 TODOs para integração de modelo real
+    class RepositorySelector {
+        -repositories Map~AIResponseSource, ChatRepository~
+        -stats Map~AIResponseSource, RepositoryStats~
+        -responseCache Map~string, CachedResponse~
+        -maxCacheSize 100
+        -cacheValidityMs 3600000
+        +sendMessage(userId, messages, systemPrompt, onChunk?) ResponseWithMetadata
+        -getRepositoryOrder() AIResponseSource[]
+        -recordSuccess(source, latencyMs) void
+        -recordFailure(source, error, latencyMs) void
+        -getFromCache(key) CachedResponse | null
+        -addToCache(key, response) void
+        +getStats() RepositoryStats[]
+        +getAttempts() RepositoryAttempt[]
+        +clearCache() void
+    }
 
-### 3. **AppConfig Expandido** (`src/config/appConfig.ts`)
-- Configuração centralizada de estratégia de IA
-- Suporte a múltiplos repositórios
-- Timeouts por repositório
-- Feature flags
+    class TorchChatRepository {
+        +sendMessage(userId, messages, systemPrompt, onChunk?) ChatResponse
+        +getMessages(userId) ChatMessage[]
+    }
 
-**Variáveis de ambiente:**
+    class OllamaChatRepository {
+        -OLLAMA_TIMEOUT_MS 30000
+        +sendMessage(userId, messages, systemPrompt, onChunk?) ChatResponse
+        +getMessages(userId) ChatMessage[]
+        -streamViaXHR(url, body, onChunk) ChatResponse
+    }
+
+    class FirebaseChatRepository {
+        +sendMessage(userId, messages, systemPrompt, onChunk?) ChatResponse
+        +getMessages(userId) ChatMessage[]
+        +subscribe(userId, callback) () => void
+        +deleteMessage(id) void
+        +clearMessages(userId) void
+    }
+
+    class MockChatRepository {
+        +sendMessage(userId, messages, systemPrompt, onChunk?) ChatResponse
+        +getMessages(userId) ChatMessage[]
+    }
+
+    ChatRepository <|.. TorchChatRepository
+    ChatRepository <|.. OllamaChatRepository
+    ChatRepository <|.. FirebaseChatRepository
+    ChatRepository <|.. MockChatRepository
+    RepositorySelector --> ChatRepository : usa
+
+    class AIResponseMetadata {
+        +source AIResponseSource
+        +latencyMs number
+        +cached boolean
+        +model? string
+        +timestamp number
+    }
+
+    class RepositoryStats {
+        +source AIResponseSource
+        +totalAttempts number
+        +successCount number
+        +failureCount number
+        +averageLatencyMs number
+        +successRate number
+    }
+
+    RepositorySelector --> AIResponseMetadata : retorna
+    RepositorySelector --> RepositoryStats : rastreia
+```
+
+---
+
+## Fluxo de Requisição (Sequence Diagram)
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant ChatScreen
+    participant chatStore
+    participant wrappedRepo as ChatRepository (DI)
+    participant Selector as RepositorySelector
+    participant Ollama as OllamaChatRepository
+    participant Firebase as FirebaseChatRepository
+    participant Mock as MockChatRepository
+
+    User->>ChatScreen: digita mensagem e envia
+
+    ChatScreen->>chatStore: sendMessage(content)
+    chatStore->>chatStore: cria userMessage + initialAssistantMessage (content: "")
+    chatStore->>chatStore: set({ messages: [..., user, assistant], isLoading: true })
+
+    chatStore->>wrappedRepo: sendMessage(userId, messages, systemPrompt, onChunk)
+    wrappedRepo->>Selector: sendMessage(userId, messages, systemPrompt, onChunk)
+
+    Selector->>Selector: getCacheKey(messages) → verificar cache
+    alt cache válido (< 1h)
+        Selector-->>chatStore: { response, metadata: { cached: true } }
+    else cache miss
+        Selector->>Selector: getRepositoryOrder() → [torch, ollama, firebase, demo]
+
+        Note over Selector: Tenta repositório primário (ex: torch)
+        Selector->>Selector: torch.sendMessage() → timeout/erro
+
+        Note over Selector: Fallback → Ollama
+        Selector->>Ollama: sendMessage(userId, messages, systemPrompt, onChunk)
+
+        Note over Ollama: streaming via XMLHttpRequest
+        loop NDJSON stream (readyState 3)
+            Ollama->>Ollama: xhr.responseText.substring(processedLen)
+            Ollama->>Ollama: split('\n') → JSON.parse cada linha
+            Ollama-->>chatStore: onChunk(token)
+            chatStore->>chatStore: atualiza messages[assistantId].content += token
+            chatStore-->>ChatScreen: re-render (token a token)
+        end
+
+        Ollama-->>Selector: resolve({ content: fullContent })
+        Selector->>Selector: recordSuccess(ollama, latencyMs)
+        Selector->>Selector: addToCache(key, response)
+        Selector-->>wrappedRepo: { response, metadata }
+        wrappedRepo-->>chatStore: response
+
+        chatStore->>chatStore: set({ messages[assistantId].content = finalContent, isLoading: false })
+        chatStore-->>ChatScreen: re-render final
+        ChatScreen-->>User: mensagem completa exibida
+    end
+```
+
+---
+
+## Fallback Chain (Flowchart)
+
+```mermaid
+flowchart TD
+    Start([Usuário envia mensagem]) --> Cache{Cache válido?}
+
+    Cache -->|Sim < 1h| CacheHit[Retorna do cache\nlatency: 0ms\nsource: local_cached]
+    Cache -->|Não| Order[Determina ordem\npor AppConfig]
+
+    Order --> Torch
+
+    subgraph Fallback Chain
+        Torch[1. TorchChatRepository\non-device · timeout 3s]
+        Ollama[2. OllamaChatRepository\ndev server · timeout 30s]
+        Firebase[3. FirebaseChatRepository\nnuvem · timeout 10s]
+        Demo[4. MockChatRepository\nhardcoded · timeout 1s]
+
+        Torch -->|sucesso| Done
+        Torch -->|erro/timeout| Ollama
+        Ollama -->|sucesso| Done
+        Ollama -->|erro/timeout| Firebase
+        Firebase -->|sucesso| Done
+        Firebase -->|erro/timeout| Demo
+        Demo --> Done
+    end
+
+    Done([Retorna com AIResponseMetadata]) --> UI
+
+    subgraph UI
+        direction LR
+        StreamUpdate[Atualiza token a token\nonChunk callback]
+        FinalSet[set isLoading: false\nconteúdo final fixado]
+    end
+
+    CacheHit --> FinalSet
+
+    style Torch fill:#4ade80,color:#000
+    style Ollama fill:#60a5fa,color:#000
+    style Firebase fill:#fb923c,color:#000
+    style Demo fill:#94a3b8,color:#000
+    style CacheHit fill:#a78bfa,color:#000
+```
+
+---
+
+## Streaming — OllamaChatRepository
+
+O Ollama retorna NDJSON (um objeto JSON por linha), então não é possível usar `fetch` + `ReadableStream` no React Native. A solução usa `XMLHttpRequest` com leitura incremental do `responseText`:
+
+```mermaid
+sequenceDiagram
+    participant Store as chatStore
+    participant Ollama as OllamaChatRepository
+    participant XHR as XMLHttpRequest
+    participant Server as Ollama Server
+
+    Store->>Ollama: sendMessage(..., onChunk)
+    Ollama->>XHR: xhr.open(POST, /api/chat)
+    XHR->>Server: { model, messages, stream: true }
+
+    loop readyState === 3 (LOADING)
+        Server-->>XHR: chunk NDJSON
+        XHR->>Ollama: onreadystatechange
+        Ollama->>Ollama: newData = responseText.substring(processedLen)
+        Ollama->>Ollama: split('\n') → JSON.parse
+        Ollama->>Ollama: fullContent += chunkObj.message.content
+        Ollama-->>Store: onChunk(token)
+        Store->>Store: messages[id].content += token
+    end
+
+    Server-->>XHR: readyState === 4 (DONE)
+    XHR->>Ollama: onload (status 200)
+    Ollama->>Ollama: clearTimeout(timeoutId)
+    Ollama-->>Store: resolve({ content: fullContent })
+```
+
+---
+
+## Wiring do DI Container
+
+```mermaid
+flowchart LR
+    subgraph diStore ["diStore.ts — buildChatRepositoryWithSelector()"]
+        Torch2[TorchChatRepository]
+        Ollama2[OllamaChatRepository]
+        Firebase2[FirebaseChatRepository]
+        Mock2[MockChatRepository]
+
+        Torch2 --> Selector2
+        Ollama2 --> Selector2
+        Firebase2 --> Selector2
+        Mock2 --> Selector2
+
+        Selector2[RepositorySelector] --> Wrapper
+
+        Wrapper["wrappedRepo: ChatRepository\n(adapter que extrai .response de .metadata)"]
+    end
+
+    Wrapper -->|container.set\nTOKENS.ChatRepository| Container[DI Container]
+    Container -->|di.resolve\nTOKENS.ChatRepository| chatStore
+
+    chatStore --> ChatScreen
+
+    note["getMessages / subscribe / delete\nroteados direto ao FirebaseChatRepository"]
+    Wrapper -.-> note
+```
+
+---
+
+## Persistência e Responsabilidades por Repositório
+
+| Repositório | sendMessage | getMessages | subscribe | Streaming |
+|---|---|---|---|---|
+| **TorchChatRepository** | on-device inference | — | — | via onChunk |
+| **OllamaChatRepository** | XHR → Ollama API | — (stateless) | no-op | ✅ XHR incremental |
+| **FirebaseChatRepository** | Cloud Function | Firestore | Firestore realtime | não |
+| **MockChatRepository** | resposta demo | [] | no-op | não |
+
+Operações de leitura/escrita persistente (`getMessages`, `subscribe`, `deleteMessage`, `clearMessages`) são sempre roteadas ao `FirebaseChatRepository` pelo wrapper no `diStore`.
+
+---
+
+## Configuração por Ambiente
+
+### Variáveis de ambiente
+
 ```bash
-# Estratégia primária
-EXPO_PUBLIC_AI_PRIMARY_REPOSITORY=firebase  # torch|ollama|firebase|mock
+# Repositório primário (torch | ollama | firebase | mock)
+EXPO_PUBLIC_AI_PRIMARY_REPOSITORY=ollama
 
-# Torch config
+# Torch (on-device)
 EXPO_PUBLIC_AI_TORCH_ENABLED=true
 EXPO_PUBLIC_AI_TORCH_MODEL=distilbert-base-multilingual-cased
-EXPO_PUBLIC_AI_TORCH_MODEL_URL=https://...
+EXPO_PUBLIC_AI_TORCH_MODEL_URL=https://models.example.com/model.pt
 
-# Ollama config (dev)
+# Ollama (dev server)
 EXPO_PUBLIC_AI_OLLAMA_URL=http://localhost:11434
 EXPO_PUBLIC_AI_OLLAMA_MODEL=llama3
 ```
 
-### 4. **UI Components** (Phase 4)
+### Cadeia por ambiente
 
-#### AIStatusIndicator
-```tsx
-<AIStatusIndicator metadata={responseMetadata} />
-```
-- Mostra origem (Local/Cloud/Demo)
-- Exibe latência
-- Indica se foi cacheado
-- Cores visuais por fonte
-
-#### AITypingIndicator
-```tsx
-<AITypingIndicator visible={isLoading} source="Cloud" />
-```
-- Animação de digitação
-- Mostra qual repositório está processando
-- Feedback visual para o usuário
-
-### 5. **DI Container Integrado** (`src/store/diStore.ts`)
-```typescript
-// Automaticamente cria:
-// - TorchChatRepository
-// - OllamaChatRepository
-// - FirebaseChatRepository  
-// - MockChatRepository
-// E envolve com RepositorySelector
-
-// Wrapper invisível ao usuário - mesmo contrato de ChatRepository
-container.set(TOKENS.ChatRepository, wrappedRepo);
+```mermaid
+flowchart LR
+    subgraph dev [Desenvolvimento]
+        D1[Torch 3s] --> D2[Ollama 30s] --> D3[Firebase 10s] --> D4[Demo 1s]
+    end
+    subgraph prod [Produção]
+        P1[Torch 3s] --> P2[Firebase 10s] --> P3[Demo 1s]
+    end
+    subgraph test [Testing / Demo]
+        T1[Demo 1s]
+    end
 ```
 
-## 📝 Tipos e Interfaces
+---
+
+## Cache de Respostas
+
+- **Chave**: últimos 100 chars da última mensagem do usuário (`msg:<content>`)
+- **TTL**: 1 hora (`cacheValidityMs = 3_600_000`)
+- **Tamanho máximo**: 100 entradas (LRU — remove a mais antiga)
+- **Source na metadata**: `AIResponseSource.LOCAL_CACHED` com `latencyMs: 0`
+
+---
+
+## Monitoramento e Debug
 
 ```typescript
+import { getRepositorySelector } from '@app/store/diStore';
+
+// Stats acumulados por repositório
+const selector = getRepositorySelector();
+console.table(selector?.getStats());
+// source     | total | success | avgLatency | successRate
+// ollama     |   12  |   10    |   1800ms   |   0.83
+// firebase   |    2  |    2    |   2100ms   |   1.00
+// demo       |    0  |    0    |      0ms   |   0.00
+
+// Histórico de tentativas
+selector?.getAttempts().forEach(a =>
+  console.log(`${a.source}: ${a.success ? '✅' : '❌'} ${a.latencyMs}ms`)
+);
+```
+
+Seletor também exposto em `global.__aiRepositorySelector` para inspeção no Flipper/DevTools.
+
+---
+
+## Tipos Principais
+
+```typescript
+// src/types/ai.ts
+
 enum AIResponseSource {
-  LOCAL = 'local',              // TorchChatRepository
-  LOCAL_CACHED = 'local_cached', // Cache
-  OLLAMA = 'ollama',            // Dev server
-  CLOUD = 'cloud',              // Firebase
-  DEMO = 'demo',                // Fallback
+  LOCAL        = 'local',         // TorchChatRepository
+  LOCAL_CACHED = 'local_cached',  // Cache interno
+  OLLAMA       = 'ollama',        // OllamaChatRepository
+  CLOUD        = 'cloud',         // FirebaseChatRepository
+  DEMO         = 'demo',          // MockChatRepository
 }
 
 interface AIResponseMetadata {
   source: AIResponseSource;
   latencyMs: number;
   cached: boolean;
-  confidence?: number;
-  model?: string;
+  model?: string;      // ex: 'llama3', 'distilbert-...'
   timestamp: number;
 }
 
 interface RepositoryStats {
-  name: string;
+  source: AIResponseSource;
   totalAttempts: number;
   successCount: number;
+  failureCount: number;
   averageLatencyMs: number;
-  successRate: number; // 0-1
+  successRate: number; // 0–1
 }
 ```
 
-## 🔄 Fluxo de Execução
+---
 
-### 1. User sends message
-```typescript
-const { sendMessage } = useChatActions();
-await sendMessage("Como usar Pomodoro?");
-```
+## Referências de Código
 
-### 2. Store resolves repository
-```typescript
-const repo = useDIStore.getState().di.resolve(TOKENS.ChatRepository);
-// Returns wrapped repo with RepositorySelector
-```
-
-### 3. Selector tries in order
-```typescript
-try {
-  // 1. Try Torch (timeout 3s)
-  response = await torchRepo.sendMessage(userId, messages, systemPrompt);
-} catch {
-  try {
-    // 2. Try Ollama (timeout 30s)
-    response = await ollamaRepo.sendMessage(userId, messages, systemPrompt);
-  } catch {
-    // 3. Try Firebase Cloud Function (timeout 10s)
-    response = await firebaseRepo.sendMessage(userId, messages, systemPrompt);
-  }
-}
-// 4. If all fail, fallback to demo responses
-```
-
-### 4. Return with metadata
-```typescript
-return {
-  response: { content: "..." },
-  metadata: {
-    source: 'torch',
-    latencyMs: 350,
-    cached: false,
-    timestamp: Date.now(),
-  }
-};
-```
-
-### 5. UI displays with indicator
-```tsx
-<ChatBubble message={message} />
-<AIStatusIndicator metadata={metadata} /> {/* 🟢 Local • 350ms */}
-```
-
-## 🎯 Configuração por Ambiente
-
-### Development
-```env
-EXPO_PUBLIC_AI_PRIMARY_REPOSITORY=ollama
-EXPO_PUBLIC_AI_TORCH_ENABLED=true
-EXPO_PUBLIC_AI_OLLAMA_URL=http://localhost:11434
-```
-Cadeia: Torch → Ollama → Firebase → Demo
-
-### Production  
-```env
-EXPO_PUBLIC_AI_PRIMARY_REPOSITORY=firebase
-EXPO_PUBLIC_AI_TORCH_ENABLED=true
-```
-Cadeia: Torch → Firebase → Demo
-
-### Testing/Demo
-```env
-EXPO_PUBLIC_AI_PRIMARY_REPOSITORY=mock
-EXPO_PUBLIC_AI_TORCH_ENABLED=false
-```
-Cadeia: Demo (instantâneo)
-
-## 📊 Monitoring e Debugging
-
-### Acessar stats do repositório
-```typescript
-import { getRepositorySelector } from '@app/store/diStore';
-
-const selector = getRepositorySelector();
-const stats = selector.getStats();
-console.table(stats);
-
-// Output:
-// ┌─────────┬──────────┬────────┬──────────┬────────────┐
-// │ name    │ source   │ total  │ success  │ avgLatency │
-// ├─────────┼──────────┼────────┼──────────┼────────────┤
-// │ torch   │ local    │ 15     │ 12       │ 350ms      │
-// │ ollama  │ ollama   │ 3      │ 3        │ 1200ms     │
-// │ firebase│ cloud    │ 0      │ 0        │ 0ms        │
-// │ demo    │ demo     │ 0      │ 0        │ 0ms        │
-// └─────────┴──────────┴────────┴──────────┴────────────┘
-```
-
-### Log de tentativas
-```typescript
-const attempts = selector.getAttempts();
-attempts.forEach(att => {
-  console.log(`${att.name}: ${att.success ? '✅' : '❌'} (${att.latencyMs}ms)`);
-});
-```
-
-## 🚀 Próximos Passos
-
-### Phase 2.0 (3-6 meses)
-- ✅ Implementar modelo real no TorchChatRepository
-- ✅ Fine-tuning com dataset português
-- ✅ Otimização de tamanho (quantization)
-- ✅ A/B testing: Torch vs Cloud
-
-### Phase 3.0 (6-12 meses)
-- Modelo especializado para produtividade
-- Multi-turn conversation com contexto
-- Persistent context em Firebase
-- Fine-tuning com dados de usuários
-
-### Phase 4.0+ (Futuro)
-- Streaming responses para modelos maiores
-- Voice input/output (TTS)
-- RAG com documentos de ajuda
-- Recomendações personalizadas
-
-## ⚠️ Considerações Importantes
-
-### Quando Torch será pronto
-expo-torch está em beta. Status:
-- iOS: suporte básico, libtorch disponível
-- Android: PyTorch Mobile funcional
-- Performance: <500ms em modelos leves confirmado
-- Documentação: ainda em desenvolvimento
-
-### Plano B se Torch não funcionar
-Se expo-torch não chegar a production-ready:
-1. Usar `react-native-pytorch` como alternativa
-2. Manter Ollama como primary (mesmo custo infra)
-3. Continuar com Cloud Function fallback
-
-### Segurança
-- Dados do usuário nunca deixam dispositivo no Torch
-- Mensagens cacheadas apenas localmente
-- Firebase usa security rules por userId
-- Sem análise de dados de conversa para publicidade
-
-## 📚 Referências
-
-- AppConfig: `src/config/appConfig.ts`
-- RepositorySelector: `src/core/ai/RepositorySelector.ts`
-- TorchChatRepository: `src/data/torch/TorchChatRepository.ts`
-- Types: `src/types/ai.ts`
-- Components: `src/presentation/components/AIStatusIndicator.tsx`
-- Store: `src/store/diStore.ts`
-
-## 🔗 Arquitetura Relacionada
-
-- [Firebase Integration Guide](./FIREBASE_INTEGRATION.md)
-- [Clean Architecture](../CLAUDE.md#architecture)
-- [DI Container](../src/core/di/container.tsx)
-- [Chat Store](../src/store/chatStore.ts)
+| Arquivo | Responsabilidade |
+|---|---|
+| `src/types/ai.ts` | Enums e interfaces do sistema de IA |
+| `src/config/appConfig.ts` | Configuração de repositórios e timeouts |
+| `src/core/ai/RepositorySelector.ts` | Orquestração de fallback e cache |
+| `src/domain/repositories/ChatRepository.ts` | Contrato da interface |
+| `src/domain/entities/ChatMessage.ts` | Entidades e respostas demo |
+| `src/data/ollama/OllamaChatRepository.ts` | Streaming via XHR para Ollama |
+| `src/data/torch/TorchChatRepository.ts` | Inferência on-device (em desenvolvimento) |
+| `src/data/firebase/FirebaseChatRepository.ts` | Backend em nuvem |
+| `src/data/mock/MockChatRepository.ts` | Fallback demo sempre disponível |
+| `src/store/diStore.ts` | Wiring do DI e wrapper unificado |
+| `src/store/chatStore.ts` | Estado do chat com streaming incremental |
+| `src/presentation/screens/Chat/ChatScreen.tsx` | UI com typing indicator |

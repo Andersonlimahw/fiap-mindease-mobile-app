@@ -16,10 +16,10 @@ type AIRepositoryType = 'torch' | 'ollama' | 'firebase' | 'mock';
 type AIConfigType = {
   // Primary repository selection strategy
   primaryRepository: AIRepositoryType;
-  
+
   // Fallback chain (tried in order if primary fails)
   fallbackRepositories: AIRepositoryType[];
-  
+
   // Torch-specific config
   torch: {
     enabled: boolean;
@@ -29,14 +29,15 @@ type AIConfigType = {
     maxInputLength: number;
     timeout: number; // ms
   };
-  
+
   // Ollama config
   ollama: {
     url: string;
     model: string;
+    apiKey: string;
     timeout: number; // ms
   };
-  
+
   // Response timeout per repository (ms)
   timeouts: {
     torch: number;
@@ -151,7 +152,7 @@ validateFirebaseConfig(firebaseConfig);
 const aiConfig: AIConfigType = {
   primaryRepository: getPrimaryAIRepository(),
   fallbackRepositories: ['ollama', 'firebase', 'mock'] as AIRepositoryType[], // Will be filled dynamically
-  
+
   torch: {
     enabled: getEnv('AI_TORCH_ENABLED', 'true') === 'true',
     modelName: getEnv('AI_TORCH_MODEL', 'distilbert-base-multilingual-cased'),
@@ -160,13 +161,14 @@ const aiConfig: AIConfigType = {
     maxInputLength: 512,
     timeout: 3000, // 3s for local inference
   },
-  
+
   ollama: {
     url: getEnv('AI_OLLAMA_URL', getEnv('OLLAMA_URL', 'http://localhost:11434')),
     model: getEnv('AI_OLLAMA_MODEL', 'llama3'),
+    apiKey: getEnv('AI_OLLAMA_API_KEY', ''),
     timeout: 30000, // 30s for Ollama
   },
-  
+
   timeouts: {
     torch: 3000,   // Local on-device
     ollama: 30000, // Local/Dev server

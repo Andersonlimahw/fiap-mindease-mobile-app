@@ -41,9 +41,9 @@ function buildChatRepositoryWithSelector(): ChatRepository {
 
   // Criar wrapper que usa o seletor
   const wrappedRepo: ChatRepository = {
-    async sendMessage(userId, messages, systemPrompt) {
-      const { response, metadata } = await selector.sendMessage(userId, messages, systemPrompt);
-      
+    async sendMessage(userId, messages, systemPrompt, onChunk) {
+      const { response, metadata } = await selector.sendMessage(userId, messages, systemPrompt, onChunk);
+
       // Log do resultado (útil para debug)
       if (__DEV__) {
         console.log(
@@ -51,7 +51,7 @@ function buildChatRepositoryWithSelector(): ChatRepository {
           metadata
         );
       }
-      
+
       return response;
     },
 
@@ -97,7 +97,7 @@ function buildContainer(): Container {
     container.set(TOKENS.AuthRepository, new FirebaseAuthRepository());
     container.set(TOKENS.FileRepository, new FirebaseFileRepository());
     container.set(TOKENS.TaskRepository, new FirebaseTaskRepository());
-    
+
     // Chat com estratégia inteligente de seleção
     container.set(TOKENS.ChatRepository, buildChatRepositoryWithSelector());
   } catch (e: any) {

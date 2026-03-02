@@ -1,7 +1,11 @@
-# MindEase App
+# MindEase App — Diagramas
 
-## Diagramas de arquitetura geral
+## Arquitetura geral
 
-[Arquitetura geral](./architeture.md)
-[Autenticação](./architeture.md)
-[Produtividade e estatísticas](./architeture.md)
+- [Arquitetura geral](./architeture.md)
+- [Autenticação](./auth-flow.md)
+
+## Chat e IA
+
+- [Chat AI — fallback chain, streaming XHR, DI wiring, cache](./chat-ai-flow.md)
+- [Arquitetura híbrida de IA (documento completo)](../AI_ARCHITECTURE.md)

@@ -8,7 +8,8 @@ export interface ChatRepository {
   sendMessage(
     userId: string,
     messages: ChatMessage[],
-    systemPrompt: string
+    systemPrompt: string,
+    onChunk?: (chunk: string) => void
   ): Promise<ChatResponse>;
 
   /**

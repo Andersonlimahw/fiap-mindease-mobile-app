@@ -49,7 +49,8 @@ export class RepositorySelector {
   async sendMessage(
     userId: string,
     messages: ChatMessage[],
-    systemPrompt: string
+    systemPrompt: string,
+    onChunk?: (chunk: string) => void
   ): Promise<{ response: ChatResponse; metadata: AIResponseMetadata }> {
     // Verificar cache primeiro
     const cacheKey = this.getCacheKey(messages);
@@ -82,21 +83,26 @@ export class RepositorySelector {
         }
 
         // Aplicar timeout
-        const timeout = AppConfig.ai.timeouts[source as keyof typeof AppConfig.ai.timeouts] || 5000;
+        let timeoutKey: keyof typeof AppConfig.ai.timeouts;
+        if (source === ResponseSource.LOCAL) timeoutKey = 'torch';
+        else if (source === ResponseSource.CLOUD) timeoutKey = 'firebase';
+        else timeoutKey = source as keyof typeof AppConfig.ai.timeouts;
+
+        const timeout = AppConfig.ai.timeouts[timeoutKey] || 5000;
         const response = await Promise.race([
-          repo.sendMessage(userId, messages, systemPrompt),
+          repo.sendMessage(userId, messages, systemPrompt, onChunk),
           this.createTimeout(timeout, `${source} timeout`),
         ]);
 
         const latencyMs = Date.now() - startTime;
         let modelName: string | undefined;
-        
+
         if (source === ResponseSource.OLLAMA) {
           modelName = AppConfig.ai.ollama.model;
         } else if (source === ResponseSource.LOCAL) {
           modelName = AppConfig.ai.torch.modelName;
         }
-        
+
         lastMetadata = {
           source,
           latencyMs,

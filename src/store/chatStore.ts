@@ -54,12 +54,20 @@ export const useChatStore = create<ChatState>()(
           timestamp: Date.now(),
         };
 
+        const assistantMessageId = generateId();
+        const initialAssistantMessage: ChatMessage = {
+          id: assistantMessageId,
+          role: 'assistant',
+          content: '',
+          timestamp: Date.now(),
+        };
+
         set((state) => ({
-          messages: [...state.messages, userMessage],
+          messages: [...state.messages, userMessage, initialAssistantMessage],
           isLoading: true,
         }));
 
-        let responseContent: string;
+        let finalResponseContent: string = '';
 
         const repo = getChatRepository();
         const user = useAuthStore.getState().user;
@@ -67,30 +75,48 @@ export const useChatStore = create<ChatState>()(
 
         if (repo) {
           try {
-            const allMessages = [...get().messages];
-            const result = await repo.sendMessage(userId, allMessages, SYSTEM_PROMPT);
-            responseContent = result.content;
+            // Send context excluding the recently added empty assistant message
+            const allMessages = get().messages.filter(m => m.id !== assistantMessageId);
+
+            const result = await repo.sendMessage(userId, allMessages, SYSTEM_PROMPT, (chunk) => {
+              set((state) => {
+                const messages = [...state.messages];
+                const lastMsgIndex = messages.findIndex(m => m.id === assistantMessageId);
+                if (lastMsgIndex !== -1) {
+                  const updatedMsg = { ...messages[lastMsgIndex] };
+                  updatedMsg.content += chunk;
+                  finalResponseContent = updatedMsg.content;
+                  messages[lastMsgIndex] = updatedMsg;
+                }
+                return { messages };
+              });
+            });
+
+            finalResponseContent = result.content;
           } catch {
-            // Fallback to demo responses
-            responseContent = getAIResponse(content);
+            // Fallback to demo responses if all repositories fail
+            finalResponseContent = getAIResponse(content);
           }
         } else {
           // No repository available — use demo responses with simulated delay
           await new Promise((resolve) => setTimeout(resolve, 800 + Math.random() * 700));
-          responseContent = getAIResponse(content);
+          finalResponseContent = getAIResponse(content);
         }
 
-        const assistantMessage: ChatMessage = {
-          id: generateId(),
-          role: 'assistant',
-          content: responseContent,
-          timestamp: Date.now(),
-        };
-
-        set((state) => ({
-          messages: [...state.messages, assistantMessage],
-          isLoading: false,
-        }));
+        set((state) => {
+          const messages = [...state.messages];
+          const lastMsgIndex = messages.findIndex(m => m.id === assistantMessageId);
+          if (lastMsgIndex !== -1) {
+            messages[lastMsgIndex] = {
+              ...messages[lastMsgIndex],
+              content: finalResponseContent,
+            };
+          }
+          return {
+            messages,
+            isLoading: false,
+          };
+        });
       },
 
       clearHistory: () => {

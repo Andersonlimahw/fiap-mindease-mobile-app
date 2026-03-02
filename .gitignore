@@ -78,6 +78,7 @@ ios/*.xcodeproj/project.xcworkspace/
 ios/*.xcodeproj/xcuserdata/
 ios/*.xcodeproj/project.xcsettings
 
+.env
 .env.prod
 .env.local
 
