@@ -9,6 +9,8 @@ import { TOKENS } from "../core/di/container";
 import { useDIStore } from "./diStore";
 import { zustandSecureStorage } from "../infrastructure/storage/SecureStorage";
 import { FirebaseAPI } from "../infrastructure/firebase/firebase";
+import { NotificationService } from "@app/infrastructure/notifications/NotificationService";
+import { useNotificationStore } from "./notificationStore";
 
 type AuthState = {
   isHydrated: boolean;
@@ -55,6 +57,20 @@ export const useAuthStore = create<AuthState>()(
           const providerResult = await repo.signIn(provider, options);
           set({ user: providerResult });
           FirebaseAPI.setCurrentUserId(providerResult?.id || null);
+          // Salvar token FCM e iniciar listener de notificações
+          if (providerResult?.id) {
+            NotificationService.getFcmToken().then((token) => {
+              if (token) {
+                useNotificationStore.getState().saveFcmToken(providerResult.id, token);
+              }
+            }).catch(() => {});
+            // Iniciar listener real-time de notificações
+            useNotificationStore.getState().subscribe(providerResult.id);
+            // Handler para mensagens FCM em foreground → salvar no inbox
+            NotificationService.setOnMessageHandler((title, body, data) => {
+              useNotificationStore.getState().addFcmNotification(providerResult.id, title, body, data);
+            });
+          }
         } catch (e: any) {
           console.error("[authStore] signIn error", e);
         } finally {
@@ -78,6 +94,20 @@ export const useAuthStore = create<AuthState>()(
           const u = await repo.getCurrentUser();
           set({ user: u });
           FirebaseAPI.setCurrentUserId(u?.id || null);
+          // Salvar token FCM e iniciar listener de notificações
+          if (u?.id) {
+            NotificationService.getFcmToken().then((token) => {
+              if (token) {
+                useNotificationStore.getState().saveFcmToken(u.id, token);
+              }
+            }).catch(() => {});
+            // Iniciar listener real-time de notificações
+            useNotificationStore.getState().subscribe(u.id);
+            // Handler para mensagens FCM em foreground → salvar no inbox
+            NotificationService.setOnMessageHandler((title, body, data) => {
+              useNotificationStore.getState().addFcmNotification(u.id, title, body, data);
+            });
+          }
         } finally {
           set({ loading: false });
         }
@@ -92,6 +122,20 @@ export const useAuthStore = create<AuthState>()(
           const u = await repo.getCurrentUser();
           set({ user: u });
           FirebaseAPI.setCurrentUserId(u?.id || null);
+          // Salvar token FCM e iniciar listener de notificações
+          if (u?.id) {
+            NotificationService.getFcmToken().then((token) => {
+              if (token) {
+                useNotificationStore.getState().saveFcmToken(u.id, token);
+              }
+            }).catch(() => {});
+            // Iniciar listener real-time de notificações
+            useNotificationStore.getState().subscribe(u.id);
+            // Handler para mensagens FCM em foreground → salvar no inbox
+            NotificationService.setOnMessageHandler((title, body, data) => {
+              useNotificationStore.getState().addFcmNotification(u.id, title, body, data);
+            });
+          }
         } finally {
           set({ loading: false });
         }
@@ -105,6 +149,7 @@ export const useAuthStore = create<AuthState>()(
           await repo.signOut();
           set({ user: null });
           FirebaseAPI.setCurrentUserId(null);
+          NotificationService.cleanup();
         } finally {
           set({ loading: false });
         }
@@ -168,6 +213,18 @@ export async function initAuthStore() {
     
     useAuthStore.setState({ user: u });
     FirebaseAPI.setCurrentUserId(u?.id || null);
+    // Salvar token FCM e iniciar listener de notificações para sessão restaurada
+    if (u?.id) {
+      NotificationService.getFcmToken().then((token) => {
+        if (token) {
+          useNotificationStore.getState().saveFcmToken(u.id, token);
+        }
+      }).catch(() => {});
+      useNotificationStore.getState().subscribe(u.id);
+      NotificationService.setOnMessageHandler((title, body, data) => {
+        useNotificationStore.getState().addFcmNotification(u.id, title, body, data);
+      });
+    }
   } finally {
     useAuthStore.setState({ loading: false });
     unsubscribe = repo.onAuthStateChanged((u: User | null) => {
@@ -178,11 +235,26 @@ export async function initAuthStore() {
           repo.signOut();
           useAuthStore.setState({ user: null });
           FirebaseAPI.setCurrentUserId(null);
+          NotificationService.cleanup();
           return;
         }
-        
+
         useAuthStore.setState({ user: u });
         FirebaseAPI.setCurrentUserId(u?.id || null);
+        if (u?.id) {
+          // Salvar token FCM e iniciar listener de notificações
+          NotificationService.getFcmToken().then((token) => {
+            if (token) {
+              useNotificationStore.getState().saveFcmToken(u.id, token);
+            }
+          }).catch(() => {});
+          useNotificationStore.getState().subscribe(u.id);
+          NotificationService.setOnMessageHandler((title, body, data) => {
+            useNotificationStore.getState().addFcmNotification(u.id, title, body, data);
+          });
+        } else {
+          NotificationService.cleanup();
+        }
       } catch (error) {
         console.error("[authStore] Failed to handle auth state change:", error);
       }
@@ -194,6 +266,7 @@ export function teardownAuthStore() {
   if (unsubscribe) unsubscribe();
   unsubscribe = undefined;
   initialized = false;
+  NotificationService.cleanup();
 }
 
 // ============================================
