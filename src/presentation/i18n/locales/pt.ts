@@ -140,6 +140,7 @@ export const pt = {
     pomodoro: "Pomodoro",
     focusMode: "Foco",
     chat: "Chat",
+    notifications: 'Notificações',
   },
   titles: {
     myAccount: "Minha Conta",
@@ -271,5 +272,15 @@ export const pt = {
     selectContent: "Selecionar conteúdo",
     noContent: "Nenhum conteúdo selecionado",
     selectToRead: "Selecione um conteúdo para começar a ler",
+  },
+  notifications: {
+    title: 'Notificações',
+    empty: 'Nenhuma notificação por enquanto',
+    markAllRead: 'Marcar todas como lidas',
+    taskCreated: 'Nova tarefa criada',
+    taskCompleted: 'Tarefa concluída',
+    taskDue: 'Prazo de tarefa chegando',
+    pomodoroCompleted: 'Sessão Pomodoro concluída!',
+    pomodoroGoal: 'Meta diária atingida!',
   },
 };
