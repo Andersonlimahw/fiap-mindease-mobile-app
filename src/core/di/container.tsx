@@ -3,6 +3,7 @@ import type { FileRepository } from "@app/domain/repositories/FileRepository";
 import type { TaskRepository } from "@app/domain/repositories/TaskRepository";
 import type { ChatRepository } from "@app/domain/repositories/ChatRepository";
 import type { UserRepository } from "@app/domain/repositories/UserRepository";
+import type { NotificationRepository } from "@app/domain/repositories/NotificationRepository";
 
 export type Token<T> = symbol & { __type?: T };
 
@@ -31,6 +32,7 @@ export const TOKENS = {
   TaskRepository: Symbol("TaskRepository") as Token<TaskRepository>,
   ChatRepository: Symbol("ChatRepository") as Token<ChatRepository>,
   UserRepository: Symbol("UserRepository") as Token<UserRepository>,
+  NotificationRepository: Symbol("NotificationRepository") as Token<NotificationRepository>,
 };
 
 export function createDI(container: Container): DI {

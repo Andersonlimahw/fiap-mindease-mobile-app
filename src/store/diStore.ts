@@ -19,6 +19,8 @@ import { AIResponseSource as ResponseSource } from "@app/types/ai";
 import { ChatRepository } from "@app/domain/repositories/ChatRepository";
 import { FirebaseUserRepository } from "@app/data/firebase/FirebaseUserRepository";
 import { MockUserRepository } from "@app/data/mock/MockUserRepository";
+import { FirebaseNotificationRepository } from "@app/data/firebase/FirebaseNotificationRepository";
+import { MockNotificationRepository } from "@app/data/mock/MockNotificationRepository";
 
 type DIState = {
   container: Container;
@@ -90,6 +92,7 @@ function buildContainer(): Container {
     container.set(TOKENS.TaskRepository, MockTaskRepository);
     container.set(TOKENS.ChatRepository, new MockChatRepository());
     container.set(TOKENS.UserRepository, new MockUserRepository());
+    container.set(TOKENS.NotificationRepository, new MockNotificationRepository());
     return container;
   }
 
@@ -101,6 +104,7 @@ function buildContainer(): Container {
     container.set(TOKENS.FileRepository, new FirebaseFileRepository());
     container.set(TOKENS.TaskRepository, new FirebaseTaskRepository());
     container.set(TOKENS.UserRepository, new FirebaseUserRepository());
+    container.set(TOKENS.NotificationRepository, new FirebaseNotificationRepository());
 
     // Chat com estratégia inteligente de seleção
     container.set(TOKENS.ChatRepository, buildChatRepositoryWithSelector());
@@ -115,6 +119,7 @@ function buildContainer(): Container {
     container.set(TOKENS.TaskRepository, MockTaskRepository);
     container.set(TOKENS.ChatRepository, new MockChatRepository());
     container.set(TOKENS.UserRepository, new MockUserRepository());
+    container.set(TOKENS.NotificationRepository, new MockNotificationRepository());
   }
   return container;
 }
