@@ -59,7 +59,7 @@ export class MockChatRepository implements ChatRepository {
     };
   }
 
-  async deleteMessage(id: string): Promise<void> {
+  async deleteMessage(id: string, _userId?: string): Promise<void> {
     const index = mockMessages.findIndex((m) => m.id === id);
     if (index !== -1) {
       mockMessages.splice(index, 1);

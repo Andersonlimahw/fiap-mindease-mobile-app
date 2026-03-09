@@ -138,7 +138,7 @@ export class OllamaChatRepository implements ChatRepository {
     return () => { };
   }
 
-  async deleteMessage(id: string): Promise<void> {
+  async deleteMessage(id: string, _userId?: string): Promise<void> {
     // No-op delete
   }
 

@@ -1,5 +1,5 @@
 {
-  "name": "mindease ",
+  "name": "mindease",
   "version": "1.0.1",
   "private": true,
   "main": "index.js",
@@ -84,9 +84,13 @@
   },
   "devDependencies": {
     "@react-native-community/cli": "latest",
+    "@testing-library/jest-native": "^5.4.3",
+    "@testing-library/react-native": "^13.3.3",
     "@types/react": "~19.1.10",
     "@vitest/coverage-v8": "^2.1.9",
     "babel-preset-expo": "~54.0.0",
+    "jsdom": "^28.1.0",
+    "react-test-renderer": "^19.0.0",
     "typescript": "^5.4.0",
     "vitest": "^2.1.9"
   }

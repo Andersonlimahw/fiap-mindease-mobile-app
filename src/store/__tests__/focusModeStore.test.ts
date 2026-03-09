@@ -3,12 +3,38 @@
  * Tests Focus Mode state management and actions
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useFocusModeStore } from '../focusModeStore';
 import { DEFAULT_FOCUS_SETTINGS } from '@app/domain/entities/FocusSession';
+import { useAuthStore } from '../authStore';
+import { useDIStore } from '../diStore';
+
+const mockUserRepo = {
+  saveSettings: vi.fn(() => Promise.resolve()),
+  getSettings: vi.fn(() => Promise.resolve(null)),
+};
+
+vi.mock('../diStore', () => ({
+  useDIStore: {
+    getState: vi.fn(() => ({
+      di: {
+        resolve: vi.fn(() => mockUserRepo),
+      },
+    })),
+  },
+}));
+
+vi.mock('../authStore', () => ({
+  useAuthStore: {
+    getState: vi.fn(() => ({
+      user: { id: 'user-123' },
+    })),
+  },
+}));
 
 describe('focusModeStore', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     // Reset store to initial state before each test
     useFocusModeStore.setState({
       isActive: false,
@@ -18,6 +44,39 @@ describe('focusModeStore', () => {
       ambientSound: DEFAULT_FOCUS_SETTINGS.ambientSound,
       dimBrightness: DEFAULT_FOCUS_SETTINGS.dimBrightness,
       blockNotifications: DEFAULT_FOCUS_SETTINGS.blockNotifications,
+    });
+  });
+
+  describe('Firebase sync', () => {
+    it('should sync settings from Firebase', async () => {
+      const remoteSettings = {
+        focusMode: {
+          duration: 40,
+          ambientSound: 'rain',
+          dimBrightness: true,
+          blockNotifications: false,
+        },
+      };
+      mockUserRepo.getSettings.mockResolvedValueOnce(remoteSettings);
+
+      const { syncWithFirebase } = useFocusModeStore.getState();
+      await syncWithFirebase();
+
+      const state = useFocusModeStore.getState();
+      expect(state.duration).toBe(40);
+      expect(state.ambientSound).toBe('rain');
+    });
+
+    it('should save settings to Firebase on update', () => {
+      const { setDuration } = useFocusModeStore.getState();
+      setDuration(50);
+
+      expect(mockUserRepo.saveSettings).toHaveBeenCalledWith(
+        'user-123',
+        expect.objectContaining({
+          focusMode: expect.objectContaining({ duration: 50 }),
+        })
+      );
     });
   });
 

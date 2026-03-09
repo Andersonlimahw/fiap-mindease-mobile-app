@@ -3,6 +3,10 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import type { AmbientSound } from '@app/domain/entities/FocusSession';
 import { DEFAULT_FOCUS_SETTINGS } from '@app/domain/entities/FocusSession';
 import { zustandSecureStorage } from '@app/infrastructure/storage/SecureStorage';
+import { useDIStore } from './diStore';
+import { TOKENS } from '@app/core/di/container';
+import type { UserRepository } from '@app/domain/repositories/UserRepository';
+import { useAuthStore } from './authStore';
 
 type FocusModeState = {
   // Active state
@@ -27,9 +31,13 @@ type FocusModeState = {
   setAmbientSound: (sound: AmbientSound) => void;
   setDimBrightness: (dim: boolean) => void;
   setBlockNotifications: (block: boolean) => void;
+  syncWithFirebase: () => Promise<void>;
+  updateSettings: (settings: any) => void;
 };
 
 const STORAGE_KEY = '@mindease/focus-mode:v1';
+
+const getRepo = () => useDIStore.getState().di.resolve<UserRepository>(TOKENS.UserRepository);
 
 export const useFocusModeStore = create<FocusModeState>()(
   persist(
@@ -42,6 +50,34 @@ export const useFocusModeStore = create<FocusModeState>()(
       ambientSound: DEFAULT_FOCUS_SETTINGS.ambientSound,
       dimBrightness: DEFAULT_FOCUS_SETTINGS.dimBrightness,
       blockNotifications: DEFAULT_FOCUS_SETTINGS.blockNotifications,
+
+      syncWithFirebase: async () => {
+        const user = useAuthStore.getState().user;
+        if (!user) return;
+        
+        const repo = getRepo();
+        const remoteSettings = await repo.getSettings(user.id);
+        if (remoteSettings?.focusMode) {
+          set(remoteSettings.focusMode);
+          get().reset();
+        }
+      },
+
+      updateSettings: (newSettings: any) => {
+        set(newSettings);
+        
+        // Sync with Firebase
+        const user = useAuthStore.getState().user;
+        if (user) {
+          const updated = {
+            duration: get().duration,
+            ambientSound: get().ambientSound,
+            dimBrightness: get().dimBrightness,
+            blockNotifications: get().blockNotifications,
+          };
+          getRepo().saveSettings(user.id, { focusMode: updated }).catch(console.error);
+        }
+      },
 
       activate: () => {
         const { duration } = get();
@@ -87,22 +123,22 @@ export const useFocusModeStore = create<FocusModeState>()(
       },
 
       setDuration: (minutes: number) => {
-        set({
+        get().updateSettings({
           duration: minutes,
           timeLeft: minutes * 60,
         });
       },
 
       setAmbientSound: (sound: AmbientSound) => {
-        set({ ambientSound: sound });
+        get().updateSettings({ ambientSound: sound });
       },
 
       setDimBrightness: (dim: boolean) => {
-        set({ dimBrightness: dim });
+        get().updateSettings({ dimBrightness: dim });
       },
 
       setBlockNotifications: (block: boolean) => {
-        set({ blockNotifications: block });
+        get().updateSettings({ blockNotifications: block });
       },
     }),
     {

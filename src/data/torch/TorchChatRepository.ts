@@ -124,7 +124,7 @@ export class TorchChatRepository implements ChatRepository {
   /**
    * Deletar mensagem (não suportado)
    */
-  async deleteMessage(id: string): Promise<void> {
+  async deleteMessage(id: string, _userId?: string): Promise<void> {
     // No-op
   }
 

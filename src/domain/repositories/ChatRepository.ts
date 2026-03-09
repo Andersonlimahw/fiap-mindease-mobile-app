@@ -28,7 +28,7 @@ export interface ChatRepository {
   /**
    * Delete a message
    */
-  deleteMessage(id: string): Promise<void>;
+  deleteMessage(id: string, userId?: string): Promise<void>;
 
   /**
    * Clear all messages for a user

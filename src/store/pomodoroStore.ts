@@ -6,6 +6,10 @@ import type {
 } from '@app/domain/entities/PomodoroSession';
 import { DEFAULT_POMODORO_SETTINGS } from '@app/domain/entities/PomodoroSession';
 import { zustandSecureStorage } from '@app/infrastructure/storage/SecureStorage';
+import { useDIStore } from './diStore';
+import { TOKENS } from '@app/core/di/container';
+import type { UserRepository } from '@app/domain/repositories/UserRepository';
+import { useAuthStore } from './authStore';
 
 type PomodoroState = {
   // Timer state
@@ -32,9 +36,12 @@ type PomodoroState = {
   setMode: (mode: PomodoroMode) => void;
   updateSettings: (settings: Partial<PomodoroSettings>) => void;
   resetStats: () => void;
+  syncWithFirebase: () => Promise<void>;
 };
 
 const STORAGE_KEY = '@mindease/pomodoro:v1';
+
+const getRepo = () => useDIStore.getState().di.resolve<UserRepository>(TOKENS.UserRepository);
 
 export const usePomodoroStore = create<PomodoroState>()(
   persist(
@@ -49,6 +56,18 @@ export const usePomodoroStore = create<PomodoroState>()(
       shortBreakDuration: DEFAULT_POMODORO_SETTINGS.shortBreakDuration,
       longBreakDuration: DEFAULT_POMODORO_SETTINGS.longBreakDuration,
       sessionsUntilLongBreak: DEFAULT_POMODORO_SETTINGS.sessionsUntilLongBreak,
+
+      syncWithFirebase: async () => {
+        const user = useAuthStore.getState().user;
+        if (!user) return;
+        
+        const repo = getRepo();
+        const remoteSettings = await repo.getSettings(user.id);
+        if (remoteSettings?.pomodoro) {
+          set(remoteSettings.pomodoro);
+          get().reset();
+        }
+      },
 
       start: () => set({ isRunning: true }),
 
@@ -139,6 +158,18 @@ export const usePomodoroStore = create<PomodoroState>()(
         const { mode, isRunning } = get();
         if (!isRunning) {
           get().reset();
+        }
+
+        // Sync with Firebase
+        const user = useAuthStore.getState().user;
+        if (user) {
+          const updated = {
+            focusDuration: get().focusDuration,
+            shortBreakDuration: get().shortBreakDuration,
+            longBreakDuration: get().longBreakDuration,
+            sessionsUntilLongBreak: get().sessionsUntilLongBreak,
+          };
+          getRepo().saveSettings(user.id, { pomodoro: updated }).catch(console.error);
         }
       },
 

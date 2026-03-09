@@ -3,15 +3,96 @@
  * Tests Accessibility settings state management
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useAccessibilityStore } from '../accessibilityStore';
 import { DEFAULT_ACCESSIBILITY_SETTINGS } from '@app/domain/entities/AccessibilitySettings';
+import { useAuthStore } from '../authStore';
+import { useDIStore } from '../diStore';
+
+const mockUserRepo = {
+  saveSettings: vi.fn(() => Promise.resolve()),
+  getSettings: vi.fn(() => Promise.resolve(null)),
+};
+
+vi.mock('../diStore', () => ({
+  useDIStore: {
+    getState: vi.fn(() => ({
+      di: {
+        resolve: vi.fn(() => mockUserRepo),
+      },
+    })),
+  },
+}));
+
+vi.mock('../authStore', () => ({
+  useAuthStore: {
+    getState: vi.fn(() => ({
+      user: { id: 'user-123' },
+    })),
+  },
+}));
 
 describe('accessibilityStore', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     // Reset store to initial state before each test
     useAccessibilityStore.setState({
       settings: { ...DEFAULT_ACCESSIBILITY_SETTINGS },
+    });
+  });
+
+  describe('Firebase sync', () => {
+    it('should sync settings from Firebase', async () => {
+      const remoteSettings = {
+        accessibility: {
+          ...DEFAULT_ACCESSIBILITY_SETTINGS,
+          fontSize: 24,
+        },
+      };
+      mockUserRepo.getSettings.mockResolvedValueOnce(remoteSettings);
+
+      const { syncWithFirebase } = useAccessibilityStore.getState();
+      await syncWithFirebase();
+
+      expect(mockUserRepo.getSettings).toHaveBeenCalledWith('user-123');
+      expect(useAccessibilityStore.getState().settings.fontSize).toBe(24);
+    });
+
+    it('should save settings to Firebase on update', () => {
+      const { setFontSize } = useAccessibilityStore.getState();
+      setFontSize(22);
+
+      expect(mockUserRepo.saveSettings).toHaveBeenCalledWith(
+        'user-123',
+        expect.objectContaining({
+          accessibility: expect.objectContaining({ fontSize: 22 }),
+        })
+      );
+    });
+
+    it('should save default settings to Firebase on reset', () => {
+      useAccessibilityStore.setState({
+        settings: { ...DEFAULT_ACCESSIBILITY_SETTINGS, fontSize: 30 },
+      });
+
+      const { resetSettings } = useAccessibilityStore.getState();
+      resetSettings();
+
+      expect(mockUserRepo.saveSettings).toHaveBeenCalledWith(
+        'user-123',
+        expect.objectContaining({
+          accessibility: DEFAULT_ACCESSIBILITY_SETTINGS,
+        })
+      );
+    });
+
+    it('should not sync if user is not logged in', async () => {
+      (useAuthStore.getState as any).mockReturnValueOnce({ user: null });
+
+      const { syncWithFirebase } = useAccessibilityStore.getState();
+      await syncWithFirebase();
+
+      expect(mockUserRepo.getSettings).not.toHaveBeenCalled();
     });
   });
 

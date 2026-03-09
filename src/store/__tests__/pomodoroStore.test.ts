@@ -3,12 +3,38 @@
  * Tests Pomodoro timer state management, actions, and helpers
  */
 
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { usePomodoroStore, formatTime, formatTotalTime } from '../pomodoroStore';
 import { DEFAULT_POMODORO_SETTINGS } from '@app/domain/entities/PomodoroSession';
+import { useAuthStore } from '../authStore';
+import { useDIStore } from '../diStore';
+
+const mockUserRepo = {
+  saveSettings: vi.fn(() => Promise.resolve()),
+  getSettings: vi.fn(() => Promise.resolve(null)),
+};
+
+vi.mock('../diStore', () => ({
+  useDIStore: {
+    getState: vi.fn(() => ({
+      di: {
+        resolve: vi.fn(() => mockUserRepo),
+      },
+    })),
+  },
+}));
+
+vi.mock('../authStore', () => ({
+  useAuthStore: {
+    getState: vi.fn(() => ({
+      user: { id: 'user-123' },
+    })),
+  },
+}));
 
 describe('pomodoroStore', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     // Reset store to initial state before each test
     usePomodoroStore.setState({
       mode: 'focus',
@@ -20,6 +46,39 @@ describe('pomodoroStore', () => {
       shortBreakDuration: DEFAULT_POMODORO_SETTINGS.shortBreakDuration,
       longBreakDuration: DEFAULT_POMODORO_SETTINGS.longBreakDuration,
       sessionsUntilLongBreak: DEFAULT_POMODORO_SETTINGS.sessionsUntilLongBreak,
+    });
+  });
+
+  describe('Firebase sync', () => {
+    it('should sync settings from Firebase', async () => {
+      const remoteSettings = {
+        pomodoro: {
+          focusDuration: 45,
+          shortBreakDuration: 15,
+          longBreakDuration: 30,
+          sessionsUntilLongBreak: 2,
+        },
+      };
+      mockUserRepo.getSettings.mockResolvedValueOnce(remoteSettings);
+
+      const { syncWithFirebase } = usePomodoroStore.getState();
+      await syncWithFirebase();
+
+      const state = usePomodoroStore.getState();
+      expect(state.focusDuration).toBe(45);
+      expect(state.timeLeft).toBe(45 * 60);
+    });
+
+    it('should save settings to Firebase on update', () => {
+      const { updateSettings } = usePomodoroStore.getState();
+      updateSettings({ focusDuration: 50 });
+
+      expect(mockUserRepo.saveSettings).toHaveBeenCalledWith(
+        'user-123',
+        expect.objectContaining({
+          pomodoro: expect.objectContaining({ focusDuration: 50 }),
+        })
+      );
     });
   });
 

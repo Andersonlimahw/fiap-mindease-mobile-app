@@ -17,6 +17,8 @@ import { RepositorySelector } from "@app/core/ai/RepositorySelector";
 import type { AIResponseSource } from "@app/types/ai";
 import { AIResponseSource as ResponseSource } from "@app/types/ai";
 import type { ChatRepository } from "@app/domain/repositories/ChatRepository";
+import { FirebaseUserRepository } from "@app/data/firebase/FirebaseUserRepository";
+import { MockUserRepository } from "@app/data/mock/MockUserRepository";
 
 type DIState = {
   container: Container;
@@ -65,9 +67,9 @@ function buildChatRepositoryWithSelector(): ChatRepository {
       return cloud.subscribe(userId, callback);
     },
 
-    async deleteMessage(id) {
+    async deleteMessage(id, userId) {
       const cloud = repos[ResponseSource.CLOUD];
-      return cloud.deleteMessage(id);
+      return cloud.deleteMessage(id, userId);
     },
 
     async clearMessages(userId) {
@@ -87,6 +89,7 @@ function buildContainer(): Container {
     container.set(TOKENS.FileRepository, new MockFileRepository());
     container.set(TOKENS.TaskRepository, MockTaskRepository);
     container.set(TOKENS.ChatRepository, new MockChatRepository());
+    container.set(TOKENS.UserRepository, new MockUserRepository());
     return container;
   }
 
@@ -97,6 +100,7 @@ function buildContainer(): Container {
     container.set(TOKENS.AuthRepository, new FirebaseAuthRepository());
     container.set(TOKENS.FileRepository, new FirebaseFileRepository());
     container.set(TOKENS.TaskRepository, new FirebaseTaskRepository());
+    container.set(TOKENS.UserRepository, new FirebaseUserRepository());
 
     // Chat com estratégia inteligente de seleção
     container.set(TOKENS.ChatRepository, buildChatRepositoryWithSelector());
@@ -110,6 +114,7 @@ function buildContainer(): Container {
     container.set(TOKENS.FileRepository, new MockFileRepository());
     container.set(TOKENS.TaskRepository, MockTaskRepository);
     container.set(TOKENS.ChatRepository, new MockChatRepository());
+    container.set(TOKENS.UserRepository, new MockUserRepository());
   }
   return container;
 }

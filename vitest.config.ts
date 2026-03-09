@@ -4,15 +4,15 @@ import path from 'path';
 export default defineConfig({
   test: {
     globals: true,
-    environment: 'node',
-    include: ['src/**/*.test.ts', 'src/**/*.spec.ts'],
+    environment: 'jsdom',
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
     exclude: ['node_modules', 'android', 'ios'],
     setupFiles: ['./src/__tests__/setup.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      include: ['src/store/**/*.ts', 'src/domain/**/*.ts'],
-      exclude: ['**/*.test.ts', '**/*.spec.ts', '**/index.ts'],
+      include: ['src/store/**/*.ts', 'src/domain/**/*.ts', 'src/presentation/components/**/*.tsx', 'src/presentation/screens/**/*.tsx'],
+      exclude: ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}', '**/index.ts', '**/*.styles.ts'],
     },
   },
   resolve: {

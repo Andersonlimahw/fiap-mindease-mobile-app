@@ -6,6 +6,10 @@ import type {
 } from '@app/domain/entities/AccessibilitySettings';
 import { DEFAULT_ACCESSIBILITY_SETTINGS } from '@app/domain/entities/AccessibilitySettings';
 import { zustandSecureStorage } from '@app/infrastructure/storage/SecureStorage';
+import { useDIStore } from './diStore';
+import { TOKENS } from '@app/core/di/container';
+import type { UserRepository } from '@app/domain/repositories/UserRepository';
+import { useAuthStore } from './authStore';
 
 type AccessibilityState = {
   settings: AccessibilitySettings;
@@ -20,65 +24,79 @@ type AccessibilityState = {
   setHighContrast: (contrast: boolean) => void;
   setColorBlindMode: (mode: ColorBlindMode) => void;
   setHapticFeedback: (enabled: boolean) => void;
+  syncWithFirebase: () => Promise<void>;
 };
 
 const STORAGE_KEY = '@mindease/accessibility:v1';
+
+const getRepo = () => useDIStore.getState().di.resolve<UserRepository>(TOKENS.UserRepository);
 
 export const useAccessibilityStore = create<AccessibilityState>()(
   persist(
     (set, get) => ({
       settings: DEFAULT_ACCESSIBILITY_SETTINGS,
 
+      syncWithFirebase: async () => {
+        const user = useAuthStore.getState().user;
+        if (!user) return;
+        
+        const repo = getRepo();
+        const remoteSettings = await repo.getSettings(user.id);
+        if (remoteSettings?.accessibility) {
+          set({ settings: remoteSettings.accessibility });
+        }
+      },
+
       updateSettings: (newSettings: Partial<AccessibilitySettings>) => {
-        set((state) => ({
-          settings: { ...state.settings, ...newSettings },
-        }));
+        set((state) => {
+          const updated = { ...state.settings, ...newSettings };
+          
+          // Background sync
+          const user = useAuthStore.getState().user;
+          if (user) {
+            getRepo().saveSettings(user.id, { accessibility: updated }).catch(console.error);
+          }
+          
+          return { settings: updated };
+        });
       },
 
       resetSettings: () => {
-        set({ settings: DEFAULT_ACCESSIBILITY_SETTINGS });
+        const updated = DEFAULT_ACCESSIBILITY_SETTINGS;
+        set({ settings: updated });
+        
+        const user = useAuthStore.getState().user;
+        if (user) {
+          getRepo().saveSettings(user.id, { accessibility: updated }).catch(console.error);
+        }
       },
 
       setFontSize: (size: number) => {
-        set((state) => ({
-          settings: { ...state.settings, fontSize: size },
-        }));
+        get().updateSettings({ fontSize: size });
       },
 
       setLineHeight: (height: number) => {
-        set((state) => ({
-          settings: { ...state.settings, lineHeight: height },
-        }));
+        get().updateSettings({ lineHeight: height });
       },
 
       setLetterSpacing: (spacing: number) => {
-        set((state) => ({
-          settings: { ...state.settings, letterSpacing: spacing },
-        }));
+        get().updateSettings({ letterSpacing: spacing });
       },
 
       setReduceMotion: (reduce: boolean) => {
-        set((state) => ({
-          settings: { ...state.settings, reduceMotion: reduce },
-        }));
+        get().updateSettings({ reduceMotion: reduce });
       },
 
       setHighContrast: (contrast: boolean) => {
-        set((state) => ({
-          settings: { ...state.settings, highContrast: contrast },
-        }));
+        get().updateSettings({ highContrast: contrast });
       },
 
       setColorBlindMode: (mode: ColorBlindMode) => {
-        set((state) => ({
-          settings: { ...state.settings, colorBlindMode: mode },
-        }));
+        get().updateSettings({ colorBlindMode: mode });
       },
 
       setHapticFeedback: (enabled: boolean) => {
-        set((state) => ({
-          settings: { ...state.settings, hapticFeedback: enabled },
-        }));
+        get().updateSettings({ hapticFeedback: enabled });
       },
     }),
     {

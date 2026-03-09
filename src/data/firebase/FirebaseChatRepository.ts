@@ -18,7 +18,7 @@ import {
   doc,
 } from '@react-native-firebase/firestore';
 
-const COLLECTION_NAME = 'chatMessages';
+const COLLECTION_NAME = 'chats';
 
 /**
  * Firebase implementation of ChatRepository
@@ -28,6 +28,14 @@ const COLLECTION_NAME = 'chatMessages';
 export class FirebaseChatRepository implements ChatRepository {
   private getDb() {
     return FirebaseAPI.db ?? getFirestore();
+  }
+
+  private getChatCollection(userId: string) {
+    const db = this.getDb();
+    if (!userId) {
+      throw new Error('User ID is required');
+    }
+    return collection(db, 'users', userId, COLLECTION_NAME);
   }
 
   private parseChatMessage(id: string, data: any): ChatMessage {
@@ -52,11 +60,7 @@ export class FirebaseChatRepository implements ChatRepository {
     messages: ChatMessage[],
     _systemPrompt: string
   ): Promise<ChatResponse> {
-    const db = this.getDb();
-
-    if (!userId) {
-      throw new Error('User ID is required');
-    }
+    const chatColl = this.getChatCollection(userId);
 
     // Extract the last user message
     const lastUserMsg = messages.filter((m) => m.role === 'user').pop();
@@ -66,8 +70,7 @@ export class FirebaseChatRepository implements ChatRepository {
     }
 
     // Store user message in Firebase
-    await addDoc(collection(db, COLLECTION_NAME), {
-      userId,
+    await addDoc(chatColl, {
       role: 'user',
       content: lastUserMsg.content,
       timestamp: serverTimestamp(),
@@ -78,8 +81,7 @@ export class FirebaseChatRepository implements ChatRepository {
     const demoResponse = this.getDemoResponse(lastUserMsg.content);
 
     // Store assistant response in Firebase
-    const assistantDocRef = await addDoc(collection(db, COLLECTION_NAME), {
-      userId,
+    await addDoc(chatColl, {
       role: 'assistant',
       content: demoResponse,
       timestamp: serverTimestamp(),
@@ -94,12 +96,8 @@ export class FirebaseChatRepository implements ChatRepository {
    * Get all chat messages for a user
    */
   async getMessages(userId: string): Promise<ChatMessage[]> {
-    const db = this.getDb();
-    const q = query(
-      collection(db, COLLECTION_NAME),
-      where('userId', '==', userId),
-      orderBy('timestamp', 'asc')
-    );
+    const chatColl = this.getChatCollection(userId);
+    const q = query(chatColl, orderBy('timestamp', 'asc'));
 
     const snap = await getDocs(q);
     return snap?.docs.map((d: any) => this.parseChatMessage(d.id, d.data())) || [];
@@ -112,12 +110,8 @@ export class FirebaseChatRepository implements ChatRepository {
     userId: string,
     callback: (messages: ChatMessage[]) => void
   ): () => void {
-    const db = this.getDb();
-    const q = query(
-      collection(db, COLLECTION_NAME),
-      where('userId', '==', userId),
-      orderBy('timestamp', 'asc')
-    );
+    const chatColl = this.getChatCollection(userId);
+    const q = query(chatColl, orderBy('timestamp', 'asc'));
 
     const unsub = onSnapshot(q, (snap: any) => {
       const messages =
@@ -130,10 +124,14 @@ export class FirebaseChatRepository implements ChatRepository {
 
   /**
    * Delete a message
+   * Note: This now requires userId to find the correct document in the subcollection
    */
-  async deleteMessage(id: string): Promise<void> {
+  async deleteMessage(id: string, userId?: string): Promise<void> {
+    if (!userId) {
+      throw new Error('User ID is required for subcollection deletion');
+    }
     const db = this.getDb();
-    const docRef = doc(db, COLLECTION_NAME, id);
+    const docRef = doc(db, 'users', userId, COLLECTION_NAME, id);
     await deleteDoc(docRef);
   }
 
@@ -141,10 +139,8 @@ export class FirebaseChatRepository implements ChatRepository {
    * Clear all messages for a user
    */
   async clearMessages(userId: string): Promise<void> {
-    const db = this.getDb();
-    const q = query(collection(db, COLLECTION_NAME), where('userId', '==', userId));
-
-    const snap = await getDocs(q);
+    const chatColl = this.getChatCollection(userId);
+    const snap = await getDocs(chatColl);
     for (const doc_ of snap.docs) {
       await deleteDoc(doc_.ref);
     }

@@ -147,83 +147,136 @@ describe('tasksStore', () => {
     });
   });
 
-  describe('task mutations', () => {
-    it('addTask should call repository and toggle loading state', async () => {
-      repo.create.mockResolvedValue(createTask());
+  describe('task mutations with Optimistic UI', () => {
+    it('addTask should update state immediately (optimistic)', async () => {
+      let resolveRepo: (value: Task) => void = () => {};
+      repo.create.mockReturnValue(new Promise((resolve) => { resolveRepo = resolve; }));
 
-      const promise = useTasksStore.getState().addTask({
+      const addTaskPromise = useTasksStore.getState().addTask({
         userId: 'user-1',
-        title: 'New',
+        title: 'Optimistic Task',
         description: '',
         priority: 'high',
         completed: false,
         subTasks: [],
       });
 
-      expect(useTasksStore.getState().loading).toBe(true);
-      await promise;
+      // State should be updated immediately
+      const stateAfterCall = useTasksStore.getState();
+      expect(stateAfterCall.tasks).toHaveLength(1);
+      expect(stateAfterCall.tasks[0].title).toBe('Optimistic Task');
+      expect(stateAfterCall.tasks[0].id).toMatch(/^temp-/);
+      expect(stateAfterCall.loading).toBe(true);
 
-      expect(repo.create).toHaveBeenCalledTimes(1);
+      // Resolve repository
+      resolveRepo(createTask({ title: 'Optimistic Task', id: 'real-id' }));
+      await addTaskPromise;
+
       expect(useTasksStore.getState().loading).toBe(false);
     });
 
-    it('addTask should capture repository errors', async () => {
-      repo.create.mockRejectedValue(new Error('cannot create'));
+    it('addTask should rollback on failure', async () => {
+      repo.create.mockRejectedValue(new Error('API Error'));
+      useTasksStore.setState({ tasks: [] });
 
       await useTasksStore.getState().addTask({
         userId: 'user-1',
-        title: 'fail',
+        title: 'Failed Task',
         description: '',
         priority: 'low',
         completed: false,
         subTasks: [],
       });
 
-      expect(useTasksStore.getState().error).toBe('cannot create');
-      expect(useTasksStore.getState().loading).toBe(false);
+      expect(useTasksStore.getState().tasks).toHaveLength(0);
+      expect(useTasksStore.getState().error).toBe('API Error');
     });
 
-    it('updateTask should forward updates to the repository', async () => {
-      repo.update.mockResolvedValue(createTask());
-      await useTasksStore.getState().updateTask('task-123', { title: 'Updated' });
+    it('updateTask should update state immediately', async () => {
+      const initialTask = createTask({ id: 't1', title: 'Old' });
+      useTasksStore.setState({ tasks: [initialTask] });
 
-      expect(repo.update).toHaveBeenCalledWith('task-123', { title: 'Updated' });
+      repo.update.mockResolvedValue({ ...initialTask, title: 'New' });
+
+      const promise = useTasksStore.getState().updateTask('t1', { title: 'New' });
+      
+      // Immediate update
+      expect(useTasksStore.getState().tasks[0].title).toBe('New');
+      
+      await promise;
     });
 
-    it('deleteTask should invoke repository delete', async () => {
+    it('deleteTask should remove task immediately', async () => {
+      const task = createTask({ id: 't1' });
+      useTasksStore.setState({ tasks: [task] });
+
       repo.delete.mockResolvedValue(undefined);
-      await useTasksStore.getState().deleteTask('task-123');
 
-      expect(repo.delete).toHaveBeenCalledWith('task-123');
+      const promise = useTasksStore.getState().deleteTask('t1');
+      
+      // Immediate removal
+      expect(useTasksStore.getState().tasks).toHaveLength(0);
+      
+      await promise;
     });
 
-    it('toggleTask should flip completion via repository', async () => {
-      repo.toggleTask.mockResolvedValue(createTask({ completed: true }));
-      await useTasksStore.getState().toggleTask('task-123');
+    it('toggleTask should update completion state immediately', async () => {
+      const task = createTask({ id: 't1', completed: false });
+      useTasksStore.setState({ tasks: [task] });
 
-      expect(repo.toggleTask).toHaveBeenCalledWith('task-123');
+      repo.toggleTask.mockResolvedValue({ ...task, completed: true });
+
+      const promise = useTasksStore.getState().toggleTask('t1');
+      
+      // Immediate toggle
+      expect(useTasksStore.getState().tasks[0].completed).toBe(true);
+      
+      await promise;
     });
 
-    it('subtask helpers should call repository implementations', async () => {
-      repo.addSubTask.mockResolvedValue(createTask());
-      repo.toggleSubTask.mockResolvedValue(createTask());
-      repo.deleteSubTask.mockResolvedValue(createTask());
+    it('addSubTask should add subtask immediately', async () => {
+      const task = createTask({ id: 't1', subTasks: [] });
+      useTasksStore.setState({ tasks: [task] });
 
-      await useTasksStore.getState().addSubTask('task-1', 'Sub task');
-      await useTasksStore.getState().toggleSubTask('task-1', 'sub-1');
-      await useTasksStore.getState().deleteSubTask('task-1', 'sub-1');
+      repo.addSubTask.mockResolvedValue({ ...task, subTasks: [{ id: 's1', title: 'Sub', completed: false }] });
 
-      expect(repo.addSubTask).toHaveBeenCalledWith('task-1', 'Sub task');
-      expect(repo.toggleSubTask).toHaveBeenCalledWith('task-1', 'sub-1');
-      expect(repo.deleteSubTask).toHaveBeenCalledWith('task-1', 'sub-1');
+      const promise = useTasksStore.getState().addSubTask('t1', 'Sub');
+      
+      // Immediate subtask
+      expect(useTasksStore.getState().tasks[0].subTasks).toHaveLength(1);
+      expect(useTasksStore.getState().tasks[0].subTasks[0].title).toBe('Sub');
+      
+      await promise;
     });
 
-    it('should set error state when mutation fails', async () => {
-      repo.update.mockRejectedValue(new Error('update failed'));
+    it('toggleSubTask should update subtask completion immediately', async () => {
+      const subTask = { id: 's1', title: 'Sub', completed: false };
+      const task = createTask({ id: 't1', subTasks: [subTask] });
+      useTasksStore.setState({ tasks: [task] });
 
-      await useTasksStore.getState().updateTask('task-1', { title: 'a' });
+      repo.toggleSubTask.mockResolvedValue({ ...task, subTasks: [{ ...subTask, completed: true }] });
 
-      expect(useTasksStore.getState().error).toBe('update failed');
+      const promise = useTasksStore.getState().toggleSubTask('t1', 's1');
+      
+      // Immediate toggle
+      expect(useTasksStore.getState().tasks[0].subTasks[0].completed).toBe(true);
+      
+      await promise;
+    });
+
+    it('deleteSubTask should remove subtask immediately', async () => {
+      const subTask = { id: 's1', title: 'Sub', completed: false };
+      const task = createTask({ id: 't1', subTasks: [subTask] });
+      useTasksStore.setState({ tasks: [task] });
+
+      repo.deleteSubTask.mockResolvedValue({ ...task, subTasks: [] });
+
+      const promise = useTasksStore.getState().deleteSubTask('t1', 's1');
+      
+      // Immediate removal
+      expect(useTasksStore.getState().tasks[0].subTasks).toHaveLength(0);
+      
+      await promise;
     });
   });
 

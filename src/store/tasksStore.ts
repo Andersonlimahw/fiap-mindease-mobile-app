@@ -62,13 +62,24 @@ export const useTasksStore = create<TasksState>()(
           .getState()
           .di.resolve<TaskRepository>(TOKENS.TaskRepository);
 
-        set({ loading: true, error: null });
+        const previousTasks = get().tasks;
+        const optimisticTask: Task = {
+          ...input,
+          id: `temp-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`,
+          createdAt: Date.now(),
+        };
+
+        set({
+          tasks: [optimisticTask, ...previousTasks],
+          loading: true,
+          error: null,
+        });
 
         try {
           await repo.create(input);
         } catch (e: any) {
           console.error('[tasksStore] addTask error', e);
-          set({ error: e.message || 'Failed to add task' });
+          set({ tasks: previousTasks, error: e.message || 'Failed to add task' });
         } finally {
           set({ loading: false });
         }
@@ -79,11 +90,18 @@ export const useTasksStore = create<TasksState>()(
           .getState()
           .di.resolve<TaskRepository>(TOKENS.TaskRepository);
 
+        const previousTasks = get().tasks;
+        set({
+          tasks: previousTasks.map((t) =>
+            t.id === id ? { ...t, ...updates, updatedAt: Date.now() } : t
+          ),
+        });
+
         try {
           await repo.update(id, updates);
         } catch (e: any) {
           console.error('[tasksStore] updateTask error', e);
-          set({ error: e.message || 'Failed to update task' });
+          set({ tasks: previousTasks, error: e.message || 'Failed to update task' });
         }
       },
 
@@ -92,11 +110,16 @@ export const useTasksStore = create<TasksState>()(
           .getState()
           .di.resolve<TaskRepository>(TOKENS.TaskRepository);
 
+        const previousTasks = get().tasks;
+        set({
+          tasks: previousTasks.filter((t) => t.id !== id),
+        });
+
         try {
           await repo.delete(id);
         } catch (e: any) {
           console.error('[tasksStore] deleteTask error', e);
-          set({ error: e.message || 'Failed to delete task' });
+          set({ tasks: previousTasks, error: e.message || 'Failed to delete task' });
         }
       },
 
@@ -105,11 +128,27 @@ export const useTasksStore = create<TasksState>()(
           .getState()
           .di.resolve<TaskRepository>(TOKENS.TaskRepository);
 
+        const previousTasks = get().tasks;
+        set({
+          tasks: previousTasks.map((t) => {
+            if (t.id === id) {
+              const completed = !t.completed;
+              return {
+                ...t,
+                completed,
+                completedAt: completed ? Date.now() : undefined,
+                updatedAt: Date.now(),
+              };
+            }
+            return t;
+          }),
+        });
+
         try {
           await repo.toggleTask(id);
         } catch (e: any) {
           console.error('[tasksStore] toggleTask error', e);
-          set({ error: e.message || 'Failed to toggle task' });
+          set({ tasks: previousTasks, error: e.message || 'Failed to toggle task' });
         }
       },
 
@@ -118,11 +157,26 @@ export const useTasksStore = create<TasksState>()(
           .getState()
           .di.resolve<TaskRepository>(TOKENS.TaskRepository);
 
+        const previousTasks = get().tasks;
+        const tempSubId = `sub-temp-${Date.now()}`;
+        
+        set({
+          tasks: previousTasks.map((t) => {
+            if (t.id === taskId) {
+              return {
+                ...t,
+                subTasks: [...t.subTasks, { id: tempSubId, title, completed: false }],
+              };
+            }
+            return t;
+          }),
+        });
+
         try {
           await repo.addSubTask(taskId, title);
         } catch (e: any) {
           console.error('[tasksStore] addSubTask error', e);
-          set({ error: e.message || 'Failed to add subtask' });
+          set({ tasks: previousTasks, error: e.message || 'Failed to add subtask' });
         }
       },
 
@@ -131,11 +185,26 @@ export const useTasksStore = create<TasksState>()(
           .getState()
           .di.resolve<TaskRepository>(TOKENS.TaskRepository);
 
+        const previousTasks = get().tasks;
+        set({
+          tasks: previousTasks.map((t) => {
+            if (t.id === taskId) {
+              return {
+                ...t,
+                subTasks: t.subTasks.map((st) =>
+                  st.id === subTaskId ? { ...st, completed: !st.completed } : st
+                ),
+              };
+            }
+            return t;
+          }),
+        });
+
         try {
           await repo.toggleSubTask(taskId, subTaskId);
         } catch (e: any) {
           console.error('[tasksStore] toggleSubTask error', e);
-          set({ error: e.message || 'Failed to toggle subtask' });
+          set({ tasks: previousTasks, error: e.message || 'Failed to toggle subtask' });
         }
       },
 
@@ -144,11 +213,24 @@ export const useTasksStore = create<TasksState>()(
           .getState()
           .di.resolve<TaskRepository>(TOKENS.TaskRepository);
 
+        const previousTasks = get().tasks;
+        set({
+          tasks: previousTasks.map((t) => {
+            if (t.id === taskId) {
+              return {
+                ...t,
+                subTasks: t.subTasks.filter((st) => st.id !== subTaskId),
+              };
+            }
+            return t;
+          }),
+        });
+
         try {
           await repo.deleteSubTask(taskId, subTaskId);
         } catch (e: any) {
           console.error('[tasksStore] deleteSubTask error', e);
-          set({ error: e.message || 'Failed to delete subtask' });
+          set({ tasks: previousTasks, error: e.message || 'Failed to delete subtask' });
         }
       },
 
