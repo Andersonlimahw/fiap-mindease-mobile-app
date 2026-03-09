@@ -12,6 +12,9 @@
 - Shared theme tokens for consistent colors, spacing, and typography
 - Adaptive MindEase theme with light/dark preference and persistent spacing/type tokens
 
+## Figma:
+[MindEase UI/UX](https://www.figma.com/design/p6jsQDxXRoS8ukHQ9a6Kff/MindEase-UI-UX?node-id=11-5253&t=VZfYF8xKgwRlcss0-1)
+
 ## Project Structure
 
 - app.json: Expo app configuration
