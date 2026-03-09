@@ -28,7 +28,7 @@
       "@utils/*": ["src/utils/*"]
     }
   },
-  "include": ["src", "App.tsx"],
+  "include": ["src", "App.tsx", "vitest.config.ts"],
   "exclude": ["node_modules"],
   "extends": "expo/tsconfig.base"
 }

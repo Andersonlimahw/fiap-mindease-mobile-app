@@ -34,14 +34,18 @@ export class FirebaseTaskRepository implements TaskRepository {
   }
 
   private parseTask(id: string, data: any): Task {
-    const createdAt = data.createdAt?.toMillis
-      ? data.createdAt.toMillis()
-      : Number(data.createdAt) || Date.now();
-    const completedAt = data.completedAt?.toMillis
-      ? data.completedAt.toMillis()
-      : data.completedAt
-      ? Number(data.completedAt)
-      : undefined;
+    const toMillis = (value: any): number | undefined => {
+      if (!value) return undefined;
+      if (typeof value.toMillis === 'function') return value.toMillis();
+      const num = Number(value);
+      if (!isNaN(num)) return num;
+      // ISO string fallback (e.g. tasks created by web app before the serverTimestamp fix)
+      const fromDate = new Date(value).getTime();
+      return isNaN(fromDate) ? undefined : fromDate;
+    };
+
+    const createdAt = toMillis(data.createdAt) ?? Date.now();
+    const completedAt = toMillis(data.completedAt);
 
     return {
       id,

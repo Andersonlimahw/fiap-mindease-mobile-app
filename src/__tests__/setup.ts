@@ -6,10 +6,8 @@
 import { vi, beforeEach, afterEach } from 'vitest';
 
 // Mock zustand persist middleware to use in-memory storage
-vi.mock('zustand/middleware', async (importOriginal) => {
-  const actual = await importOriginal<typeof import('zustand/middleware')>();
+vi.mock('zustand/middleware', () => {
   return {
-    ...actual,
     persist: (config: any) => config,
     createJSONStorage: () => ({
       getItem: vi.fn(() => null),

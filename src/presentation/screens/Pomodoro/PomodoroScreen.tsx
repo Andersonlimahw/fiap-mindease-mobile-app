@@ -23,6 +23,7 @@ import {
   formatTotalTime,
 } from '@store/pomodoroStore';
 import type { PomodoroMode } from '@app/domain/entities/PomodoroSession';
+import { usePomodoroAlert } from '@app/presentation/hooks/usePomodoroAlert';
 
 const MODE_COLORS: Record<PomodoroMode, string> = {
   focus: '#DC2626',
@@ -41,6 +42,9 @@ export function PomodoroScreen() {
   const settings = usePomodoroSettings();
   const { start, pause, reset, skip, tick, setMode, updateSettings } =
     usePomodoroActions();
+
+  // Handle pomodoro alert sounds
+  usePomodoroAlert(mode);
 
   const [settingsVisible, setSettingsVisible] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);

@@ -9,9 +9,7 @@ import { useDIStore } from '@store/diStore';
 import { TOKENS } from '@app/core/di/container';
 
 // Helper to configure the mock DI to return a specific ChatRepository
-function mockChatRepository(repo: {
-  sendMessage: ReturnType<typeof vi.fn>;
-} | null) {
+function mockChatRepository(repo: any) {
   vi.mocked(useDIStore.getState).mockReturnValue({
     di: {
       resolve: vi.fn((token: unknown) => {
@@ -53,10 +51,12 @@ describe('chatStore', () => {
       const promise = sendMessage('Hello');
 
       // Check that user message was added immediately
+      // Note: Now we add both user message AND an empty assistant message for streaming
       const state = useChatStore.getState();
-      expect(state.messages.length).toBe(1);
+      expect(state.messages.length).toBe(2);
       expect(state.messages[0].role).toBe('user');
       expect(state.messages[0].content).toBe('Hello');
+      expect(state.messages[1].role).toBe('assistant');
 
       await promise;
     });

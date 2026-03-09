@@ -1,13 +1,14 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-import type { User } from "../domain/entities/User";
-import type { AuthRepository } from "../domain/repositories/AuthRepository";
-import type { AuthProvider } from "../domain/entities/AuthProvider";
+import { User } from "../domain/entities/User";
+import { AuthRepository } from "../domain/repositories/AuthRepository";
+import { AuthProvider } from "../domain/entities/AuthProvider";
 
 import { TOKENS } from "../core/di/container";
 import { useDIStore } from "./diStore";
 import { zustandSecureStorage } from "../infrastructure/storage/SecureStorage";
+import { FirebaseAPI } from "../infrastructure/firebase/firebase";
 
 type AuthState = {
   isHydrated: boolean;
@@ -53,6 +54,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           const providerResult = await repo.signIn(provider, options);
           set({ user: providerResult });
+          FirebaseAPI.setCurrentUserId(providerResult?.id || null);
         } catch (e: any) {
           console.error("[authStore] signIn error", e);
         } finally {
@@ -62,7 +64,9 @@ export const useAuthStore = create<AuthState>()(
       setPartialProfile(patch) {
         const user = get().user;
         if (!user) return;
-        set({ user: { ...user, ...patch } });
+        const updated = { ...user, ...patch };
+        set({ user: updated });
+        FirebaseAPI.setCurrentUserId(updated.id);
       },
       async signUp(options: { email: string; password: string }) {
         const repo = useDIStore
@@ -73,6 +77,7 @@ export const useAuthStore = create<AuthState>()(
           await repo.signUp(options);
           const u = await repo.getCurrentUser();
           set({ user: u });
+          FirebaseAPI.setCurrentUserId(u?.id || null);
         } finally {
           set({ loading: false });
         }
@@ -86,6 +91,7 @@ export const useAuthStore = create<AuthState>()(
           await repo.signIn("anonymous");
           const u = await repo.getCurrentUser();
           set({ user: u });
+          FirebaseAPI.setCurrentUserId(u?.id || null);
         } finally {
           set({ loading: false });
         }
@@ -98,6 +104,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           await repo.signOut();
           set({ user: null });
+          FirebaseAPI.setCurrentUserId(null);
         } finally {
           set({ loading: false });
         }
@@ -116,6 +123,14 @@ export const useAuthStore = create<AuthState>()(
         };
       },
       onRehydrateStorage: (state) => {
+        // If the rehydrated user has a numeric-only ID, it's an old Google ID
+        // that hasn't been unified with Firebase UID.
+        if (state && state.user && /^\d+$/.test(state.user.id)) {
+          console.log("[authStore] Invalidating old numeric Google ID:", state.user.id);
+          state.user = null;
+          FirebaseAPI.setCurrentUserId(null);
+        }
+
         state &&
           state.isHydrated == false &&
           state &&
@@ -142,13 +157,32 @@ export async function initAuthStore() {
     .getState()
     .di.resolve<AuthRepository>(TOKENS.AuthRepository);
   try {
-    const u = await repo.getCurrentUser();
+    let u = await repo.getCurrentUser();
+    
+    // Safety check: if we somehow got a numeric Google ID, ignore it and force sign-in
+    if (u && /^\d+$/.test(u.id)) {
+      console.warn("[authStore] init found old numeric Google ID, clearing session:", u.id);
+      await repo.signOut();
+      u = null;
+    }
+    
     useAuthStore.setState({ user: u });
+    FirebaseAPI.setCurrentUserId(u?.id || null);
   } finally {
     useAuthStore.setState({ loading: false });
     unsubscribe = repo.onAuthStateChanged((u: User | null) => {
       try {
+        // Same safety check for auth state changes
+        if (u && /^\d+$/.test(u.id)) {
+          console.warn("[authStore] state change found old numeric Google ID:", u.id);
+          repo.signOut();
+          useAuthStore.setState({ user: null });
+          FirebaseAPI.setCurrentUserId(null);
+          return;
+        }
+        
         useAuthStore.setState({ user: u });
+        FirebaseAPI.setCurrentUserId(u?.id || null);
       } catch (error) {
         console.error("[authStore] Failed to handle auth state change:", error);
       }

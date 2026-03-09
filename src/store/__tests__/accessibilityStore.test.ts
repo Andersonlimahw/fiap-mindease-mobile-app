@@ -11,7 +11,7 @@ import { useDIStore } from '../diStore';
 
 const mockUserRepo = {
   saveSettings: vi.fn(() => Promise.resolve()),
-  getSettings: vi.fn(() => Promise.resolve(null)),
+  getSettings: vi.fn().mockResolvedValue(null),
 };
 
 vi.mock('../diStore', () => ({

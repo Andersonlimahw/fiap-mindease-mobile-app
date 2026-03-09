@@ -14,11 +14,9 @@ const createAuthRepoMock = () => ({
   onAuthStateChanged: vi.fn(),
 });
 
-const mockedUseDIStore = useDIStore as unknown as {
-  getState: ReturnType<typeof vi.fn>;
-};
+const mockedUseDIStore = useDIStore as any;
 
-const mockDIWithRepo = (repo: ReturnType<typeof createAuthRepoMock>) => {
+const mockDIWithRepo = (repo: any) => {
   mockedUseDIStore.getState.mockReturnValue({
     di: {
       resolve: vi.fn((token: unknown) => {
@@ -32,7 +30,7 @@ const mockDIWithRepo = (repo: ReturnType<typeof createAuthRepoMock>) => {
 };
 
 describe('authStore', () => {
-  let repo: ReturnType<typeof createAuthRepoMock>;
+  let repo: any;
   const baseUser: User = { id: 'user-1', name: 'Test User', email: 'test@mindease.app' };
 
   beforeEach(() => {
@@ -100,7 +98,7 @@ describe('authStore', () => {
     const unsubscribe = vi.fn();
     repo.getCurrentUser.mockResolvedValue(baseUser);
     let listener: (user: User | null) => void = () => {};
-    repo.onAuthStateChanged.mockImplementation((cb) => {
+    repo.onAuthStateChanged.mockImplementation((cb: (user: User | null) => void) => {
       listener = cb;
       return unsubscribe;
     });

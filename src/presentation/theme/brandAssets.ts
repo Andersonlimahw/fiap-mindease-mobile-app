@@ -15,4 +15,7 @@ export const brandLogos: BrandLogos = {
   neon: {
     // Provide a logo if available; otherwise the UI will render the brand name
   },
+  bytebank: {
+    // Provide a logo if available; otherwise the UI will render the brand name
+  },
 };

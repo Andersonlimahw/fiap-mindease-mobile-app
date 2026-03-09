@@ -37,3 +37,5 @@ export const MODE_LABELS: Record<PomodoroMode, string> = {
   'short-break': 'Short Break',
   'long-break': 'Long Break',
 };
+
+export const POMODORO_ALERT_SOUND = 'https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3';

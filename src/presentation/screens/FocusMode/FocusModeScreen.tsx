@@ -15,6 +15,7 @@ import {
 } from '@store/focusModeStore';
 import { formatTime } from '@store/pomodoroStore';
 import type { AmbientSound } from '@app/domain/entities/FocusSession';
+import { useAmbientSound } from '@app/presentation/hooks/useAmbientSound';
 
 const DURATION_OPTIONS = [15, 25, 30, 45, 60];
 
@@ -49,6 +50,9 @@ export function FocusModeScreen() {
     setDimBrightness,
     setBlockNotifications,
   } = useFocusActions();
+
+  // Handle ambient sound playback
+  const { isLoading } = useAmbientSound(settings.ambientSound, isActive && isRunning);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -284,10 +288,17 @@ export function FocusModeScreen() {
 
         {/* Activate Button */}
         <TouchableOpacity
-          style={[styles.activateButton, { backgroundColor: FOCUS_COLOR }]}
+          style={[
+            styles.activateButton,
+            { backgroundColor: FOCUS_COLOR },
+            isLoading && { opacity: 0.7 },
+          ]}
           onPress={handleActivate}
+          disabled={isLoading}
         >
-          <Text style={styles.activateText}>{t('focusMode.activate')}</Text>
+          <Text style={styles.activateText}>
+            {isLoading ? 'Loading sound...' : t('focusMode.activate')}
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

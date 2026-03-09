@@ -138,18 +138,28 @@ export const FirebaseAPI = {
   get app(): any {
     return getFirebaseApp();
   },
-  // For native callers expecting sync access, return RNFB instance immediately; on web, this will be a promise-aware getter via `getDb()` below.
+  /**
+   * Returns the Firestore instance if initialized, otherwise null.
+   * Callers should use getDb() or ensure initFirebase() was called.
+   */
   get db(): any {
-    return firestoreInstance ?? ensureFirestore();
+    return firestoreInstance;
   },
   async getDb() {
     return ensureFirestore();
   },
+  /**
+   * Returns the Storage instance if initialized, otherwise null.
+   */
   get storage() {
-    return fireStorageInstance ?? getFireStorage();
+    return fireStorageInstance;
   },
   getCurrentUserId() {
     return currentUserId;
+  },
+  setCurrentUserId(userId: string | null) {
+    // Call the module-scope function directly to avoid naming collision issues
+    setCurrentUserId(userId);
   },
 };
 

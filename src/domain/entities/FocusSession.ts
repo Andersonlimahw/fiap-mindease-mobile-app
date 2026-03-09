@@ -52,3 +52,11 @@ export const AMBIENT_SOUND_ICONS: Record<AmbientSound, string> = {
   cafe: 'local-cafe',
   'white-noise': 'graphic-eq',
 };
+
+export const SOUND_ASSETS: Record<Exclude<AmbientSound, 'none'>, string> = {
+  rain: 'https://assets.mixkit.co/active_storage/sfx/2357/2357-preview.mp3',
+  forest: 'https://assets.mixkit.co/active_storage/sfx/2436/2436-preview.mp3',
+  ocean: 'https://assets.mixkit.co/active_storage/sfx/1110/1110-preview.mp3',
+  cafe: 'https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3',
+  'white-noise': 'https://assets.mixkit.co/active_storage/sfx/2573/2573-preview.mp3',
+};
