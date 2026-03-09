@@ -14,6 +14,7 @@ import { rootNavigatorStyles as styles } from "./RootNavigator.styles";
 import { useI18n } from "../i18n/I18nProvider";
 import { useTheme, type AppTheme } from "../theme/theme";
 import { Loading } from "../components/Loading";
+import { useUnreadCount } from "@store/notificationStore";
 
 // Telas críticas (carregadas imediatamente)
 import { LoginScreen } from "../screens/Auth/LoginScreen";
@@ -62,6 +63,11 @@ const ContentReaderScreen = lazy(() =>
     default: m.ContentReaderScreen,
   }))
 );
+const NotificationsScreen = lazy(() =>
+  import("../screens/Notifications/NotificationsScreen").then((m) => ({
+    default: m.NotificationsScreen,
+  }))
+);
 
 /**
  * HOC para envolver componentes lazy em Suspense
@@ -87,6 +93,7 @@ const LazyFocusMode = withSuspense(FocusModeScreen);
 const LazyChat = withSuspense(ChatScreen);
 const LazyAccessibility = withSuspense(AccessibilityScreen);
 const LazyContentReader = withSuspense(ContentReaderScreen);
+const LazyNotifications = withSuspense(NotificationsScreen);
 
 type AuthStackParamList = {
   Onboarding: undefined;
@@ -100,6 +107,7 @@ type AppTabParamList = {
   Pomodoro: undefined;
   FocusMode: undefined;
   Chat: undefined;
+  Notifications: undefined;
 };
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
@@ -221,6 +229,35 @@ const centerButtonStyles = StyleSheet.create({
   },
 });
 
+function NotificationTabIcon({ color, size }: { color: string; size: number }) {
+  const unreadCount = useUnreadCount();
+  return (
+    <View style={{ position: 'relative' }}>
+      <MaterialIcons name="notifications" size={size} color={color} />
+      {unreadCount > 0 && (
+        <View
+          style={{
+            position: 'absolute',
+            top: -4,
+            right: -6,
+            backgroundColor: '#EF4444',
+            borderRadius: 8,
+            minWidth: 16,
+            height: 16,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingHorizontal: 3,
+          }}
+        >
+          <Text style={{ color: '#fff', fontSize: 9, fontWeight: '700', lineHeight: 12 }}>
+            {unreadCount > 9 ? '9+' : String(unreadCount)}
+          </Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
 function AppTabs() {
   const theme = useTheme();
   const { t } = useI18n();
@@ -308,6 +345,17 @@ function AppTabs() {
         options={{
           tabBarLabel: t("tabs.focusMode"),
           headerTitle: t("focusMode.title"),
+        }}
+      />
+      <Tab.Screen
+        name="Notifications"
+        component={LazyNotifications}
+        options={{
+          tabBarLabel: t('tabs.notifications'),
+          headerTitle: t('notifications.title'),
+          tabBarIcon: ({ color, size }) => (
+            <NotificationTabIcon color={color} size={size} />
+          ),
         }}
       />
     </Tab.Navigator>

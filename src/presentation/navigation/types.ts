@@ -12,6 +12,7 @@ export type AppTabParamList = {
   Pomodoro: undefined;
   FocusMode: undefined;
   Chat: undefined;
+  Notifications: undefined;
 };
 
 export type RootStackParamList = {
