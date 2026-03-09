@@ -323,3 +323,47 @@ export const ensureMediaPermissions = async (
     return false;
   }
 };
+
+/**
+ * Solicita permissão de notificação push.
+ * iOS: usa @react-native-firebase/messaging
+ * Android 13+ (API 33+): usa react-native-permissions POST_NOTIFICATIONS
+ * Android < 13: concedido por padrão
+ */
+export const requestNotificationPermission = async (): Promise<boolean> => {
+  try {
+    if (Platform.OS === 'ios') {
+      // No iOS, a permissão é gerenciada pelo NotificationService via firebase/messaging
+      // Esta função retorna true para não bloquear o fluxo
+      return true;
+    }
+
+    if (Platform.OS === 'android') {
+      const sdk = Number(Platform.Version);
+      if (sdk >= 33) {
+        const status = await check(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
+        if (status === RESULTS.GRANTED) return true;
+        if (status === RESULTS.BLOCKED) {
+          Alert.alert(
+            'Notificações bloqueadas',
+            'Para receber notificações, habilite nas configurações do app.',
+            [
+              { text: 'Cancelar', style: 'cancel' },
+              { text: 'Abrir Configurações', onPress: () => openSettings() },
+            ]
+          );
+          return false;
+        }
+        const result = await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
+        return result === RESULTS.GRANTED;
+      }
+      // Android < 13: permissão concedida automaticamente
+      return true;
+    }
+
+    return false;
+  } catch (error) {
+    console.error('[permissions] requestNotificationPermission error:', error);
+    return false;
+  }
+};
