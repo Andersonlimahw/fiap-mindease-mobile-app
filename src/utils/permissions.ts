@@ -341,7 +341,8 @@ export const requestNotificationPermission = async (): Promise<boolean> => {
     if (Platform.OS === 'android') {
       const sdk = Number(Platform.Version);
       if (sdk >= 33) {
-        const status = await check(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
+        const POST_NOTIFICATIONS = 'android.permission.POST_NOTIFICATIONS' as any;
+        const status = await check(POST_NOTIFICATIONS);
         if (status === RESULTS.GRANTED) return true;
         if (status === RESULTS.BLOCKED) {
           Alert.alert(
@@ -354,7 +355,7 @@ export const requestNotificationPermission = async (): Promise<boolean> => {
           );
           return false;
         }
-        const result = await request(PERMISSIONS.ANDROID.POST_NOTIFICATIONS);
+        const result = await request(POST_NOTIFICATIONS);
         return result === RESULTS.GRANTED;
       }
       // Android < 13: permissão concedida automaticamente
