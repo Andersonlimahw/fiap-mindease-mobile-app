@@ -201,7 +201,7 @@ Respostas hardcoded ativadas quando todos os repositórios falham (`MockChatRepo
 ## Referências
 
 - Arquitetura completa de IA: [`docs/AI_ARCHITECTURE.md`](../AI_ARCHITECTURE.md)
-- Diagrama de fluxo: [`docs/digrams/chat-ai-flow.md`](../digrams/chat-ai-flow.md)
+- Diagrama de fluxo: [`docs/diagrams/chat-ai-flow.md`](../diagrams/chat-ai-flow.md)
 - Store: `src/store/chatStore.ts`
 - Screen: `src/presentation/screens/Chat/ChatScreen.tsx`
 - Repositório Ollama: `src/data/ollama/OllamaChatRepository.ts`

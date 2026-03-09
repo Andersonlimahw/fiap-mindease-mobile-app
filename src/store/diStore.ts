@@ -127,8 +127,7 @@ export const useDIStore = create<DIState>()(
 );
 
 export function useDI(): DI {
-  type S = ReturnType<typeof useDIStore.getState>;
-  return useDIStore((s: S) => s.di);
+  return useDIStore((s) => s.di);
 }
 
 /**

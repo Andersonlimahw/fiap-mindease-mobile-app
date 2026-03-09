@@ -410,7 +410,7 @@ npx expo prebuild --clean
 ### Documentation
 - `README.md` - Setup & features
 - `docs/` - Architecture docs
-- `docs/digrams/` - Flow diagrams
+- `docs/diagrams/` - Flow diagrams
 
 ---
 

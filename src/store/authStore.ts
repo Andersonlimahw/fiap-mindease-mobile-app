@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-import { User } from "../domain/entities/User";
-import { AuthRepository } from "../domain/repositories/AuthRepository";
-import { AuthProvider } from "../domain/entities/AuthProvider";
+import type { User } from "../domain/entities/User";
+import type { AuthRepository } from "../domain/repositories/AuthRepository";
+import type { AuthProvider } from "../domain/entities/AuthProvider";
 
 import { TOKENS } from "../core/di/container";
 import { useDIStore } from "./diStore";
@@ -220,16 +220,16 @@ export const useAuthActions = () =>
 // NOTA: Este hook causa re-render quando QUALQUER parte do estado muda
 // Para melhor performance, use os seletores individuais acima
 export function useAuth() {
-  type S = ReturnType<typeof useAuthStore.getState>;
-  const user = useAuthStore((s: S) => s.user);
-  const loading = useAuthStore((s: S) => s.loading);
-  const signIn = useAuthStore((s: S) => s.signIn);
-  const signUp = useAuthStore((s: S) => s.signUp);
-  const signInAnonymously = useAuthStore((s: S) => s.signInAnonymously);
-  const signOut = useAuthStore((s: S) => s.signOut);
+  const user = useAuthStore((s) => s.user);
+  const loading = useAuthStore((s) => s.loading);
+  const signIn = useAuthStore((s) => s.signIn);
+  const signUp = useAuthStore((s) => s.signUp);
+  const signInAnonymously = useAuthStore((s) => s.signInAnonymously);
+  const signOut = useAuthStore((s) => s.signOut);
   const setPartialProfile = useAuthStore((s) => s.setPartialProfile);
   const isHydrated = useAuthStore((s) => s.isHydrated);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  
   return {
     user,
     loading,

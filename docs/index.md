@@ -17,14 +17,14 @@ Documentação das features de produtividade do MindEase sendo migradas da vers�
 
 A arquitetura do aplicativo segue os princípios de Clean Architecture, dividindo o código em camadas com responsabilidades distintas para promover um desenvolvimento mais organizado, escalável e testável.
 
--   [Diagrama de Arquitetura](./digrams/architeture.md)
+-   [Diagrama de Arquitetura](./diagrams/architeture.md)
 
 ## Fluxogramas
 
 Os fluxogramas abaixo ilustram os principais fluxos de usuário e de dados dentro do aplicativo.
 
--   [Fluxo de Autenticação](./digrams/auth-flow.md)
--   [Fluxo para Obter Saldo](./digrams/get-balance-flow.md)
+-   [Fluxo de Autenticação](./diagrams/auth-flow.md)
+-   [Fluxo de Sincronização de Tasks](./diagrams/tasks-sync-flow.md)
 
 ## Gerenciamento de Estado
 

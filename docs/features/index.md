@@ -109,4 +109,4 @@ Store (Zustand State Management)
 
 ## Reference
 
-See the main [Architecture Documentation](../digrams/architeture.md) for detailed layer explanations.
+See the main [Architecture Documentation](../diagrams/architeture.md) for detailed layer explanations.
