@@ -3,6 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { RootNavigator } from "./src/presentation/navigation/RootNavigator";
 import { initAuthStore } from "./src/store/authStore";
+import { NotificationService } from './src/infrastructure/notifications/NotificationService';
 import { enableScreens } from "react-native-screens";
 import { Platform, UIManager, StatusBar } from "react-native";
 import { I18nProvider } from "./src/presentation/i18n/I18nProvider";
@@ -16,6 +17,11 @@ export default function App() {
   useEffect(() => {
     // Initialize auth subscription once at app start
     initAuthStore();
+    // Inicializar serviço de notificações (solicita permissão + obtém FCM token)
+    // O token será salvo no Firestore pelo authStore após o login do usuário
+    NotificationService.init().catch((e) =>
+      console.warn('[App] NotificationService init error:', e)
+    );
     // Enable LayoutAnimation on Android for smoother list updates
     if (
       Platform.OS === "android" &&
