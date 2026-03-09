@@ -7,14 +7,13 @@ const firestoreMocks = vi.hoisted(() => ({
   getFirestore: vi.fn(),
   collection: vi.fn(),
   query: vi.fn(),
-  where: vi.fn(),
+  orderBy: vi.fn(),
   getDocs: vi.fn(),
   addDoc: vi.fn(),
   doc: vi.fn(),
   getDoc: vi.fn(),
   updateDoc: vi.fn(),
   deleteDoc: vi.fn(),
-  orderBy: vi.fn(),
   onSnapshot: vi.fn(),
   serverTimestamp: vi.fn(() => 'SERVER_TS'),
 }));
@@ -22,10 +21,16 @@ const firestoreMocks = vi.hoisted(() => ({
 vi.mock('@react-native-firebase/firestore', () => firestoreMocks);
 
 vi.mock('@app/infrastructure/firebase/firebase', () => ({
-  FirebaseAPI: { db: undefined as unknown },
+  FirebaseAPI: {
+    db: undefined as unknown,
+    getCurrentUserId: vi.fn(() => 'user-1'),
+  },
 }));
 
-const mutableFirebaseAPI = FirebaseAPI as unknown as { db?: unknown };
+const mutableFirebaseAPI = FirebaseAPI as unknown as {
+  db?: unknown;
+  getCurrentUserId: ReturnType<typeof vi.fn>;
+};
 
 type SnapshotDoc = {
   id: string;
@@ -50,9 +55,9 @@ describe('FirebaseTaskRepository', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mutableFirebaseAPI.db = undefined;
+    mutableFirebaseAPI.getCurrentUserId.mockReturnValue('user-1');
     firestoreMocks.getFirestore.mockReturnValue('mock-db');
     firestoreMocks.collection.mockReturnValue('collection-ref');
-    firestoreMocks.where.mockReturnValue('where-ref');
     firestoreMocks.orderBy.mockReturnValue('order-ref');
     firestoreMocks.query.mockReturnValue('query-ref');
     firestoreMocks.doc.mockReturnValue('doc-ref');
@@ -63,7 +68,7 @@ describe('FirebaseTaskRepository', () => {
     vi.useRealTimers();
   });
 
-  it('getAll should query firestore and parse tasks', async () => {
+  it('getAll should query subcollection users/{userId}/tasks and parse tasks', async () => {
     const createdAt = { toMillis: () => 1710000000000 };
     const completedAt = { toMillis: () => 1710001000000 };
     firestoreMocks.getDocs.mockResolvedValue({
@@ -81,8 +86,7 @@ describe('FirebaseTaskRepository', () => {
     const repo = new FirebaseTaskRepository();
     const result = await repo.getAll('user-1');
 
-    expect(firestoreMocks.collection).toHaveBeenCalledWith('mock-db', 'tasks');
-    expect(firestoreMocks.where).toHaveBeenCalledWith('userId', '==', 'user-1');
+    expect(firestoreMocks.collection).toHaveBeenCalledWith('mock-db', 'users', 'user-1', 'tasks');
     expect(firestoreMocks.orderBy).toHaveBeenCalledWith('createdAt', 'desc');
     expect(result).toEqual([
       expect.objectContaining({
@@ -100,7 +104,7 @@ describe('FirebaseTaskRepository', () => {
     const repo = new FirebaseTaskRepository();
     const result = await repo.getById('task-404');
 
-    expect(firestoreMocks.doc).toHaveBeenCalledWith('mock-db', 'tasks', 'task-404');
+    expect(firestoreMocks.doc).toHaveBeenCalledWith('mock-db', 'users', 'user-1', 'tasks', 'task-404');
     expect(result).toBeNull();
   });
 
@@ -131,7 +135,7 @@ describe('FirebaseTaskRepository', () => {
     );
   });
 
-  it('create should persist data with server timestamp and return task shape', async () => {
+  it('create should persist data in subcollection with server timestamp', async () => {
     mutableFirebaseAPI.db = { name: 'pre-configured' } as any;
     firestoreMocks.addDoc.mockResolvedValue({ id: 'firebase-id' });
     const input = {
@@ -146,7 +150,12 @@ describe('FirebaseTaskRepository', () => {
     const repo = new FirebaseTaskRepository();
     const result = await repo.create(input);
 
-    expect(firestoreMocks.getFirestore).not.toHaveBeenCalled();
+    expect(firestoreMocks.collection).toHaveBeenCalledWith(
+      { name: 'pre-configured' },
+      'users',
+      'user-1',
+      'tasks'
+    );
     expect(firestoreMocks.addDoc).toHaveBeenCalledWith('collection-ref', {
       ...input,
       createdAt: 'SERVER_TS',
@@ -182,20 +191,19 @@ describe('FirebaseTaskRepository', () => {
     expect(result).toEqual(expect.objectContaining({ title: 'Updated', completed: true }));
   });
 
-  it('delete should remove document from collection', async () => {
+  it('delete should remove document from subcollection', async () => {
     const repo = new FirebaseTaskRepository();
     await repo.delete('task-1');
 
+    expect(firestoreMocks.doc).toHaveBeenCalledWith('mock-db', 'users', 'user-1', 'tasks', 'task-1');
     expect(firestoreMocks.deleteDoc).toHaveBeenCalledWith('doc-ref');
   });
 
-  it('subscribe should forward realtime updates and return unsubscriber', () => {
+  it('subscribe should use subcollection path and forward realtime updates', () => {
     const unsub = vi.fn();
-    firestoreMocks.onSnapshot.mockImplementation((_query, cb) => {
+    firestoreMocks.onSnapshot.mockImplementation((_query, cb, _errCb) => {
       cb({
-        docs: [
-          buildSnapshotDoc({ id: 'task-10' }),
-        ],
+        docs: [buildSnapshotDoc({ id: 'task-10' })],
       });
       return unsub;
     });
@@ -204,7 +212,12 @@ describe('FirebaseTaskRepository', () => {
     const callback = vi.fn();
     const teardown = repo.subscribe('user-1', callback);
 
-    expect(firestoreMocks.onSnapshot).toHaveBeenCalledWith('query-ref', expect.any(Function));
+    expect(firestoreMocks.collection).toHaveBeenCalledWith('mock-db', 'users', 'user-1', 'tasks');
+    expect(firestoreMocks.onSnapshot).toHaveBeenCalledWith(
+      'query-ref',
+      expect.any(Function),
+      expect.any(Function)
+    );
     expect(callback).toHaveBeenCalledWith([
       expect.objectContaining({ id: 'task-10' }),
     ]);

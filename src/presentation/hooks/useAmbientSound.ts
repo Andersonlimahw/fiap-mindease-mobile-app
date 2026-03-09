@@ -11,13 +11,13 @@ export function useAmbientSound(soundType: AmbientSound, isPlaying: boolean) {
   const loadSound = useCallback(async (type: Exclude<AmbientSound, 'none'>) => {
     try {
       setIsLoading(true);
-      
+
       // Stop and unload previous sound if exists
       if (soundRef.current) {
-        await soundRef.current.stopAsync();
-        await soundRef.current.unloadAsync();
+        const oldSound = soundRef.current;
         soundRef.current = null;
         setSound(null);
+        await oldSound.unloadAsync().catch(() => { }); // Silent catch for old sound cleanup
       }
 
       const { sound: newSound } = await Audio.Sound.createAsync(
@@ -35,14 +35,20 @@ export function useAmbientSound(soundType: AmbientSound, isPlaying: boolean) {
   }, [isPlaying]);
 
   const stopSound = useCallback(async () => {
-    if (soundRef.current) {
+    const currentSound = soundRef.current;
+    if (currentSound) {
       try {
-        await soundRef.current.stopAsync();
-        await soundRef.current.unloadAsync();
+        // Clear reference FIRST to prevent race conditions with effects
         soundRef.current = null;
         setSound(null);
+        await currentSound.unloadAsync();
       } catch (error) {
-        console.error('Failed to stop sound', error);
+        // 'Seeking interrupted' is a common (and often harmless) error in expo-av 
+        // when a sound is unloaded while it's still preparing or stopping.
+        const isSeekingInterrupted = error instanceof Error && error.message.includes('Seeking interrupted');
+        if (!isSeekingInterrupted) {
+          console.error('Failed to stop sound', error);
+        }
       }
     }
   }, []);
@@ -82,8 +88,10 @@ export function useAmbientSound(soundType: AmbientSound, isPlaying: boolean) {
   // Clean up on unmount
   useEffect(() => {
     return () => {
-      if (soundRef.current) {
-        soundRef.current.unloadAsync();
+      const currentSound = soundRef.current;
+      if (currentSound) {
+        soundRef.current = null;
+        currentSound.unloadAsync().catch(() => { });
       }
     };
   }, []);
