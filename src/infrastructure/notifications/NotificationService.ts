@@ -54,9 +54,14 @@ export const NotificationService = {
 
   /**
    * Obtém o token FCM do dispositivo.
+   * No iOS, registra o dispositivo para remote messages antes de obter o token.
    */
   async getFcmToken(): Promise<string | null> {
     try {
+      // iOS requer registro explícito antes de chamar getToken()
+      if (Platform.OS === 'ios') {
+        await messaging().registerDeviceForRemoteMessages();
+      }
       const token = await messaging().getToken();
       return token;
     } catch (error) {
