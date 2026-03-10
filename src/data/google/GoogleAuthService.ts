@@ -5,6 +5,9 @@ import { di } from '@app/core/di/container';
 import { Logger } from '@app/infrastructure/logging/Logger';
 import NetInfo from '@react-native-community/netinfo';
 
+// Add missing FirebaseDebugger import at the end of the file for consistency
+import { FirebaseDebugger } from '@app/utils/FirebaseDebugger';
+
 export class GoogleAuthService {
   private logger = di.resolve('Logger') as Logger;
   private readonly MAX_RETRIES = 3;

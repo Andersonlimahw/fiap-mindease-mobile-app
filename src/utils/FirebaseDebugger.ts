@@ -9,7 +9,12 @@ export class FirebaseDebugger {
   private logger: Logger;
 
   constructor() {
-    this.logger = di.resolve('Logger') as Logger;
+    // Use dependency injection or create new instance if DI not available
+    try {
+      this.logger = di.resolve('Logger') as Logger;
+    } catch (error) {
+      this.logger = new Logger();
+    }
   }
 
   async runDiagnostics() {
