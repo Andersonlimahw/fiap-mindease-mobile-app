@@ -1,10 +1,10 @@
 
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
-import { useTheme } from '@app/presentation/theme/theme';
+import { useTheme } from '../theme/theme';
 import { useNavigation } from '@react-navigation/native';
-import { GoogleAuthService } from '@app/data/google/GoogleAuthService';
-import { runFirebaseDiagnostics } from '@app/utils/FirebaseDebugger';
+import { GoogleAuthService } from '../../data/google/GoogleAuthService';
+import { runFirebaseDiagnostics } from '../../utils/FirebaseDebugger';
 import { styles } from './AuthScreen.styles';
 
 export function AuthScreen() {

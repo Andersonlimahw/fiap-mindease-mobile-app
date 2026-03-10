@@ -2,8 +2,8 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, initializeAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { Logger } from '@app/infrastructure/logging/Logger';
-import { di } from '@app/core/di/container';
+import { Logger } from '../logging/Logger';
+import { di } from '../../core/di/container';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getReactNativePersistence } from 'firebase/auth/react-native';

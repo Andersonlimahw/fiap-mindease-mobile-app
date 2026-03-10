@@ -1,0 +1,10 @@
+
+{
+  "extends": "./tsconfig.json",
+  "exclude": [
+    "src/core/ai/**/*",
+    "node_modules",
+    "android",
+    "ios"
+  ]
+}

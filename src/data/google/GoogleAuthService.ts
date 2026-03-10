@@ -1,12 +1,9 @@
 
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
-import { di } from '@app/core/di/container';
-import { Logger } from '@app/infrastructure/logging/Logger';
+import { di } from '../core/di/container';
+import { Logger } from '../infrastructure/logging/Logger';
 import NetInfo from '@react-native-community/netinfo';
-
-// Add missing FirebaseDebugger import at the end of the file for consistency
-import { FirebaseDebugger } from '@app/utils/FirebaseDebugger';
 
 export class GoogleAuthService {
   private logger = di.resolve('Logger') as Logger;
