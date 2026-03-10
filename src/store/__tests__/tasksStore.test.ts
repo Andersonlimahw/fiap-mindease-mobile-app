@@ -2,9 +2,9 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import type { Mock, Mocked } from 'vitest';
 import { useTasksStore, getTaskProgress, teardownTasksStore } from '../tasksStore';
 import { useDIStore } from '@store/diStore';
-import { TOKENS } from '../core/di/container';
-import type { Task } from '../domain/entities/Task';
-import type { TaskRepository } from '../domain/repositories/TaskRepository';
+import { TOKENS } from '@core/di/container';
+import type { Task } from '@domain/entities/Task';
+import type { TaskRepository } from '@domain/repositories/TaskRepository';
 
 const createTask = (overrides: Partial<Task> = {}): Task => ({
   id: 'task-id',

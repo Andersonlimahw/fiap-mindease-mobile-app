@@ -13,11 +13,11 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { styles } from './AddTaskModal.styles';
-import { useTheme } from '../presentation/theme/theme';
-import { useI18n } from '../presentation/i18n/I18nProvider';
-import { useAuth } from '@store/authStore';
+import { useTheme } from '@presentation/theme/theme';
+import { useI18n } from '@presentation/i18n/I18nProvider';
 import { useTasksActions } from '@store/tasksStore';
-import type { Task, TaskPriority, CreateTaskInput } from '../domain/entities/Task';
+import { useAuth } from '@store/authStore';
+import type { Task, TaskPriority, CreateTaskInput } from '@domain/entities/Task';
 
 interface AddTaskModalProps {
   visible: boolean;

@@ -1,4 +1,4 @@
-import type { UserRepository } from '../domain/repositories/UserRepository';
+import type { UserRepository } from '@domain/repositories/UserRepository';
 
 export class MockUserRepository implements UserRepository {
   private settings: any = {};

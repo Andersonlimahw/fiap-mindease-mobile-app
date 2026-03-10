@@ -1,10 +1,10 @@
-import type { TaskRepository } from '../domain/repositories/TaskRepository';
+import type { TaskRepository } from '@domain/repositories/TaskRepository';
 import type {
   Task,
   CreateTaskInput,
   UpdateTaskInput,
   SubTask,
-} from '../domain/entities/Task';
+} from '@domain/entities/Task';
 
 let mockTasks: Task[] = [];
 let listeners: ((tasks: Task[]) => void)[] = [];

@@ -46,26 +46,30 @@ export function BrandSelector({ compact = false }: Props) {
 
   const getLabel = (brand: BrandId) => {
     if (brand === 'mindease') return 'MindEase';
-    if (brand === 'neon') return 'Neon';
-    return brand;
+    if (brand === ('neon' as any)) return 'Neon';
+    return brand.charAt(0).toUpperCase() + brand.slice(1);
   };
 
   return (
     <View style={styles.row}>
-      {brands.map((brand, idx) => (
-        <React.Fragment key={brand}>
-          <TouchableOpacity
-            onPress={() => setBrand(brand)}
-            style={[styles.chip, brand === theme.brand && styles.chipActive]}
-            accessibilityRole="button"
-            accessibilityLabel={`${t('common.selectBrand')}: ${getLabel(brand)}`}
-          >
-            <BrandLogo size={compact ? 20 : 28} brand={brand} mode={theme.mode} />
-            {!compact && <Text style={styles.chipText}>{getLabel(brand)}</Text>}
-          </TouchableOpacity>
-          {idx < brands.length - 1 && <View style={styles.spacer} />}
-        </React.Fragment>
-      ))}
+      {brands.map((brandCode, idx) => {
+        const brand = brandCode as BrandId;
+        return (
+          <React.Fragment key={brand}>
+            <TouchableOpacity
+              style={[styles.chip, brand === theme.brand && styles.chipActive]}
+              onPress={() => setBrand(brand)}
+              accessibilityRole="button"
+              accessibilityState={{ selected: brand === theme.brand }}
+              accessibilityLabel={`${t('common.selectBrand')}: ${getLabel(brand)}`}
+            >
+              <BrandLogo size={compact ? 20 : 28} brand={brand} mode={theme.mode} />
+              {!compact && <Text style={styles.chipText}>{getLabel(brand)}</Text>}
+            </TouchableOpacity>
+            {idx < brands.length - 1 && <View style={styles.spacer} />}
+          </React.Fragment>
+        );
+      })}
     </View>
   );
 }

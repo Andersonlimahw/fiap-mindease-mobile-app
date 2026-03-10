@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Audio } from 'expo-av';
-import type { AmbientSound } from '../domain/entities/FocusSession';
-import { SOUND_ASSETS } from '../domain/entities/FocusSession';
+import type { AmbientSound } from '@domain/entities/FocusSession';
+import { SOUND_ASSETS } from '@domain/entities/FocusSession';
 
 export function useAmbientSound(soundType: AmbientSound, isPlaying: boolean) {
   const [sound, setSound] = useState<Audio.Sound | null>(null);

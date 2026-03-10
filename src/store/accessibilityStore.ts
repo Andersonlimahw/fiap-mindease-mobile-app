@@ -3,12 +3,12 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import type {
   AccessibilitySettings,
   ColorBlindMode,
-} from '../domain/entities/AccessibilitySettings';
-import { DEFAULT_ACCESSIBILITY_SETTINGS } from '../domain/entities/AccessibilitySettings';
-import { zustandSecureStorage } from '../infrastructure/storage/SecureStorage';
+} from '@domain/entities/AccessibilitySettings';
+import { DEFAULT_ACCESSIBILITY_SETTINGS } from '@domain/entities/AccessibilitySettings';
+import { zustandSecureStorage } from '@infrastructure/storage/SecureStorage';
 import { useDIStore } from './diStore';
-import { TOKENS } from '../core/di/container';
-import type { UserRepository } from '../domain/repositories/UserRepository';
+import { TOKENS } from '@core/di/container';
+import type { UserRepository } from '@domain/repositories/UserRepository';
 import { useAuthStore } from './authStore';
 
 type AccessibilityState = {

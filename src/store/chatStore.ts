@@ -1,12 +1,12 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { ChatMessage } from '../domain/entities/ChatMessage';
-import type { ChatRepository } from '../domain/repositories/ChatRepository';
-import { getAIResponse } from '../domain/entities/ChatMessage';
-import { zustandSecureStorage } from '../infrastructure/storage/SecureStorage';
-import { useDIStore } from '../store/diStore';
-import { useAuthStore } from '../store/authStore';
-import { TOKENS } from '../core/di/container';
+import type { ChatMessage } from '@domain/entities/ChatMessage';
+import type { ChatRepository } from '@domain/repositories/ChatRepository';
+import { getAIResponse } from '@domain/entities/ChatMessage';
+import { zustandSecureStorage } from '@infrastructure/storage/SecureStorage';
+import { useDIStore } from './diStore';
+import { useAuthStore } from './authStore';
+import { TOKENS } from '@core/di/container';
 
 const SYSTEM_PROMPT =
   'Você é o assistente IA do MindEase, um app de produtividade e bem-estar. ' +

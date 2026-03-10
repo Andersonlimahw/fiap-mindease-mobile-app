@@ -1,11 +1,11 @@
-import type { TaskRepository } from '../domain/repositories/TaskRepository';
+import type { TaskRepository } from '@domain/repositories/TaskRepository';
 import type {
   Task,
   CreateTaskInput,
   UpdateTaskInput,
   SubTask,
-} from '../domain/entities/Task';
-import { FirebaseAPI } from '../infrastructure/firebase/firebase';
+} from '@domain/entities/Task';
+import { FirebaseAPI } from '@infrastructure/firebase/firebase';
 import {
   getFirestore,
   collection,

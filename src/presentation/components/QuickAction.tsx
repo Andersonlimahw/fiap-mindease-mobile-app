@@ -1,6 +1,6 @@
 import React, { useMemo, useRef } from 'react';
 import { Image, Text, ViewStyle, ImageSourcePropType, Animated, Pressable, Vibration } from 'react-native';
-import { useTheme } from '../theme/theme';
+import { useTheme } from '@presentation/theme/theme';
 import { makeQuickActionStyles } from './QuickAction.styles';
 
 type Props = {

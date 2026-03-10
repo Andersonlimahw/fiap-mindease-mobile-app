@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, PanResponder, View, Pressable, LayoutChangeEvent, Vibration } from 'react-native';
-import { useTheme } from '../theme/theme';
-import { useI18n } from '../i18n/I18nProvider';
+import { useTheme } from '@presentation/theme/theme';
+import { useI18n } from '@presentation/i18n/I18nProvider';
 import { makeSwipeableRowStyles } from './SwipeableRow.styles';
 import { Ionicons } from '@expo/vector-icons';
 

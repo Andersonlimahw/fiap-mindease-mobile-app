@@ -2,7 +2,7 @@ import { Platform } from "react-native";
 import { getApp } from "@react-native-firebase/app";
 import { getFirestore } from "@react-native-firebase/firestore";
 import { getStorage } from "@react-native-firebase/storage";
-import AppConfig from "../../config/appConfig";
+import AppConfig from "@config/appConfig";
 
 type FirebaseEnvConfig = {
   apiKey: string;

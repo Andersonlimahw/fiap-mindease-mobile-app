@@ -10,8 +10,8 @@ import {
   Animated,
 } from "react-native";
 import { Button } from "@components/Button";
-import { useFadeSlideInOnFocus } from "../../hooks/animations";
-import { goToLogin } from "../../navigation/navigationUtils";
+import { useFadeSlideInOnFocus } from "@presentation/hooks/animations";
+import { goToLogin } from "@presentation/navigation/navigationUtils";
 import { useTheme } from "@presentation/theme/theme";
 import { makeOnboardingStyles } from "./OnboardingScreen.styles";
 import { useI18n } from "@presentation/i18n/I18nProvider";

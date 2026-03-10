@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, Alert, ActivityIndicator } from 'react-na
 import { useTheme } from '../theme/theme';
 import { useNavigation } from '@react-navigation/native';
 import { GoogleAuthService } from '../../data/google/GoogleAuthService';
-import { runFirebaseDiagnostics } from '../../utils/FirebaseDebugger';
+import { runFirebaseDiagnostics } from '@utils/FirebaseDebugger';
 import { styles } from './AuthScreen.styles';
 
 export function AuthScreen() {
@@ -16,10 +16,10 @@ export function AuthScreen() {
   const handleGoogleSignIn = async () => {
     setLoading(true);
     setDebugInfo('Starting authentication...');
-    
+
     try {
       const authService = new GoogleAuthService();
-      
+
       // Run diagnostics first if in development
       if (__DEV__) {
         setDebugInfo('Running diagnostics...');
@@ -29,25 +29,24 @@ export function AuthScreen() {
 
       setDebugInfo('Signing in with Google...');
       const result = await authService.signIn();
-      
+
       setDebugInfo('Authentication successful, navigating to main app...');
-      
-      // Check if user needs onboarding or can go directly to main app
+
       const needsOnboarding = await checkUserOnboardingStatus(result.user);
-      
+
       if (needsOnboarding) {
-        navigation.navigate('Onboarding');
+        (navigation as any).navigate('Onboarding');
       } else {
-        navigation.navigate('Main');
+        (navigation as any).navigate('Main');
       }
-      
+
     } catch (error: any) {
       console.error('Sign-in failed:', error);
       setDebugInfo(`Error: ${error.message}`);
-      
+
       // Show user-friendly error message
       let errorMessage = 'Sign-in failed. Please try again.';
-      
+
       if (error.message.includes('network')) {
         errorMessage = 'Network error. Please check your internet connection.';
       } else if (error.message.includes('SIGN_IN_CANCELLED')) {
@@ -57,7 +56,7 @@ export function AuthScreen() {
       } else if (error.message.includes('Play Services')) {
         errorMessage = 'Google Play Services required. Please update from Play Store.';
       }
-      
+
       Alert.alert('Authentication Error', errorMessage);
     } finally {
       setLoading(false);
@@ -79,12 +78,7 @@ export function AuthScreen() {
   const runDebugDiagnostics = async () => {
     setDebugInfo('Running full diagnostics...');
     const diagnostics = await runFirebaseDiagnostics();
-    const suggestions = new FirebaseDebugger().generateFixSuggestions(diagnostics);
-    
-    setDebugInfo(`Diagnostics: ${JSON.stringify(diagnostics.results, null, 2)}
-    
-Suggestions:
-${suggestions.map(s => `• ${s}`).join('\n')}`);
+    setDebugInfo(`Diagnostics: ${JSON.stringify(diagnostics.results, null, 2)}`);
   };
 
   return (
@@ -92,7 +86,7 @@ ${suggestions.map(s => `• ${s}`).join('\n')}`);
       <Text style={[styles.title, { color: theme.colors.text }]}>
         Welcome to MindEase
       </Text>
-      
+
       <TouchableOpacity
         style={[styles.googleButton, { backgroundColor: theme.colors.primary }]}
         onPress={handleGoogleSignIn}

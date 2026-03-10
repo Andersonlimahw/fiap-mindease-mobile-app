@@ -1,14 +1,14 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-import type { User } from "../domain/entities/User";
-import type { AuthRepository } from "../domain/repositories/AuthRepository";
-import type { AuthProvider } from "../domain/entities/AuthProvider";
+import type { User } from "@domain/entities/User";
+import type { AuthRepository } from "@domain/repositories/AuthRepository";
+import type { AuthProvider } from "@domain/entities/AuthProvider";
 
-import { TOKENS } from "../core/di/container";
+import { TOKENS } from "@core/di/container";
 import { useDIStore } from "./diStore";
-import { zustandSecureStorage } from "../infrastructure/storage/SecureStorage";
-import { FirebaseAPI } from "../infrastructure/firebase/firebase";
+import { zustandSecureStorage } from "@infrastructure/storage/SecureStorage";
+import { FirebaseAPI } from "@infrastructure/firebase/firebase";
 import { NotificationService } from "@app/infrastructure/notifications/NotificationService";
 import { useNotificationStore } from "./notificationStore";
 

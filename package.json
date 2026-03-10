@@ -40,7 +40,7 @@
     "prebuild": "EXPO_PUBLIC_USE_MOCK=false npx expo prebuild --clean",
     "prebuild:clean": "npx expo prebuild --clean",
     "reset:all": "npm run watchman:del || true && npm run cache:metro && npm run clean:deps && npm run prebuild:clean && npm run clean:ios && npm run clean:android",
-    "start:clean": "npm run reset:all && npx expo install && npx expo prebuild --clean -y && npx expo run ios"
+    "start:clean": "npm run reset:all && npx expo install && npx expo prebuild --clean --no-interactive && npx expo run ios"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",

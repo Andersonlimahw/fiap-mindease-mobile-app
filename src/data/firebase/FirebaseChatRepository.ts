@@ -1,9 +1,9 @@
-import type { ChatRepository } from '../domain/repositories/ChatRepository';
+import type { ChatRepository } from '@domain/repositories/ChatRepository';
 import type {
   ChatMessage,
   ChatResponse,
-} from '../domain/entities/ChatMessage';
-import { FirebaseAPI } from '../infrastructure/firebase/firebase';
+} from '@domain/entities/ChatMessage';
+import { FirebaseAPI } from '@infrastructure/firebase/firebase';
 import {
   getFirestore,
   collection,
@@ -86,7 +86,7 @@ export class FirebaseChatRepository implements ChatRepository {
   async saveMessage(userId: string, message: Partial<ChatMessage>): Promise<string> {
     const chatColl = this.getChatCollection(userId);
     const db = this.getDb();
-    
+
     const messageData = {
       role: message.role || 'user',
       content: message.content || '',

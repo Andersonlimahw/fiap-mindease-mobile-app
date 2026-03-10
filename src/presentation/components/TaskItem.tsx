@@ -9,9 +9,9 @@ import {
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { styles } from './TaskItem.styles';
-import { useTheme } from '../presentation/theme/theme';
-import { useI18n } from '../presentation/i18n/I18nProvider';
-import type { Task, SubTask, TaskPriority } from '../domain/entities/Task';
+import { useTheme } from '@presentation/theme/theme';
+import { useI18n } from '@presentation/i18n/I18nProvider';
+import type { Task, SubTask, TaskPriority } from '@domain/entities/Task';
 
 interface TaskItemProps {
   task: Task;

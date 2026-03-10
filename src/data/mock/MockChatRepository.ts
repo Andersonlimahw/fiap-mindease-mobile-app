@@ -1,9 +1,9 @@
-import type { ChatRepository } from '../domain/repositories/ChatRepository';
+import type { ChatRepository } from '@domain/repositories/ChatRepository';
 import type {
   ChatMessage,
   ChatResponse,
-} from '../domain/entities/ChatMessage';
-import { getAIResponse } from '../domain/entities/ChatMessage';
+} from '@domain/entities/ChatMessage';
+import { getAIResponse } from '@domain/entities/ChatMessage';
 
 const mockMessages: ChatMessage[] = [];
 

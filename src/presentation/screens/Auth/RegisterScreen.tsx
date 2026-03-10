@@ -3,7 +3,7 @@ import { View, Text, Image, TouchableOpacity, Animated } from "react-native";
 import { Button } from "@components/Button";
 import { Input } from "@components/Input";
 import { useAuth } from "@store/authStore";
-import { useFadeSlideInOnFocus } from "../../hooks/animations";
+import { useFadeSlideInOnFocus } from "@presentation/hooks/animations";
 import { useTheme } from "@presentation/theme/theme";
 import { useI18n } from "@presentation/i18n/I18nProvider";
 import { makeRegisterStyles } from "./RegisterScreen.styles";

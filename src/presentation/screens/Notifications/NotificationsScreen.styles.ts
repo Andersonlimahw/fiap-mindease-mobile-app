@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import type { AppTheme } from '../presentation/theme/theme';
+import type { AppTheme } from '@presentation/theme/theme';
 
 export const makeNotificationsStyles = (theme: AppTheme) =>
   StyleSheet.create({

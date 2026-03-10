@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { FirebaseChatRepository } from '../FirebaseChatRepository';
-import { FirebaseAPI } from '../infrastructure/firebase/firebase';
+import { FirebaseAPI } from '@infrastructure/firebase/firebase';
 
 const firestoreMocks = vi.hoisted(() => ({
   getFirestore: vi.fn(),
@@ -61,7 +61,7 @@ describe('FirebaseChatRepository', () => {
   it('sendMessage should save message but throw error if AI not implemented', async () => {
     const repo = new FirebaseChatRepository();
     const messages = [{ id: '1', role: 'user', content: 'Hi', timestamp: Date.now() }];
-    
+
     // It should throw because AI part is not implemented in FirebaseChatRepository yet
     await expect(repo.sendMessage('user-123', messages as any, '')).rejects.toThrow('Firebase Cloud AI not implemented');
 

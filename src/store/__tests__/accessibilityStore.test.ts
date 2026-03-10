@@ -5,7 +5,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useAccessibilityStore } from '../accessibilityStore';
-import { DEFAULT_ACCESSIBILITY_SETTINGS } from '../domain/entities/AccessibilitySettings';
+import { DEFAULT_ACCESSIBILITY_SETTINGS } from '@domain/entities/AccessibilitySettings';
 import { useAuthStore } from '../authStore';
 import { useDIStore } from '../diStore';
 

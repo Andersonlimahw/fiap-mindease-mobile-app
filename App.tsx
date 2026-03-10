@@ -33,7 +33,7 @@ export default function App() {
   return (
     <I18nProvider>
       <SafeAreaProvider>
-        <NavigationContainer theme={getNavigationTheme(theme) as any}>
+        <NavigationContainer theme={getNavigationTheme(theme.mode) as any}>
           <StatusBar
             barStyle={theme.mode === "dark" ? "light-content" : "dark-content"}
             backgroundColor={theme.colors.background}

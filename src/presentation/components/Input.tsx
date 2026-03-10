@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { TextInput, TextInputProps, View, Text, StyleProp, TextStyle, Animated, Pressable } from 'react-native';
-import { useTheme } from '../theme/theme';
+import { useTheme } from '@presentation/theme/theme';
 import { makeInputStyles } from './Input.styles';
-import { useI18n } from '../i18n/I18nProvider';
+import { useI18n } from '@presentation/i18n/I18nProvider';
 
 type Props = TextInputProps & {
   label?: string;

@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { AmbientSound } from '../domain/entities/FocusSession';
-import { DEFAULT_FOCUS_SETTINGS } from '../domain/entities/FocusSession';
-import { zustandSecureStorage } from '../infrastructure/storage/SecureStorage';
+import type { AmbientSound } from '@domain/entities/FocusSession';
+import { DEFAULT_FOCUS_SETTINGS } from '@domain/entities/FocusSession';
+import { zustandSecureStorage } from '@infrastructure/storage/SecureStorage';
 import { useDIStore } from './diStore';
-import { TOKENS } from '../core/di/container';
-import type { UserRepository } from '../domain/repositories/UserRepository';
+import { TOKENS } from '@core/di/container';
+import type { UserRepository } from '@domain/repositories/UserRepository';
 import { useAuthStore } from './authStore';
 
 type FocusModeState = {

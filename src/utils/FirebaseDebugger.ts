@@ -2,8 +2,8 @@
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
 import { Platform } from 'react-native';
-import { Logger } from '../infrastructure/logging/Logger';
-import { di } from '../core/di/container';
+import { Logger } from '@infrastructure/logging/Logger';
+import { di } from '@core/di/container';
 
 export class FirebaseDebugger {
   private logger: Logger;

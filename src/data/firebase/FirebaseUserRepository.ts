@@ -1,5 +1,5 @@
-import type { UserRepository } from '../domain/repositories/UserRepository';
-import { FirebaseAPI } from '../infrastructure/firebase/firebase';
+import type { UserRepository } from '@domain/repositories/UserRepository';
+import { FirebaseAPI } from '@infrastructure/firebase/firebase';
 import {
   getFirestore,
   doc,

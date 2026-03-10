@@ -2,8 +2,8 @@ import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react-native';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TaskItem } from '../TaskItem';
-import { useTheme } from '../presentation/theme/theme';
-import { useI18n } from '../presentation/i18n/I18nProvider';
+import { useTheme } from '@presentation/theme/theme';
+import { useI18n } from '@presentation/i18n/I18nProvider';
 import { Alert } from 'react-native';
 
 // Mock Alert

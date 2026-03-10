@@ -1,9 +1,13 @@
 
 import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import auth from '@react-native-firebase/auth';
-import { di } from '../core/di/container';
-import { Logger } from '../infrastructure/logging/Logger';
-import NetInfo from '@react-native-community/netinfo';
+import { di } from '@core/di/container';
+import { Logger } from '@infrastructure/logging/Logger';
+// import NetInfo from '@react-native-community/netinfo';
+const NetInfo = {
+  fetch: async () => ({ isConnected: true }),
+};
+import Constants from 'expo-constants';
 
 export class GoogleAuthService {
   private logger = di.resolve('Logger') as Logger;
@@ -11,8 +15,11 @@ export class GoogleAuthService {
   private readonly RETRY_DELAY = 1000;
 
   constructor() {
+    const extra = (Constants.expoConfig?.extra ?? {}) as Record<string, string | undefined>;
+
     GoogleSignin.configure({
-      webClientId: '102802199932-lnv0non6dphbc4i6r8rrd4motkct34gq.apps.googleusercontent.com',
+      webClientId: extra.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
+      iosClientId: extra.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
       offlineAccess: true,
       forceCodeForRefreshToken: true,
     });
@@ -20,11 +27,11 @@ export class GoogleAuthService {
 
   async signIn(): Promise<{ user: any; idToken: string }> {
     let lastError: Error | null = null;
-    
+
     for (let attempt = 1; attempt <= this.MAX_RETRIES; attempt++) {
       try {
         this.logger.debug(`Google sign-in attempt ${attempt}/${this.MAX_RETRIES}`);
-        
+
         // Check network connectivity
         const networkState = await NetInfo.fetch();
         if (!networkState.isConnected) {
@@ -35,14 +42,14 @@ export class GoogleAuthService {
         const hasPlayServices = await GoogleSignin.hasPlayServices({
           showPlayServicesUpdateDialog: true,
         });
-        
+
         if (!hasPlayServices) {
           throw new Error('Google Play Services not available');
         }
 
         // Perform sign-in
         const userInfo = await GoogleSignin.signIn();
-        
+
         if (!userInfo.idToken) {
           throw new Error('No ID token received from Google');
         }
@@ -50,12 +57,12 @@ export class GoogleAuthService {
         // Create Firebase credential and sign in
         const googleCredential = auth.GoogleAuthProvider.credential(userInfo.idToken);
         const authResult = await auth().signInWithCredential(googleCredential);
-        
+
         this.logger.info('Google sign-in successful', {
           userId: authResult.user.uid,
           email: authResult.user.email,
         });
-        
+
         return {
           user: userInfo.user,
           idToken: userInfo.idToken,

@@ -5,8 +5,8 @@ import {
   ThemeMode,
   BrandId,
   getBrandLogoText,
-} from "../theme/theme";
-import { brandLogos } from "../theme/brandAssets";
+} from "@presentation/theme/theme";
+import { brandLogos } from "@presentation/theme/brandAssets";
 
 type Props = {
   size?: number;
@@ -24,7 +24,7 @@ export const BrandLogo: React.FC<Props> = ({
   const theme = useTheme();
   const b = brand ?? theme.brand;
   const m = mode ?? theme.mode;
-  const logo = brandLogos[b]?.[m];
+  const logo = (brandLogos as any)[b]?.[m];
   const styles = useMemo(
     () =>
       StyleSheet.create({

@@ -6,7 +6,7 @@ import {
   Pressable,
 } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../presentation/theme/theme';
+import { useTheme } from '@presentation/theme/theme';
 import { makeNotificationsStyles } from './NotificationsScreen.styles';
 import {
   useNotifications,
@@ -15,8 +15,8 @@ import {
   useNotificationLoading,
 } from '@store/notificationStore';
 import { useAuth } from '@store/authStore';
-import { useI18n } from '../presentation/i18n/I18nProvider';
-import type { Notification } from '../domain/entities/Notification';
+import { useI18n } from '@presentation/i18n/I18nProvider';
+import type { Notification } from '@domain/entities/Notification';
 
 const ICON_MAP: Record<string, React.ComponentProps<typeof MaterialIcons>['name']> = {
   task_created: 'add-task',

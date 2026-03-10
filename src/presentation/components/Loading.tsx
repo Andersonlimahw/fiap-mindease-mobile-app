@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, ActivityIndicator, Text, StyleSheet } from 'react-native';
-import { useTheme } from '../theme/theme';
+import { useTheme } from '@presentation/theme/theme';
 
 type LoadingProps = {
   /** Mensagem opcional a exibir */

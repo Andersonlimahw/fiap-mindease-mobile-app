@@ -3,7 +3,7 @@ import { initializeApp } from 'firebase/app';
 import { getAuth, initializeAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { Logger } from '../logging/Logger';
-import { di } from '../../core/di/container';
+import { di } from '@core/di/container';
 import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getReactNativePersistence } from 'firebase/auth/react-native';
@@ -38,20 +38,20 @@ export class FirebaseInitializer {
       this.validateConfig();
 
       const app = initializeApp(firebaseConfig);
-      
+
       // Initialize auth with persistence
       const auth = initializeAuth(app, {
         persistence: getReactNativePersistence(AsyncStorage),
       });
 
       const firestore = getFirestore(app);
-      
+
       this.isInitialized = true;
       this.logger.info('Firebase initialized successfully', {
         projectId: firebaseConfig.projectId,
         platform: Platform.OS,
       });
-      
+
       return { app, auth, firestore };
     } catch (error: any) {
       this.logger.error('Firebase initialization failed', {

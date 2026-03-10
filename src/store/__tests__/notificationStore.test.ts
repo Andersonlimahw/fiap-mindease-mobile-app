@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useNotificationStore } from '../notificationStore';
-import type { Notification } from '../domain/entities/Notification';
+import type { Notification } from '@domain/entities/Notification';
 
 const mockRepo = {
   getAll: vi.fn(),

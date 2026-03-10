@@ -13,7 +13,7 @@ import { usePomodoroStats } from "@store/pomodoroStore";
 import { formatTotalTime } from "@store/pomodoroStore";
 import { useTheme } from "@presentation/theme/theme";
 import { makeHomeStyles } from "./HomeScreen.styles";
-import { useFadeSlideInOnFocus } from "../../hooks/animations";
+import { useFadeSlideInOnFocus } from "@presentation/hooks/animations";
 import { Avatar } from "@components/Avatar";
 import { useI18n } from "@presentation/i18n/I18nProvider";
 

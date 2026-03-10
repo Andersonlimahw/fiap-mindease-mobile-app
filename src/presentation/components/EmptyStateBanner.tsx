@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, ViewStyle } from 'react-native';
-import { useTheme } from '../theme/theme';
+import { useTheme } from '@presentation/theme/theme';
 
 type Props = {
   title: string;

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, StyleProp, ViewStyle } from 'react-native';
-import { useTheme } from '../theme/theme';
+import { useTheme } from '@presentation/theme/theme';
 import { makeSkeletonStyles } from './Skeleton.styles';
 
 type Props = {

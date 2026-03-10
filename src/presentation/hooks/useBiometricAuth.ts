@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import * as LocalAuthentication from 'expo-local-authentication';
-import { SecureStorage, StorageKeys } from '../../infrastructure/storage/SecureStorage';
+import { SecureStorage, StorageKeys } from '@infrastructure/storage/SecureStorage';
 
 export type BiometricType = 'fingerprint' | 'facial' | 'iris' | 'none';
 

@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Image, ImageProps, ImageContentFit } from 'expo-image';
 import { StyleSheet, View, ViewStyle } from 'react-native';
-import { useTheme } from '../theme/theme';
+import { useTheme } from '@presentation/theme/theme';
 
 type OptimizedImageProps = Omit<ImageProps, 'source'> & {
   /** URI da imagem */

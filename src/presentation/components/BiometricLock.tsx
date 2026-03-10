@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useTheme } from '../theme/theme';
-import { useBiometricAuth } from '../hooks/useBiometricAuth';
+import { useTheme } from '@presentation/theme/theme';
+import { useBiometricAuth } from '@presentation/hooks/useBiometricAuth';
 import { Loading } from './Loading';
 
 type BiometricLockProps = {

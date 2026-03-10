@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { FirebaseUserRepository } from '../FirebaseUserRepository';
-import { FirebaseAPI } from '../infrastructure/firebase/firebase';
+import { FirebaseAPI } from '@infrastructure/firebase/firebase';
 
 const firestoreMocks = vi.hoisted(() => ({
   getFirestore: vi.fn(),
@@ -29,7 +29,7 @@ describe('FirebaseUserRepository', () => {
   it('saveSettings should use path users/{userId}/preferences/settings', async () => {
     const repo = new FirebaseUserRepository();
     const settings = { theme: 'dark' };
-    
+
     await repo.saveSettings('user-123', settings);
 
     expect(firestoreMocks.doc).toHaveBeenCalledWith('mock-db', 'users', 'user-123', 'preferences', 'settings');

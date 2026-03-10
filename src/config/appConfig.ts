@@ -1,5 +1,6 @@
 
 export default {
+  useMock: process.env.EXPO_PUBLIC_USE_MOCK === 'true',
   api: {
     baseUrl: process.env.EXPO_PUBLIC_API_URL || 'https://api.example.com',
     timeout: 30000,
@@ -13,7 +14,7 @@ export default {
     appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
   },
   ai: {
-    ollamaUrl: process.env.EXPO_PUBLIC_OLLAMA_URL || 'http://localhost:11434',
-    defaultModel: process.env.EXPO_PUBLIC_DEFAULT_MODEL || 'qwen2.5-coder:7b',
+    ollamaUrl: process.env.EXPO_PUBLIC_AI_OLLAMA_URL || 'http://localhost:11434',
+    defaultModel: process.env.EXPO_PUBLIC_AI_OLLAMA_MODEL || 'qwen2.5-coder:7b',
   },
 };
