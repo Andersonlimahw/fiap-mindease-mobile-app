@@ -60,7 +60,7 @@ export class FirebaseDebugger {
         webClientId: config.webClientId ? '***' + config.webClientId.slice(-4) : 'missing',
         offlineAccess: config.offlineAccess,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'error',
         error: error.message,
@@ -80,7 +80,7 @@ export class FirebaseDebugger {
         } : 'no user',
         authReady: true,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'error',
         error: error.message,
@@ -96,7 +96,7 @@ export class FirebaseDebugger {
         status: response.ok ? 'connected' : 'failed',
         responseCode: response.status,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'offline',
         error: error.message,
@@ -111,7 +111,7 @@ export class FirebaseDebugger {
         status: hasPlayServices ? 'available' : 'unavailable',
         hasPlayServices,
       };
-    } catch (error) {
+    } catch (error: any) {
       return {
         status: 'error',
         error: error.message,
@@ -135,26 +135,26 @@ export class FirebaseDebugger {
   }
 
   // Method to generate configuration fix suggestions
-  generateFixSuggestions(diagnostics: any) {
+  generateFixSuggestions(diagnosticResults: any) {
     const suggestions: string[] = [];
 
-    if (diagnostics.results.googleSignInConfig?.status === 'error') {
+    if (diagnosticResults.results.googleSignInConfig?.status === 'error') {
       suggestions.push('Check Google Sign-In configuration in GoogleAuthService');
     }
 
-    if (diagnostics.results.firebaseAuth?.status === 'error') {
+    if (diagnosticResults.results.firebaseAuth?.status === 'error') {
       suggestions.push('Verify Firebase initialization and configuration');
     }
 
-    if (diagnostics.results.network?.status === 'offline') {
+    if (diagnosticResults.results.network?.status === 'offline') {
       suggestions.push('Check internet connectivity and network settings');
     }
 
-    if (diagnostics.results.playServices?.status === 'unavailable') {
+    if (diagnosticResults.results.playServices?.status === 'unavailable') {
       suggestions.push('Update Google Play Services on Android device');
     }
 
-    if (!diagnostics.results.firebaseConfig?.allConfigured) {
+    if (!diagnosticResults.results.firebaseConfig?.allConfigured) {
       suggestions.push('Complete Firebase configuration in environment variables');
     }
 
@@ -164,6 +164,6 @@ export class FirebaseDebugger {
 
 // Utility function to run diagnostics from anywhere
 export async function runFirebaseDiagnostics() {
-  const debugger = new FirebaseDebugger();
-  return await debugger.runDiagnostics();
+  const firebaseDebugger = new FirebaseDebugger();
+  return await firebaseDebugger.runDiagnostics();
 }
