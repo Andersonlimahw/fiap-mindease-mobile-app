@@ -15,6 +15,9 @@
 ## Figma:
 [MindEase UI/UX](https://www.figma.com/design/p6jsQDxXRoS8ukHQ9a6Kff/MindEase-UI-UX?node-id=11-5253&t=VZfYF8xKgwRlcss0-1)
 
+## Pitch
+[MindEase Pitch](https://gamma.app/docs/Voce-e-produtivo-ou-apenas-ocupado-nt1gn55s1r5p5ka)
+
 ## Project Structure
 
 - app.json: Expo app configuration
