@@ -11,7 +11,7 @@ type FirebaseConfig = {
   databaseURL: string;
 };
 
-type AIRepositoryType = 'torch' | 'ollama' | 'firebase' | 'mock';
+type AIRepositoryType = 'ollama' | 'firebase' | 'mock';
 
 type AIConfigType = {
   // Primary repository selection strategy
@@ -19,16 +19,6 @@ type AIConfigType = {
 
   // Fallback chain (tried in order if primary fails)
   fallbackRepositories: AIRepositoryType[];
-
-  // Torch-specific config
-  torch: {
-    enabled: boolean;
-    modelName: string;
-    modelUrl: string;
-    cacheDir: string;
-    maxInputLength: number;
-    timeout: number; // ms
-  };
 
   // Ollama config
   ollama: {
@@ -40,7 +30,6 @@ type AIConfigType = {
 
   // Response timeout per repository (ms)
   timeouts: {
-    torch: number;
     ollama: number;
     firebase: number;
     demo: number;
@@ -153,15 +142,6 @@ const aiConfig: AIConfigType = {
   primaryRepository: getPrimaryAIRepository(),
   fallbackRepositories: ['ollama', 'firebase', 'mock'] as AIRepositoryType[], // Will be filled dynamically
 
-  torch: {
-    enabled: getEnv('AI_TORCH_ENABLED', 'true') === 'true',
-    modelName: getEnv('AI_TORCH_MODEL', 'distilbert-base-multilingual-cased'),
-    modelUrl: getEnv('AI_TORCH_MODEL_URL', 'https://models.example.com/distilbert.pt'),
-    cacheDir: 'torch-models',
-    maxInputLength: 512,
-    timeout: 3000, // 3s for local inference
-  },
-
   ollama: {
     url: getEnv('AI_OLLAMA_URL', getEnv('OLLAMA_URL', 'http://localhost:11434')),
     model: getEnv('AI_OLLAMA_MODEL', 'llama3'),
@@ -170,7 +150,6 @@ const aiConfig: AIConfigType = {
   },
 
   timeouts: {
-    torch: 3000,   // Local on-device
     ollama: 30000, // Local/Dev server
     firebase: 10000, // Cloud function
     demo: 1000,    // Demo responses
@@ -179,13 +158,11 @@ const aiConfig: AIConfigType = {
 
 // Build fallback chain based on primary selection
 if (!__DEV__ && !getEnv('USE_MOCK', 'false').includes('true')) {
-  // Production: torch → firebase → demo
+  // Production: firebase → demo
   aiConfig.fallbackRepositories = ['firebase', 'mock'] as AIRepositoryType[];
-  if (!aiConfig.torch.enabled) {
-    aiConfig.primaryRepository = 'firebase';
-  }
+  aiConfig.primaryRepository = 'firebase';
 } else {
-  // Development: torch → ollama → firebase → demo
+  // Development: ollama → firebase → demo
   aiConfig.fallbackRepositories = ['ollama', 'firebase', 'mock'] as AIRepositoryType[];
 }
 

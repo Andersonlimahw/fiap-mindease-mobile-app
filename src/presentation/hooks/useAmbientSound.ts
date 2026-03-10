@@ -21,7 +21,7 @@ export function useAmbientSound(soundType: AmbientSound, isPlaying: boolean) {
       }
 
       const { sound: newSound } = await Audio.Sound.createAsync(
-        { uri: SOUND_ASSETS[type] },
+        SOUND_ASSETS[type],
         { shouldPlay: isPlaying, isLooping: true, volume: 1.0 }
       );
 

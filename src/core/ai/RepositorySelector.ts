@@ -84,8 +84,7 @@ export class RepositorySelector {
 
         // Aplicar timeout
         let timeoutKey: keyof typeof AppConfig.ai.timeouts;
-        if (source === ResponseSource.LOCAL) timeoutKey = 'torch';
-        else if (source === ResponseSource.CLOUD) timeoutKey = 'firebase';
+        if (source === ResponseSource.CLOUD) timeoutKey = 'firebase';
         else timeoutKey = source as keyof typeof AppConfig.ai.timeouts;
 
         const timeout = AppConfig.ai.timeouts[timeoutKey] || 5000;
@@ -99,8 +98,6 @@ export class RepositorySelector {
 
         if (source === ResponseSource.OLLAMA) {
           modelName = AppConfig.ai.ollama.model;
-        } else if (source === ResponseSource.LOCAL) {
-          modelName = AppConfig.ai.torch.modelName;
         }
 
         lastMetadata = {

@@ -4,10 +4,8 @@
   "private": true,
   "main": "index.js",
   "scripts": {
-    "test": "vitest",
-    "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage",
-    "test:watch": "vitest watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "start": "EXPO_PUBLIC_USE_MOCK=false npx expo prebuild --clean",
     "start:firebase": "EXPO_PUBLIC_USE_MOCK=false npx expo start --clear --dev-client",
     "start:mocks": "EXPO_PUBLIC_USE_MOCK=true npx expo prebuild",

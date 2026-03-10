@@ -8,6 +8,7 @@ const firestoreMocks = vi.hoisted(() => ({
   query: vi.fn(),
   getDocs: vi.fn(),
   addDoc: vi.fn(),
+  setDoc: vi.fn(),
   doc: vi.fn(),
   deleteDoc: vi.fn(),
   orderBy: vi.fn(),
@@ -57,16 +58,16 @@ describe('FirebaseChatRepository', () => {
     expect(result[0].content).toBe('Hello');
   });
 
-  it('sendMessage should add documents to subcollection', async () => {
+  it('sendMessage should save message but throw error if AI not implemented', async () => {
     const repo = new FirebaseChatRepository();
     const messages = [{ id: '1', role: 'user', content: 'Hi', timestamp: Date.now() }];
     
-    await repo.sendMessage('user-123', messages as any, '');
+    // It should throw because AI part is not implemented in FirebaseChatRepository yet
+    await expect(repo.sendMessage('user-123', messages as any, '')).rejects.toThrow('Firebase Cloud AI not implemented');
 
     expect(firestoreMocks.collection).toHaveBeenCalledWith('mock-db', 'users', 'user-123', 'chats');
-    // Should call addDoc twice: one for user, one for assistant (demo)
-    expect(firestoreMocks.addDoc).toHaveBeenCalledTimes(2);
-    expect(firestoreMocks.addDoc).toHaveBeenCalledWith('collection-ref', expect.objectContaining({
+    // Should call setDoc for user message (since it has an ID)
+    expect(firestoreMocks.setDoc).toHaveBeenCalledWith('doc-ref', expect.objectContaining({
       role: 'user',
       content: 'Hi',
       timestamp: 'SERVER_TS'

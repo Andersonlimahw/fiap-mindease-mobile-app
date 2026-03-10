@@ -44,6 +44,17 @@ export class MockChatRepository implements ChatRepository {
     return { content: response };
   }
 
+  async saveMessage(userId: string, message: Partial<ChatMessage>): Promise<string> {
+    const id = `mock-${Date.now()}-${message.role || 'user'}`;
+    mockMessages.push({
+      id,
+      role: message.role || 'user',
+      content: message.content || '',
+      timestamp: Date.now(),
+    });
+    return id;
+  }
+
   async getMessages(userId: string): Promise<ChatMessage[]> {
     return mockMessages;
   }

@@ -21,8 +21,13 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.mindease.ios",
       "googleServicesFile": "./GoogleService-Info.plist",
-      "usesIcloudStorage": true,
+      "entitlements": {
+        "aps-environment": "development"
+      },
       "infoPlist": {
+        "UIBackgroundModes": [
+          "remote-notification"
+        ],
         "NSPhotoLibraryUsageDescription": "Permitir que o MindEase acesse suas fotos para selecionar imagens.",
         "NSPhotoLibraryAddUsageDescription": "Permitir que o MindEase salve imagens nos seus álbuns."
       }
@@ -33,7 +38,10 @@
       "permissions": [
         "READ_MEDIA_IMAGES",
         "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
+        "WRITE_EXTERNAL_STORAGE",
+        "POST_NOTIFICATIONS",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
       ]
     },
     "web": {

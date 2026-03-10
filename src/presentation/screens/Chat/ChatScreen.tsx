@@ -85,25 +85,28 @@ export function ChatScreen() {
 
   const messages = useChatMessages();
   const isLoading = useChatIsLoading();
-  const { sendMessage, clearHistory } = useChatActions();
+  const { sendMessage, clearHistory, loadHistory } = useChatActions();
 
   const [inputText, setInputText] = useState('');
   const flatListRef = useRef<FlatList>(null);
 
+  useEffect(() => {
+    loadHistory();
+  }, [loadHistory]);
+
   const handleSend = useCallback(async () => {
-    if (!inputText.trim() || isLoading) return;
+    if (!inputText.trim()) return;
 
     const text = inputText.trim();
     setInputText('');
     await sendMessage(text);
-  }, [inputText, isLoading, sendMessage]);
+  }, [inputText, sendMessage]);
 
   const handleQuickQuestion = useCallback(
     async (question: string) => {
-      if (isLoading) return;
       await sendMessage(question);
     },
-    [isLoading, sendMessage]
+    [sendMessage]
   );
 
   const handleClearHistory = useCallback(() => {
@@ -288,10 +291,10 @@ export function ChatScreen() {
             style={[
               styles.sendButton,
               { backgroundColor: CHAT_COLOR },
-              (!inputText.trim() || isLoading) && styles.sendButtonDisabled,
+              (!inputText.trim()) && styles.sendButtonDisabled,
             ]}
             onPress={handleSend}
-            disabled={!inputText.trim() || isLoading}
+            disabled={!inputText.trim()}
           >
             <MaterialIcons name="send" size={22} color="#fff" />
           </TouchableOpacity>

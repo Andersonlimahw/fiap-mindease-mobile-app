@@ -124,6 +124,11 @@ export class OllamaChatRepository implements ChatRepository {
     }
   }
 
+  async saveMessage(userId: string, message: Partial<ChatMessage>): Promise<string> {
+    // Ollama doesn't persist, so we just return a temporary ID
+    return `ollama-${Date.now()}`;
+  }
+
   async getMessages(userId: string): Promise<ChatMessage[]> {
     // Ollama doesn't persist messages, return empty array
     return [];

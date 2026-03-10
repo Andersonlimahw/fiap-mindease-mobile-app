@@ -11,6 +11,7 @@ import {
   where,
   getDocs,
   addDoc,
+  setDoc,
   serverTimestamp,
   orderBy,
   onSnapshot,
@@ -52,7 +53,7 @@ export class FirebaseChatRepository implements ChatRepository {
   }
 
   /**
-   * Send a message to the chat (store in Firebase)
+   * Send a message to the chat (store in Firebase and get AI response)
    * In a real scenario, this would integrate with an AI service via Cloud Functions
    */
   async sendMessage(
@@ -69,27 +70,37 @@ export class FirebaseChatRepository implements ChatRepository {
       throw new Error('No user message found');
     }
 
-    // Store user message in Firebase
-    await addDoc(chatColl, {
-      role: 'user',
-      content: lastUserMsg.content,
-      timestamp: serverTimestamp(),
-    });
+    // Store user message in Firebase if not already there (id check would be better)
+    // For now, we assume the caller might have already saved it or we save it here
+    await this.saveMessage(userId, lastUserMsg);
 
-    // For now, return a demo response
     // In production, call a Cloud Function to get AI response
-    const demoResponse = this.getDemoResponse(lastUserMsg.content);
+    // Since we don't have a Cloud Function yet, we'll throw to allow fallback
+    // unless a URL is configured (we can add this to AppConfig later)
+    throw new Error('Firebase Cloud AI not implemented. Falling back to next provider.');
+  }
 
-    // Store assistant response in Firebase
-    await addDoc(chatColl, {
-      role: 'assistant',
-      content: demoResponse,
+  /**
+   * Saves a single message to the chat history
+   */
+  async saveMessage(userId: string, message: Partial<ChatMessage>): Promise<string> {
+    const chatColl = this.getChatCollection(userId);
+    const db = this.getDb();
+    
+    const messageData = {
+      role: message.role || 'user',
+      content: message.content || '',
       timestamp: serverTimestamp(),
-    });
-
-    return {
-      content: demoResponse,
     };
+
+    if (message.id) {
+      const docRef = doc(db, 'users', userId, COLLECTION_NAME, message.id);
+      await setDoc(docRef, messageData);
+      return message.id;
+    } else {
+      const docRef = await addDoc(chatColl, messageData);
+      return docRef.id;
+    }
   }
 
   /**
@@ -144,43 +155,5 @@ export class FirebaseChatRepository implements ChatRepository {
     for (const doc_ of snap.docs) {
       await deleteDoc(doc_.ref);
     }
-  }
-
-  /**
-   * Demo response based on keywords
-   */
-  private getDemoResponse(message: string): string {
-    const DEMO_RESPONSES: Record<string, string> = {
-      pomodoro:
-        'A Técnica Pomodoro é um método de gerenciamento de tempo que divide o trabalho em intervalos de 25 minutos (chamados "pomodoros"), separados por pausas curtas. Após 4 pomodoros, você faz uma pausa mais longa. Isso ajuda a manter o foco e prevenir a fadiga mental.',
-
-      tarefas:
-        'Para organizar suas tarefas de forma eficaz:\n1. Liste todas as tarefas\n2. Divida tarefas grandes em micro-etapas menores\n3. Priorize por urgência e importância\n4. Defina prazos realistas\n5. Use o MindEase para criar e acompanhar suas tarefas!',
-
-      ansiedade:
-        'Algumas estratégias para reduzir ansiedade:\n1. Respiração profunda (4-7-8)\n2. Meditação mindfulness (5-10 min)\n3. Exercício físico regular\n4. Limite de cafeína\n5. Estabeleça uma rotina de sono\n6. Use o modo foco do MindEase para minimizar distrações',
-
-      concentração:
-        'Para melhorar sua concentração:\n1. Elimine distrações (use o Modo Foco)\n2. Trabalhe em blocos de tempo (Pomodoro)\n3. Faça pausas regulares\n4. Mantenha-se hidratado\n5. Ajuste iluminação e temperatura\n6. Pratique meditação diariamente',
-
-      produtividade:
-        'Dicas para aumentar sua produtividade:\n1. Planeje seu dia na noite anterior\n2. Comece pelas tarefas mais difíceis\n3. Use técnicas como Pomodoro\n4. Minimize multitasking\n5. Organize seu espaço de trabalho\n6. Tire pausas regulares',
-
-      foco:
-        'O Modo Foco do MindEase ajuda você a:\n1. Eliminar distrações visuais\n2. Usar sons ambiente relaxantes\n3. Bloquear notificações\n4. Manter um timer para sessões focadas\n\nExperimente ativar o Modo Foco antes de começar uma tarefa importante!',
-
-      default:
-        'Sou o assistente IA do MindEase! Posso ajudar com:\n- Técnicas de produtividade (Pomodoro)\n- Organização de tarefas\n- Gerenciamento de tempo\n- Redução de ansiedade e estresse\n- Dicas de foco e concentração\n\nComo posso ajudar você hoje?',
-    };
-
-    const lowerMessage = message.toLowerCase();
-
-    for (const [key, response] of Object.entries(DEMO_RESPONSES)) {
-      if (key !== 'default' && lowerMessage.includes(key)) {
-        return response;
-      }
-    }
-
-    return DEMO_RESPONSES.default;
   }
 }

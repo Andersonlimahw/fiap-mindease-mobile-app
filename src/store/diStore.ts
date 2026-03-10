@@ -11,7 +11,6 @@ import { MockTaskRepository } from "@app/data/mock/MockTaskRepository";
 import { FirebaseTaskRepository } from "@app/data/firebase/FirebaseTaskRepository";
 import { FirebaseChatRepository } from "@app/data/firebase/FirebaseChatRepository";
 import { OllamaChatRepository } from "@app/data/ollama/OllamaChatRepository";
-import { TorchChatRepository } from "@app/data/torch/TorchChatRepository";
 import { MockChatRepository } from "@app/data/mock/MockChatRepository";
 import { RepositorySelector } from "@app/core/ai/RepositorySelector";
 import { AIResponseSource } from "@app/types/ai";
@@ -30,11 +29,11 @@ type DIState = {
 function buildChatRepositoryWithSelector(): ChatRepository {
   // Criar todas as implementações disponíveis
   const repos: Record<AIResponseSource, ChatRepository> = {
-    [ResponseSource.LOCAL]: new TorchChatRepository(),
     [ResponseSource.LOCAL_CACHED]: new MockChatRepository(), // Placeholder para cache
     [ResponseSource.OLLAMA]: new OllamaChatRepository(),
     [ResponseSource.CLOUD]: new FirebaseChatRepository(),
     [ResponseSource.DEMO]: new MockChatRepository(),
+    [ResponseSource.LOCAL]: new MockChatRepository(), // Removed Torch, using mock as placeholder
   };
 
   // Criar seletor com as implementações
@@ -46,7 +45,31 @@ function buildChatRepositoryWithSelector(): ChatRepository {
   // Criar wrapper que usa o seletor
   const wrappedRepo: ChatRepository = {
     async sendMessage(userId, messages, systemPrompt, onChunk) {
+      const cloudRepo = repos[ResponseSource.CLOUD];
+
+      // 1. Get the last user message to save it
+      const lastUserMsg = messages.filter(m => m.role === 'user').pop();
+      if (lastUserMsg) {
+        try {
+          // Salvar no Firebase para persistência E2E
+          await cloudRepo.saveMessage(userId, lastUserMsg);
+        } catch (e) {
+          console.warn('[ChatRepository] Failed to save user message to cloud:', e);
+        }
+      }
+
+      // 2. Get AI response from selector (tries Cloud, then Ollama, then Local...)
       const { response, metadata } = await selector.sendMessage(userId, messages, systemPrompt, onChunk);
+
+      // 3. Save the final AI response to Firebase for persistence
+      try {
+        await cloudRepo.saveMessage(userId, {
+          role: 'assistant',
+          content: response.content,
+        });
+      } catch (e) {
+        console.warn('[ChatRepository] Failed to save assistant message to cloud:', e);
+      }
 
       // Log do resultado (útil para debug)
       if (__DEV__) {
@@ -57,6 +80,11 @@ function buildChatRepositoryWithSelector(): ChatRepository {
       }
 
       return response;
+    },
+
+    async saveMessage(userId, message) {
+      const cloud = repos[ResponseSource.CLOUD];
+      return cloud.saveMessage(userId, message);
     },
 
     async getMessages(userId) {

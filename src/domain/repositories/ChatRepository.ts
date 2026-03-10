@@ -13,6 +13,11 @@ export interface ChatRepository {
   ): Promise<ChatResponse>;
 
   /**
+   * Saves a single message to the chat history
+   */
+  saveMessage(userId: string, message: Partial<ChatMessage>): Promise<string>;
+
+  /**
    * Get all chat messages for a user
    */
   getMessages(userId: string): Promise<ChatMessage[]>;
