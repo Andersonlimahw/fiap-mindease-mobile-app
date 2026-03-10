@@ -10,7 +10,7 @@ type BrandLogos = Record<
 // falls back to using `theme.logoText` instead of an image.
 export const brandLogos: BrandLogos = {
   mindease: {
-    light: require("../../../public/assets/images/icons/Logo.png"),
+    light: require("../../../public/assets/images/icons/logo.png"),
   },
   neon: {
     // Provide a logo if available; otherwise the UI will render the brand name
