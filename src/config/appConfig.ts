@@ -144,7 +144,7 @@ const aiConfig: AIConfigType = {
 
   ollama: {
     url: getEnv('AI_OLLAMA_URL', getEnv('OLLAMA_URL', 'https://ollama.com')),
-    model: getEnv('AI_OLLAMA_MODEL', 'llama3'),
+    model: getEnv('AI_OLLAMA_MODEL', 'kimi-k2.5:cloud'),
     apiKey: getEnv('AI_OLLAMA_API_KEY', '66d85387ecaf49498c33428de0eb2fd0.wA32-KSXmJBE_bvgQEf0SlG1'),
     timeout: 30000, // 30s for Ollama
   },
@@ -152,7 +152,7 @@ const aiConfig: AIConfigType = {
   timeouts: {
     ollama: 30000, // Local/Dev server
     firebase: 10000, // Cloud function
-    demo: 1000,    // Demo responses
+    demo: 2000,    // Demo responses
   },
 };
 
