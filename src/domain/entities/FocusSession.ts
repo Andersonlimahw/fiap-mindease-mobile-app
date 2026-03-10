@@ -53,10 +53,10 @@ export const AMBIENT_SOUND_ICONS: Record<AmbientSound, string> = {
   'white-noise': 'graphic-eq',
 };
 
-export const SOUND_ASSETS: Record<Exclude<AmbientSound, 'none'>, number> = {
-  rain: require('../../../../public/assets/audio/rain.mp3'),
-  forest: require('../../../../public/assets/audio/forest.mp3'),
-  ocean: require('../../../../public/assets/audio/ocean.mp3'),
-  cafe: require('../../../../public/assets/audio/cafe.mp3'),
-  'white-noise': require('../../../../public/assets/audio/white-noise.mp3'),
+export const SOUND_ASSETS: Record<Exclude<AmbientSound, 'none'>, ReturnType<typeof require>> = {
+  rain: require('../../../assets/audio/rain.mp3'),
+  forest: require('../../../assets/audio/forest.mp3'),
+  ocean: require('../../../assets/audio/ocean.mp3'),
+  cafe: require('../../../assets/audio/cafe.mp3'),
+  'white-noise': require('../../../assets/audio/white-noise.mp3'),
 };
