@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import * as Speech from 'expo-speech';
-import type { ContentItem, ContentViewMode } from '@app/domain/entities/ContentItem';
-import { zustandSecureStorage } from '@app/infrastructure/storage/SecureStorage';
+import type { ContentItem, ContentViewMode } from '../domain/entities/ContentItem';
+import { zustandSecureStorage } from '../infrastructure/storage/SecureStorage';
 
 type ContentReaderState = {
   // Current content

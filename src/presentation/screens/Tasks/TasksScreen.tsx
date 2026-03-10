@@ -10,8 +10,8 @@ import { FlashList } from '@shopify/flash-list';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { styles } from './TasksScreen.styles';
-import { useTheme } from '@app/presentation/theme/theme';
-import { useI18n } from '@app/presentation/i18n/I18nProvider';
+import { useTheme } from '../presentation/theme/theme';
+import { useI18n } from '../presentation/i18n/I18nProvider';
 import { useAuth } from '@store/authStore';
 import {
   useTasks,
@@ -19,10 +19,10 @@ import {
   useTasksActions,
   getTaskProgress,
 } from '@store/tasksStore';
-import type { Task, TaskPriority } from '@app/domain/entities/Task';
+import type { Task, TaskPriority } from '../domain/entities/Task';
 
-import { TaskItem } from '@app/presentation/components/TaskItem';
-import { AddTaskModal } from '@app/presentation/components/AddTaskModal';
+import { TaskItem } from '../presentation/components/TaskItem';
+import { AddTaskModal } from '../presentation/components/AddTaskModal';
 
 type FilterType = 'all' | 'pending' | 'completed';
 

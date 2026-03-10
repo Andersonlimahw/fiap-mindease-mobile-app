@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { Notification, CreateNotificationInput } from '@app/domain/entities/Notification';
-import type { NotificationRepository } from '@app/domain/repositories/NotificationRepository';
-import { TOKENS } from '@app/core/di/container';
+import type { Notification, CreateNotificationInput } from '../domain/entities/Notification';
+import type { NotificationRepository } from '../domain/repositories/NotificationRepository';
+import { TOKENS } from '../core/di/container';
 import { useDIStore } from './diStore';
-import { zustandSecureStorage } from '@app/infrastructure/storage/SecureStorage';
+import { zustandSecureStorage } from '../infrastructure/storage/SecureStorage';
 
 type NotificationState = {
   notifications: Notification[];

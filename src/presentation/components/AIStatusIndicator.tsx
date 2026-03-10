@@ -1,9 +1,9 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { StyleSheet } from 'react-native';
-import type { AIResponseMetadata } from '@app/types/ai';
-import { AIResponseSource } from '@app/types/ai';
-import { useTheme } from '@app/presentation/theme/theme';
+import type { AIResponseMetadata } from '../types/ai';
+import { AIResponseSource } from '../types/ai';
+import { useTheme } from '../presentation/theme/theme';
 
 interface AIStatusIndicatorProps {
   metadata?: AIResponseMetadata;

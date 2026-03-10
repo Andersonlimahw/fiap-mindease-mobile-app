@@ -1,9 +1,9 @@
-import type { ChatRepository } from '@app/domain/repositories/ChatRepository';
+import type { ChatRepository } from '../domain/repositories/ChatRepository';
 import type {
   ChatMessage,
   ChatResponse,
-} from '@app/domain/entities/ChatMessage';
-import { FirebaseAPI } from '@app/infrastructure/firebase/firebase';
+} from '../domain/entities/ChatMessage';
+import { FirebaseAPI } from '../infrastructure/firebase/firebase';
 import {
   getFirestore,
   collection,

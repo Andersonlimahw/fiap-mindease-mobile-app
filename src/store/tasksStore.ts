@@ -1,10 +1,10 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import type { Task, CreateTaskInput, UpdateTaskInput, TaskPriority, TASK_PRIORITY_ORDER } from '@app/domain/entities/Task';
-import type { TaskRepository } from '@app/domain/repositories/TaskRepository';
-import { TOKENS } from '@app/core/di/container';
+import type { Task, CreateTaskInput, UpdateTaskInput, TaskPriority, TASK_PRIORITY_ORDER } from '../domain/entities/Task';
+import type { TaskRepository } from '../domain/repositories/TaskRepository';
+import { TOKENS } from '../core/di/container';
 import { useDIStore } from './diStore';
-import { zustandSecureStorage } from '@app/infrastructure/storage/SecureStorage';
+import { zustandSecureStorage } from '../infrastructure/storage/SecureStorage';
 
 type TasksState = {
   tasks: Task[];

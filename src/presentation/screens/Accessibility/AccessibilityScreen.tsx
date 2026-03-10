@@ -4,8 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Slider from '@react-native-community/slider';
 
 import { styles } from './AccessibilityScreen.styles';
-import { useTheme } from '@app/presentation/theme/theme';
-import { useI18n } from '@app/presentation/i18n/I18nProvider';
+import { useTheme } from '../presentation/theme/theme';
+import { useI18n } from '../presentation/i18n/I18nProvider';
 import {
   useAccessibilitySettings,
   useAccessibilityActions,
@@ -16,8 +16,8 @@ import {
   LINE_HEIGHT_MIN,
   LINE_HEIGHT_MAX,
   COLOR_BLIND_MODES,
-} from '@app/domain/entities/AccessibilitySettings';
-import type { ColorBlindMode } from '@app/domain/entities/AccessibilitySettings';
+} from '../domain/entities/AccessibilitySettings';
+import type { ColorBlindMode } from '../domain/entities/AccessibilitySettings';
 
 const ACCENT_COLOR = '#6366F1'; // Indigo for accessibility
 

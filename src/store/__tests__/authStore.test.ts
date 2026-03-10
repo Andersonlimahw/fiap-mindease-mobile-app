@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { useAuthStore, initAuthStore, teardownAuthStore } from '../authStore';
 import { useDIStore } from '@store/diStore';
-import { TOKENS } from '@app/core/di/container';
-import type { AuthRepository } from '@app/domain/repositories/AuthRepository';
-import type { User } from '@app/domain/entities/User';
-import type { AuthProvider } from '@app/domain/entities/AuthProvider';
+import { TOKENS } from '../core/di/container';
+import type { AuthRepository } from '../domain/repositories/AuthRepository';
+import type { User } from '../domain/entities/User';
+import type { AuthProvider } from '../domain/entities/AuthProvider';
 
 const createAuthRepoMock = () => ({
   signIn: vi.fn(),

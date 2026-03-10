@@ -1,7 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { Audio } from 'expo-av';
-import type { PomodoroMode } from '@app/domain/entities/PomodoroSession';
-import { POMODORO_ALERT_SOUND } from '@app/domain/entities/PomodoroSession';
+import type { PomodoroMode } from '../domain/entities/PomodoroSession';
+import { POMODORO_ALERT_SOUND } from '../domain/entities/PomodoroSession';
 
 export function usePomodoroAlert(mode: PomodoroMode) {
   const previousModeRef = useRef<PomodoroMode>(mode);

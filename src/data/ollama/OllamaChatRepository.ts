@@ -1,10 +1,10 @@
-import type { ChatRepository } from '@app/domain/repositories/ChatRepository';
+import type { ChatRepository } from '../domain/repositories/ChatRepository';
 import type {
   ChatMessage,
   ChatResponse,
   OllamaMessage,
-} from '@app/domain/entities/ChatMessage';
-import AppConfig from '@app/config/appConfig';
+} from '../domain/entities/ChatMessage';
+import AppConfig from '../config/appConfig';
 
 // Ollama API Web Search endpoints configuration
 const OLLAMA_API_BASE = 'https://ollama.com/api';

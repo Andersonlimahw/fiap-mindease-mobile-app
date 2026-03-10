@@ -1,5 +1,5 @@
-import type { NotificationRepository } from '@app/domain/repositories/NotificationRepository';
-import type { Notification, CreateNotificationInput } from '@app/domain/entities/Notification';
+import type { NotificationRepository } from '../domain/repositories/NotificationRepository';
+import type { Notification, CreateNotificationInput } from '../domain/entities/Notification';
 
 let mockNotifications: Notification[] = [
   {

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import type { Task } from '@app/domain/entities/Task';
+import type { Task } from '../domain/entities/Task';
 import { FirebaseTaskRepository } from '../FirebaseTaskRepository';
-import { FirebaseAPI } from '@app/infrastructure/firebase/firebase';
+import { FirebaseAPI } from '../infrastructure/firebase/firebase';
 
 const firestoreMocks = vi.hoisted(() => ({
   getFirestore: vi.fn(),

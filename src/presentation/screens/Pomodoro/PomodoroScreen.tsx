@@ -10,8 +10,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { styles } from './PomodoroScreen.styles';
-import { useTheme } from '@app/presentation/theme/theme';
-import { useI18n } from '@app/presentation/i18n/I18nProvider';
+import { useTheme } from '../presentation/theme/theme';
+import { useI18n } from '../presentation/i18n/I18nProvider';
 import {
   usePomodoroMode,
   usePomodoroTimeLeft,
@@ -22,8 +22,8 @@ import {
   formatTime,
   formatTotalTime,
 } from '@store/pomodoroStore';
-import type { PomodoroMode } from '@app/domain/entities/PomodoroSession';
-import { usePomodoroAlert } from '@app/presentation/hooks/usePomodoroAlert';
+import type { PomodoroMode } from '../domain/entities/PomodoroSession';
+import { usePomodoroAlert } from '../presentation/hooks/usePomodoroAlert';
 
 const MODE_COLORS: Record<PomodoroMode, string> = {
   focus: '#DC2626',

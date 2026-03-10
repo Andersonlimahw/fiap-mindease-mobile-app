@@ -11,7 +11,7 @@ import {
   useSampleContents,
   useContentReaderActions,
 } from '@store/contentReaderStore';
-import type { ContentItem } from '@app/domain/entities/ContentItem';
+import type { ContentItem } from '../domain/entities/ContentItem';
 
 export function ContentReaderScreen() {
   const theme = useTheme();

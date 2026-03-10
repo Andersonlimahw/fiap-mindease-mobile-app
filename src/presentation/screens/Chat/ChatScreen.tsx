@@ -15,11 +15,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { styles } from './ChatScreen.styles';
-import { useTheme } from '@app/presentation/theme/theme';
-import { useI18n } from '@app/presentation/i18n/I18nProvider';
+import { useTheme } from '../presentation/theme/theme';
+import { useI18n } from '../presentation/i18n/I18nProvider';
 import { useChatMessages, useChatIsLoading, useChatActions } from '@store/chatStore';
-import { QUICK_QUESTIONS } from '@app/domain/entities/ChatMessage';
-import type { ChatMessage } from '@app/domain/entities/ChatMessage';
+import { QUICK_QUESTIONS } from '../domain/entities/ChatMessage';
+import type { ChatMessage } from '../domain/entities/ChatMessage';
 
 const CHAT_COLOR = '#10B981'; // Green for chat
 

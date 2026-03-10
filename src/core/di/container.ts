@@ -1,5 +1,5 @@
 
-import { Logger } from '@app/infrastructure/logging/Logger';
+import { Logger } from '../infrastructure/logging/Logger';
 
 export const TOKENS = {
   Logger: 'Logger',

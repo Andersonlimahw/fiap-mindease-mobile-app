@@ -1,13 +1,13 @@
-import type { ChatRepository } from '@app/domain/repositories/ChatRepository';
-import type { ChatMessage, ChatResponse } from '@app/domain/entities/ChatMessage';
+import type { ChatRepository } from '../domain/repositories/ChatRepository';
+import type { ChatMessage, ChatResponse } from '../domain/entities/ChatMessage';
 import type {
   AIResponseMetadata,
   AIResponseSource,
   RepositoryAttempt,
   RepositoryStats,
-} from '@app/types/ai';
-import { AIResponseSource as ResponseSource } from '@app/types/ai';
-import AppConfig from '@app/config/appConfig';
+} from '../types/ai';
+import { AIResponseSource as ResponseSource } from '../types/ai';
+import AppConfig from '../config/appConfig';
 
 /**
  * RepositorySelector - Estratégia inteligente de seleção de repositório

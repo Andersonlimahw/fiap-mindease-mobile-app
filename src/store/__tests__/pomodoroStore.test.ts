@@ -5,7 +5,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { usePomodoroStore, formatTime, formatTotalTime } from '../pomodoroStore';
-import { DEFAULT_POMODORO_SETTINGS } from '@app/domain/entities/PomodoroSession';
+import { DEFAULT_POMODORO_SETTINGS } from '../domain/entities/PomodoroSession';
 import { useAuthStore } from '../authStore';
 import { useDIStore } from '../diStore';
 

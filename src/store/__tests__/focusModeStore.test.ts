@@ -5,7 +5,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useFocusModeStore } from '../focusModeStore';
-import { DEFAULT_FOCUS_SETTINGS } from '@app/domain/entities/FocusSession';
+import { DEFAULT_FOCUS_SETTINGS } from '../domain/entities/FocusSession';
 import { useAuthStore } from '../authStore';
 import { useDIStore } from '../diStore';
 

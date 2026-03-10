@@ -6,7 +6,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { useChatStore } from '../chatStore';
 import { useDIStore } from '@store/diStore';
-import { TOKENS } from '@app/core/di/container';
+import { TOKENS } from '../core/di/container';
 
 // Helper to configure the mock DI to return a specific ChatRepository
 function mockChatRepository(repo: any) {

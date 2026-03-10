@@ -4,8 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { MaterialIcons } from '@expo/vector-icons';
 
 import { styles } from './FocusModeScreen.styles';
-import { useTheme } from '@app/presentation/theme/theme';
-import { useI18n } from '@app/presentation/i18n/I18nProvider';
+import { useTheme } from '../presentation/theme/theme';
+import { useI18n } from '../presentation/i18n/I18nProvider';
 import {
   useFocusIsActive,
   useFocusTimeLeft,
@@ -14,8 +14,8 @@ import {
   useFocusActions,
 } from '@store/focusModeStore';
 import { formatTime } from '@store/pomodoroStore';
-import type { AmbientSound } from '@app/domain/entities/FocusSession';
-import { useAmbientSound } from '@app/presentation/hooks/useAmbientSound';
+import type { AmbientSound } from '../domain/entities/FocusSession';
+import { useAmbientSound } from '../presentation/hooks/useAmbientSound';
 
 const DURATION_OPTIONS = [15, 25, 30, 45, 60];
 

@@ -1,6 +1,6 @@
-import type { NotificationRepository } from '@app/domain/repositories/NotificationRepository';
-import type { Notification, CreateNotificationInput } from '@app/domain/entities/Notification';
-import { FirebaseAPI } from '@app/infrastructure/firebase/firebase';
+import type { NotificationRepository } from '../domain/repositories/NotificationRepository';
+import type { Notification, CreateNotificationInput } from '../domain/entities/Notification';
+import { FirebaseAPI } from '../infrastructure/firebase/firebase';
 import {
   getFirestore,
   collection,

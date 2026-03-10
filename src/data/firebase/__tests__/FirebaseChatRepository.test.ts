@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { FirebaseChatRepository } from '../FirebaseChatRepository';
-import { FirebaseAPI } from '@app/infrastructure/firebase/firebase';
+import { FirebaseAPI } from '../infrastructure/firebase/firebase';
 
 const firestoreMocks = vi.hoisted(() => ({
   getFirestore: vi.fn(),

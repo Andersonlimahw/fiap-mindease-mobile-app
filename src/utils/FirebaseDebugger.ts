@@ -18,7 +18,7 @@ export class FirebaseDebugger {
   }
 
   async runDiagnostics() {
-    const diagnostics: any = {
+    const diagnosticResults: any = {
       timestamp: new Date().toISOString(),
       platform: Platform.OS,
       results: {},
@@ -26,29 +26,29 @@ export class FirebaseDebugger {
 
     try {
       // 1. Check Google Sign-In configuration
-      diagnostics.results.googleSignInConfig = await this.checkGoogleSignInConfig();
+      diagnosticResults.results.googleSignInConfig = await this.checkGoogleSignInConfig();
       
       // 2. Check Firebase Auth state
-      diagnostics.results.firebaseAuth = await this.checkFirebaseAuth();
+      diagnosticResults.results.firebaseAuth = await this.checkFirebaseAuth();
       
       // 3. Check network connectivity
-      diagnostics.results.network = await this.checkNetwork();
+      diagnosticResults.results.network = await this.checkNetwork();
       
       // 4. Check Play Services (Android only)
       if (Platform.OS === 'android') {
-        diagnostics.results.playServices = await this.checkPlayServices();
+        diagnosticResults.results.playServices = await this.checkPlayServices();
       }
 
       // 5. Check Firebase project configuration
-      diagnostics.results.firebaseConfig = this.checkFirebaseConfig();
+      diagnosticResults.results.firebaseConfig = this.checkFirebaseConfig();
 
-      this.logger.info('Firebase diagnostics completed', diagnostics);
-      return diagnostics;
+      this.logger.info('Firebase diagnostics completed', diagnosticResults);
+      return diagnosticResults;
 
-    } catch (error) {
+    } catch (error: any) {
       this.logger.error('Firebase diagnostics failed', error);
-      diagnostics.error = error.message;
-      return diagnostics;
+      diagnosticResults.error = error.message;
+      return diagnosticResults;
     }
   }
 

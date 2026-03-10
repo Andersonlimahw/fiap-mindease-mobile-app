@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Animated, StyleSheet } from 'react-native';
-import { useTheme } from '@app/presentation/theme/theme';
+import { useTheme } from '../presentation/theme/theme';
 
 interface AITypingIndicatorProps {
   visible: boolean;
