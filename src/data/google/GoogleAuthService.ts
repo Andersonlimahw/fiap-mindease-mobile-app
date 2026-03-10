@@ -18,9 +18,9 @@ export class GoogleAuthService {
     const extra = (Constants.expoConfig?.extra ?? {}) as Record<string, string | undefined>;
 
     GoogleSignin.configure({
-      webClientId: extra.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-      iosClientId: extra.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
-      offlineAccess: true,
+      webClientId: '102802199932-dro8udnia2hu7k6bmnkhij4m97gooqck.apps.googleusercontent.com',
+      iosClientId: '102802199932-3c8av88ho09numo7u87evflujm83v3sn.apps.googleusercontent.com',
+      offlineAccess: false,
       forceCodeForRefreshToken: true,
     });
   }

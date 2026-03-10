@@ -17,19 +17,11 @@ function mapFirebaseUser(firebaseUser: FirebaseAuthTypes.User | null): User | nu
 
 export class FirebaseAuthRepository implements AuthRepository {
   constructor() {
-    const extra = (Constants.expoConfig?.extra ?? {}) as Record<
-      string,
-      string | undefined
-    >;
-    try {
-      GoogleSignin.configure({
-        webClientId: extra.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID,
-        iosClientId: extra.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
-        offlineAccess: false,
-      });
-    } catch (e) {
-      console.error("[FirebaseAuthRepository] GoogleSignin configure error", e);
-    }
+    GoogleSignin.configure({
+      webClientId: '102802199932-dro8udnia2hu7k6bmnkhij4m97gooqck.apps.googleusercontent.com',
+      iosClientId: '102802199932-3c8av88ho09numo7u87evflujm83v3sn.apps.googleusercontent.com',
+      offlineAccess: false,
+    });
   }
 
   async getCurrentUser(): Promise<User | null> {
@@ -37,6 +29,7 @@ export class FirebaseAuthRepository implements AuthRepository {
   }
 
   onAuthStateChanged(cb: (user: User | null) => void): () => void {
+    // Use the standard listener, ensuring no additional arguments are passed to avoid v22 warnings
     return auth().onAuthStateChanged((user) => {
       cb(mapFirebaseUser(user));
     });
@@ -50,14 +43,14 @@ export class FirebaseAuthRepository implements AuthRepository {
       await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
       const { data } = await GoogleSignin.signIn();
       const idToken = data?.idToken;
-      
+
       if (!idToken) {
         throw new Error("Google Sign-In failed: No ID Token found");
       }
 
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       const userCredential = await auth().signInWithCredential(googleCredential);
-      
+
       const user = mapFirebaseUser(userCredential.user);
       if (!user) throw new Error("Firebase sign-in with Google failed");
       return user;
