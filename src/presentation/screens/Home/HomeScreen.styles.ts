@@ -14,6 +14,33 @@ export const makeHomeStyles = (theme: AppTheme) =>
       alignItems: "center",
       marginBottom: theme.spacing.lg,
     },
+    headerActions: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
+    },
+    notificationButton: {
+      position: "relative",
+      padding: 4,
+    },
+    notificationBadge: {
+      position: "absolute",
+      top: 0,
+      right: 0,
+      backgroundColor: "#EF4444",
+      borderRadius: 8,
+      minWidth: 16,
+      height: 16,
+      alignItems: "center",
+      justifyContent: "center",
+      paddingHorizontal: 3,
+    },
+    notificationBadgeText: {
+      color: "#fff",
+      fontSize: 9,
+      fontWeight: "700",
+      lineHeight: 12,
+    },
     hello: { color: theme.colors.muted, fontFamily: theme.fonts.regular },
     username: {
       fontSize: theme.text.h2,

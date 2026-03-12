@@ -58,11 +58,14 @@ export const NotificationService = {
    */
   async getFcmToken(): Promise<string | null> {
     try {
+      console.log('[NotificationService] Getting FCM token...');
       // iOS requer registro explícito antes de chamar getToken()
       if (Platform.OS === 'ios') {
+        console.log('[NotificationService] Registering device for remote messages (iOS)...');
         await messaging().registerDeviceForRemoteMessages();
       }
       const token = await messaging().getToken();
+      console.log('[NotificationService] Get new FCM registration token:', token);
       return token;
     } catch (error) {
       console.error('[NotificationService] getFcmToken error:', error);
@@ -76,7 +79,12 @@ export const NotificationService = {
    * Idempotente: chamadas subsequentes retornam o token atual sem re-inicializar.
    */
   async init(onMessage?: FcmMessageHandler): Promise<string | null> {
-    if (initialized) return this.getFcmToken();
+    console.log('[NotificationService] Initializing...');
+    if (initialized) {
+      const token = await this.getFcmToken();
+      console.log('[NotificationService] Already initialized. Token:', token);
+      return token;
+    }
     initialized = true;
 
     if (onMessage) {
@@ -84,13 +92,17 @@ export const NotificationService = {
     }
 
     const granted = await this.requestPermission();
+    console.log('[NotificationService] Permission granted:', granted);
     if (!granted) {
       console.log('[NotificationService] Notification permission denied');
       return null;
     }
 
     const token = await this.getFcmToken();
-    if (!token) return null;
+    if (!token) {
+      console.warn('[NotificationService] Failed to get FCM token');
+      return null;
+    }
 
     // Handler para mensagens em foreground
     if (unsubscribeForeground) unsubscribeForeground();
@@ -98,13 +110,22 @@ export const NotificationService = {
       const title = remoteMessage.notification?.title ?? 'MindEase';
       const body = remoteMessage.notification?.body ?? '';
       const data = (remoteMessage.data ?? {}) as Record<string, string>;
-      console.log('[NotificationService] Foreground message:', { title, body });
+      console.log('[NotificationService] Foreground message received:', { title, body, data });
       onMessageHandler?.(title, body, data);
+    });
+
+    // Handler para refresh de token
+    messaging().onTokenRefresh((token) => {
+      console.log('[NotificationService] FCM token refreshed:', token);
     });
 
     // Handler: app aberto via notificação (background → foreground)
     messaging().onNotificationOpenedApp((remoteMessage) => {
-      console.log('[NotificationService] Opened from background:', remoteMessage.messageId);
+      console.log('[NotificationService] App opened from background state:', {
+        messageId: remoteMessage.messageId,
+        notification: remoteMessage.notification,
+        data: remoteMessage.data
+      });
     });
 
     // Handler: app estava fechado (quit state)
@@ -112,7 +133,11 @@ export const NotificationService = {
       .getInitialNotification()
       .then((remoteMessage) => {
         if (remoteMessage) {
-          console.log('[NotificationService] Opened from quit state:', remoteMessage.messageId);
+          console.log('[NotificationService] App opened from quit state:', {
+            messageId: remoteMessage.messageId,
+            notification: remoteMessage.notification,
+            data: remoteMessage.data
+          });
         }
       });
 

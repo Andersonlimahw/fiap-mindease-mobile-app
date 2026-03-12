@@ -11,6 +11,7 @@ import { useAuth } from "@store/authStore";
 import { usePendingTasks } from "@store/tasksStore";
 import { usePomodoroStats } from "@store/pomodoroStore";
 import { formatTotalTime } from "@store/pomodoroStore";
+
 import { useTheme } from "@presentation/theme/theme";
 import { makeHomeStyles } from "./HomeScreen.styles";
 import { useFadeSlideInOnFocus } from "@presentation/hooks/animations";
@@ -29,6 +30,7 @@ export const HomeScreen: React.FC<any> = ({ navigation }) => {
   const { user, signOut } = useAuth();
   const pendingTasks = usePendingTasks();
   const { completedSessions, totalFocusTime } = usePomodoroStats();
+
   const { animatedStyle } = useFadeSlideInOnFocus();
   const { t } = useI18n();
   const theme = useTheme();
@@ -61,12 +63,15 @@ export const HomeScreen: React.FC<any> = ({ navigation }) => {
               {user?.name || t("home.userFallback")}
             </Text>
           </View>
-          <Avatar
-            username={user?.name}
-            source={user?.photoUrl ? { uri: user.photoUrl } : undefined}
-            size={40}
-            onPress={() => (navigation as any)?.navigate?.("User")}
-          />
+          <View style={styles.headerActions}>
+
+            <Avatar
+              username={user?.name}
+              source={user?.photoUrl ? { uri: user.photoUrl } : undefined}
+              size={40}
+              onPress={() => (navigation as any)?.navigate?.("User")}
+            />
+          </View>
         </View>
 
         {/* Summary Card */}

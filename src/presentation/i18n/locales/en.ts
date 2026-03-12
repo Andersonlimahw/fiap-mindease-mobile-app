@@ -137,7 +137,6 @@ export const en = {
     pomodoro: "Pomodoro",
     focusMode: "Focus",
     chat: "Chat",
-    notifications: 'Notifications',
   },
   titles: {
     myAccount: "My Account",

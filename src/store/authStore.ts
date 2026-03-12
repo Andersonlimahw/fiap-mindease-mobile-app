@@ -59,17 +59,15 @@ export const useAuthStore = create<AuthState>()(
           FirebaseAPI.setCurrentUserId(providerResult?.id || null);
           // Salvar token FCM e iniciar listener de notificações
           if (providerResult?.id) {
-            NotificationService.getFcmToken().then((token) => {
+            NotificationService.init((title, body, data) => {
+              useNotificationStore.getState().addFcmNotification(providerResult.id, title, body, data);
+            }).then((token) => {
               if (token) {
                 useNotificationStore.getState().saveFcmToken(providerResult.id, token);
               }
             }).catch(() => {});
             // Iniciar listener real-time de notificações
             useNotificationStore.getState().subscribe(providerResult.id);
-            // Handler para mensagens FCM em foreground → salvar no inbox
-            NotificationService.setOnMessageHandler((title, body, data) => {
-              useNotificationStore.getState().addFcmNotification(providerResult.id, title, body, data);
-            });
           }
         } catch (e: any) {
           console.error("[authStore] signIn error", e);
@@ -96,17 +94,15 @@ export const useAuthStore = create<AuthState>()(
           FirebaseAPI.setCurrentUserId(u?.id || null);
           // Salvar token FCM e iniciar listener de notificações
           if (u?.id) {
-            NotificationService.getFcmToken().then((token) => {
+            NotificationService.init((title, body, data) => {
+              useNotificationStore.getState().addFcmNotification(u.id, title, body, data);
+            }).then((token) => {
               if (token) {
                 useNotificationStore.getState().saveFcmToken(u.id, token);
               }
             }).catch(() => {});
             // Iniciar listener real-time de notificações
             useNotificationStore.getState().subscribe(u.id);
-            // Handler para mensagens FCM em foreground → salvar no inbox
-            NotificationService.setOnMessageHandler((title, body, data) => {
-              useNotificationStore.getState().addFcmNotification(u.id, title, body, data);
-            });
           }
         } finally {
           set({ loading: false });
@@ -124,17 +120,15 @@ export const useAuthStore = create<AuthState>()(
           FirebaseAPI.setCurrentUserId(u?.id || null);
           // Salvar token FCM e iniciar listener de notificações
           if (u?.id) {
-            NotificationService.getFcmToken().then((token) => {
+            NotificationService.init((title, body, data) => {
+              useNotificationStore.getState().addFcmNotification(u.id, title, body, data);
+            }).then((token) => {
               if (token) {
                 useNotificationStore.getState().saveFcmToken(u.id, token);
               }
             }).catch(() => {});
             // Iniciar listener real-time de notificações
             useNotificationStore.getState().subscribe(u.id);
-            // Handler para mensagens FCM em foreground → salvar no inbox
-            NotificationService.setOnMessageHandler((title, body, data) => {
-              useNotificationStore.getState().addFcmNotification(u.id, title, body, data);
-            });
           }
         } finally {
           set({ loading: false });
@@ -215,15 +209,14 @@ export async function initAuthStore() {
     FirebaseAPI.setCurrentUserId(u?.id || null);
     // Salvar token FCM e iniciar listener de notificações para sessão restaurada
     if (u?.id) {
-      NotificationService.getFcmToken().then((token) => {
+      NotificationService.init((title, body, data) => {
+        useNotificationStore.getState().addFcmNotification(u!.id, title, body, data);
+      }).then((token) => {
         if (token) {
-          useNotificationStore.getState().saveFcmToken(u.id, token);
+          useNotificationStore.getState().saveFcmToken(u!.id, token);
         }
       }).catch(() => {});
       useNotificationStore.getState().subscribe(u.id);
-      NotificationService.setOnMessageHandler((title, body, data) => {
-        useNotificationStore.getState().addFcmNotification(u.id, title, body, data);
-      });
     }
   } finally {
     useAuthStore.setState({ loading: false });
@@ -243,15 +236,14 @@ export async function initAuthStore() {
         FirebaseAPI.setCurrentUserId(u?.id || null);
         if (u?.id) {
           // Salvar token FCM e iniciar listener de notificações
-          NotificationService.getFcmToken().then((token) => {
+          NotificationService.init((title, body, data) => {
+            useNotificationStore.getState().addFcmNotification(u.id, title, body, data);
+          }).then((token) => {
             if (token) {
               useNotificationStore.getState().saveFcmToken(u.id, token);
             }
           }).catch(() => {});
           useNotificationStore.getState().subscribe(u.id);
-          NotificationService.setOnMessageHandler((title, body, data) => {
-            useNotificationStore.getState().addFcmNotification(u.id, title, body, data);
-          });
         } else {
           NotificationService.cleanup();
         }

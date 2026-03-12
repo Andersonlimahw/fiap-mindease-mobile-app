@@ -22,18 +22,11 @@ export default function App() {
     NotificationService.init().catch((e) =>
       console.warn('[App] NotificationService init error:', e)
     );
-    // Enable LayoutAnimation on Android for smoother list updates
-    if (
-      Platform.OS === "android" &&
-      (UIManager as any)?.setLayoutAnimationEnabledExperimental
-    ) {
-      (UIManager as any).setLayoutAnimationEnabledExperimental(true);
-    }
   }, []);
   return (
     <I18nProvider>
       <SafeAreaProvider>
-        <NavigationContainer theme={getNavigationTheme(theme.mode) as any}>
+        <NavigationContainer theme={getNavigationTheme(theme) as any}>
           <StatusBar
             barStyle={theme.mode === "dark" ? "light-content" : "dark-content"}
             backgroundColor={theme.colors.background}

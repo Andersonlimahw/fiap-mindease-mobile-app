@@ -139,7 +139,6 @@ export const es = {
     pomodoro: "Pomodoro",
     focusMode: "Enfoque",
     chat: "Chat",
-    notifications: 'Notificaciones',
   },
   titles: {
     myAccount: "Mi Cuenta",

@@ -24,9 +24,9 @@ export type AppTheme = {
   brand: BrandId;
   mode: ThemeMode;
   colors: ThemeColors;
-  radius: { sm: number; md: number; lg: number };
+  radius: { sm: number; md: number; lg: number; full: number };
   spacing: { xs: number; sm: number; md: number; lg: number; xl: number };
-  text: { h1: number; h2: number; body: number };
+  text: { h1: number; h2: number; h3: number; body: number; caption: number };
   fonts: { regular: string; medium: string; bold: string };
   logoText: string; // fallback when no image logo is provided
 };
@@ -153,9 +153,9 @@ function buildTheme(brand: BrandId, mode: ThemeMode): AppTheme {
     brand: safeBrand,
     mode,
     colors: palette,
-    radius: { sm: 8, md: 12, lg: 20 },
+    radius: { sm: 8, md: 12, lg: 20, full: 9999 },
     spacing: { xs: 4, sm: 8, md: 12, lg: 16, xl: 24 },
-    text: { h1: 24, h2: 20, body: 14 },
+    text: { h1: 24, h2: 20, h3: 18, body: 14, caption: 12 },
     fonts,
     logoText,
   };
@@ -169,7 +169,7 @@ type ThemeState = {
   toggleMode: () => void;
 };
 
-const DEFAULT_BRAND: BrandId = 'bytebank';
+const DEFAULT_BRAND: BrandId = 'mindease';
 
 export const useThemeStore = create<ThemeState>()(
   devtools(
@@ -182,7 +182,7 @@ export const useThemeStore = create<ThemeState>()(
         toggleMode: () => set({ mode: get().mode === 'light' ? 'dark' : 'light' }),
       }),
       {
-        name: 'bytebank_theme',
+        name: 'mindease_theme',
         storage: createJSONStorage(() => AsyncStorage),
         partialize: (state) => ({ brand: state.brand, mode: state.mode }),
       }

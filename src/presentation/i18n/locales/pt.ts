@@ -140,7 +140,6 @@ export const pt = {
     pomodoro: "Pomodoro",
     focusMode: "Foco",
     chat: "Chat",
-    notifications: 'Notificações',
   },
   titles: {
     myAccount: "Minha Conta",

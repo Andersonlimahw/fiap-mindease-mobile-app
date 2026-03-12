@@ -16,6 +16,7 @@ import {
   serverTimestamp,
   writeBatch,
   arrayUnion,
+  setDoc,
 } from '@react-native-firebase/firestore';
 
 /**
@@ -98,7 +99,9 @@ export class FirebaseNotificationRepository implements NotificationRepository {
   async saveFcmToken(userId: string, token: string): Promise<void> {
     const db = this.getDb();
     const userRef = doc(db, 'users', userId);
-    await updateDoc(userRef, { fcmTokens: arrayUnion(token) });
+    // Usar setDoc com merge para não falhar se o documento do usuário ainda não existir
+    await setDoc(userRef, { fcmTokens: arrayUnion(token) }, { merge: true });
+    console.log('[FirebaseNotificationRepository] FCM token saved for user:', userId);
   }
 
   subscribe(

@@ -19,6 +19,8 @@ export type RootStackParamList = {
   App: undefined;
   User: undefined;
   Accessibility: undefined;
+  ContentReader: undefined;
+  Notifications: undefined;
 };
 
 // Navigation props for screens in the Auth stack

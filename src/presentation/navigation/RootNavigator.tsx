@@ -1,4 +1,4 @@
-import React, { useMemo, lazy, Suspense } from "react";
+import React, { useMemo } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useAuth } from "@store/authStore";
@@ -14,105 +14,38 @@ import { rootNavigatorStyles as styles } from "./RootNavigator.styles";
 import { useI18n } from "../i18n/I18nProvider";
 import { useTheme, type AppTheme } from "../theme/theme";
 import { Loading } from "../components/Loading";
-import { useUnreadCount } from "@store/notificationStore";
+import {
+  AuthStackParamList,
+  AppTabParamList,
+  RootStackParamList,
+} from "./types";
 
 // Telas críticas (carregadas imediatamente)
 import { LoginScreen } from "../screens/Auth/LoginScreen";
 import { OnboardingScreen } from "../screens/Onboarding/OnboardingScreen";
 import { HomeScreen } from "../screens/Home/HomeScreen";
-
-// Lazy loading de telas secundárias
-const UserScreen = lazy(() =>
-  import("../screens/User/UserScreen").then((m) => ({
-    default: m.UserScreen,
-  }))
-);
-
-const RegisterScreen = lazy(() =>
-  import("../screens/Auth/RegisterScreen").then((m) => ({
-    default: m.RegisterScreen,
-  }))
-);
-const TasksScreen = lazy(() =>
-  import("../screens/Tasks/TasksScreen").then((m) => ({
-    default: m.TasksScreen,
-  }))
-);
-const PomodoroScreen = lazy(() =>
-  import("../screens/Pomodoro/PomodoroScreen").then((m) => ({
-    default: m.PomodoroScreen,
-  }))
-);
-const FocusModeScreen = lazy(() =>
-  import("../screens/FocusMode/FocusModeScreen").then((m) => ({
-    default: m.FocusModeScreen,
-  }))
-);
-const ChatScreen = lazy(() =>
-  import("../screens/Chat/ChatScreen").then((m) => ({
-    default: m.ChatScreen,
-  }))
-);
-const AccessibilityScreen = lazy(() =>
-  import("../screens/Accessibility/AccessibilityScreen").then((m) => ({
-    default: m.AccessibilityScreen,
-  }))
-);
-const ContentReaderScreen = lazy(() =>
-  import("../screens/ContentReader/ContentReaderScreen").then((m) => ({
-    default: m.ContentReaderScreen,
-  }))
-);
-const NotificationsScreen = lazy(() =>
-  import("../screens/Notifications/NotificationsScreen").then((m) => ({
-    default: m.NotificationsScreen,
-  }))
-);
-
-/**
- * HOC para envolver componentes lazy em Suspense
- */
-function withSuspense<P extends object>(
-  LazyComponent: React.LazyExoticComponent<React.ComponentType<P>>
-) {
-  return function SuspenseWrapper(props: P) {
-    return (
-      <Suspense fallback={<Loading />}>
-        <LazyComponent {...props} />
-      </Suspense>
-    );
-  };
-}
+import { UserScreen } from "../screens/User/UserScreen";
+import { RegisterScreen } from "../screens/Auth/RegisterScreen";
+import { TasksScreen } from "../screens/Tasks/TasksScreen";
+import { PomodoroScreen } from "../screens/Pomodoro/PomodoroScreen";
+import { FocusModeScreen } from "../screens/FocusMode/FocusModeScreen";
+import { ChatScreen } from "../screens/Chat/ChatScreen";
+import { AccessibilityScreen } from "../screens/Accessibility/AccessibilityScreen";
+import { ContentReaderScreen } from "../screens/ContentReader/ContentReaderScreen";
 
 // Componentes com Suspense
-const LazyUser = withSuspense(UserScreen);
-const LazyRegister = withSuspense(RegisterScreen);
-const LazyTasks = withSuspense(TasksScreen);
-const LazyPomodoro = withSuspense(PomodoroScreen);
-const LazyFocusMode = withSuspense(FocusModeScreen);
-const LazyChat = withSuspense(ChatScreen);
-const LazyAccessibility = withSuspense(AccessibilityScreen);
-const LazyContentReader = withSuspense(ContentReaderScreen);
-const LazyNotifications = withSuspense(NotificationsScreen);
-
-type AuthStackParamList = {
-  Onboarding: undefined;
-  Login: undefined;
-  Register: undefined;
-};
-
-type AppTabParamList = {
-  Home: undefined;
-  Tasks: undefined;
-  Pomodoro: undefined;
-  FocusMode: undefined;
-  Chat: undefined;
-  Notifications: undefined;
-};
+const LazyUser = UserScreen;
+const LazyRegister = RegisterScreen;
+const LazyTasks = TasksScreen;
+const LazyPomodoro = PomodoroScreen;
+const LazyFocusMode = FocusModeScreen;
+const LazyChat = ChatScreen;
+const LazyAccessibility = AccessibilityScreen;
+const LazyContentReader = ContentReaderScreen;
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const Tab = createBottomTabNavigator<AppTabParamList>();
-const AppStack = createNativeStackNavigator();
+const AppStack = createNativeStackNavigator<RootStackParamList>();
 
 import { MaterialIcons } from "@expo/vector-icons";
 
@@ -229,35 +162,6 @@ const centerButtonStyles = StyleSheet.create({
   },
 });
 
-function NotificationTabIcon({ color, size }: { color: string; size: number }) {
-  const unreadCount = useUnreadCount();
-  return (
-    <View style={{ position: 'relative' }}>
-      <MaterialIcons name="notifications" size={size} color={color} />
-      {unreadCount > 0 && (
-        <View
-          style={{
-            position: 'absolute',
-            top: -4,
-            right: -6,
-            backgroundColor: '#EF4444',
-            borderRadius: 8,
-            minWidth: 16,
-            height: 16,
-            alignItems: 'center',
-            justifyContent: 'center',
-            paddingHorizontal: 3,
-          }}
-        >
-          <Text style={{ color: '#fff', fontSize: 9, fontWeight: '700', lineHeight: 12 }}>
-            {unreadCount > 9 ? '9+' : String(unreadCount)}
-          </Text>
-        </View>
-      )}
-    </View>
-  );
-}
-
 function AppTabs() {
   const theme = useTheme();
   const { t } = useI18n();
@@ -289,6 +193,7 @@ function AppTabs() {
             Pomodoro: "timer",
             FocusMode: "self-improvement",
             Chat: "chat",
+            Notifications: "notifications",
           };
 
           const iconName = icons[route.name] || "help";
@@ -345,17 +250,6 @@ function AppTabs() {
         options={{
           tabBarLabel: t("tabs.focusMode"),
           headerTitle: t("focusMode.title"),
-        }}
-      />
-      <Tab.Screen
-        name="Notifications"
-        component={LazyNotifications}
-        options={{
-          tabBarLabel: t('tabs.notifications'),
-          headerTitle: t('notifications.title'),
-          tabBarIcon: ({ color, size }) => (
-            <NotificationTabIcon color={color} size={size} />
-          ),
         }}
       />
     </Tab.Navigator>
